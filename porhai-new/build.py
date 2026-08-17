@@ -100,6 +100,22 @@ NAV = [
     ('Контакты', '#kontakt'),
 ]
 
+# Мобильное меню (rec561486903) — отдельная структура от десктопного NAV:
+# «Аренда залов» и «Праздник под ключ» здесь не якоря на секции, а
+# раскрывающиеся группы ссылок на подстраницы (так было и в оригинале).
+MOBILE_MENU = [
+    ('Главная', '/', None),
+    ('Разовое посещение', '/razovoe', None),
+    ('Аренда залов', None, [
+        ('WhiteBox', '/whiteroom'), ('LoftBox', '/loftbox'), ('Комбо+', '/combo')]),
+    ('Праздник под ключ', None, [
+        ('День рождения', '/denrozhdeniya'), ('Выпускной', '/vypusknye'), ('Корпоратив', '/korporativ')]),
+    ('Для групп', '#dlyagrupp', None),
+    ('Отзывы', '#otziv', None),
+    ('Скидки от партнёров', '/partner', None),
+    ('Контакты', '#kontakt', None),
+]
+
 # Неразрывные пробелы — как в оригинале: они держат переносы строк.
 # «Cтильные» начинается с латинской C — опечатка исходника, переносим как есть.
 CARDS = [
@@ -443,6 +459,26 @@ def render_popups(popups):
     return ''.join(out)
 
 
+def render_mobile_menu():
+    items = []
+    for label, href, sub in MOBILE_MENU:
+        if sub:
+            sub_html = ''.join('<li><a class="mobile-menu__sublink" href="%s">%s</a></li>' % (h, t) for t, h in sub)
+            items.append(
+                '<li><details class="mobile-menu__group"><summary>%s</summary>'
+                '<ul class="mobile-menu__sublist">%s</ul></details></li>' % (label, sub_html))
+        else:
+            items.append('<li><a class="mobile-menu__link" href="%s">%s</a></li>' % (href, label))
+    return ''.join(items)
+
+
+def render_mobile_socials():
+    return ''.join(
+        '<a class="contact__social" href="%s" target="_blank" rel="nofollow" aria-label="%s">'
+        '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">%s</svg></a>'
+        % (url, name, svg) for name, url, svg in SOCIALS)
+
+
 def build():
     nav = ''.join('<li><a class="nav__link" href="%s">%s</a></li>' % (h, t) for t, h in NAV)
 
@@ -540,6 +576,9 @@ def build():
         'openingHours': 'Mo-Su 10:00-21:00',
     }, ensure_ascii=False)
 
+    mobile_menu_items = render_mobile_menu()
+    mobile_socials = render_mobile_socials()
+
     float_links = ''.join(
         '<a class="float__link" href="%s" target="_blank" rel="nofollow noopener noreferrer" aria-label="%s">'
         '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">%s</svg></a>'
@@ -576,11 +615,22 @@ def build():
       <ul class="nav__list">{nav}</ul>
     </nav>
     <a class="btn btn--teal header__cta" href="#zayavka">Забронировать зал</a>
-    <button class="burger" type="button" aria-label="Меню" aria-expanded="false">
+    <button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mobile-menu">
       <span></span><span></span><span></span>
     </button>
   </div>
 </header>
+
+<div class="mobile-menu" id="mobile-menu" hidden>
+  <div class="mobile-menu__inner">
+    <button class="mobile-menu__close" type="button" aria-label="Закрыть меню">
+      <span></span><span></span>
+    </button>
+    <ul class="mobile-menu__list">{mobile_menu_items}</ul>
+    <div class="mobile-menu__socials">{mobile_socials}</div>
+    <p class="mobile-menu__copy">© Развлекательный центр «Порхай»</p>
+  </div>
+</div>
 
 <main>
   <section class="hero">
@@ -844,6 +894,27 @@ def build():
       track.scrollBy({{ left: track.clientWidth * .8, behavior: 'smooth' }});
     }});
   }}
+
+  // 6. Мобильное меню.
+  var burger = document.querySelector('.burger');
+  var menu = document.getElementById('mobile-menu');
+  function closeMenu() {{
+    menu.hidden = true;
+    burger.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  }}
+  burger.addEventListener('click', function () {{
+    var open = burger.getAttribute('aria-expanded') === 'true';
+    if (open) {{ closeMenu(); return; }}
+    menu.hidden = false;
+    burger.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+  }});
+  menu.querySelector('.mobile-menu__close').addEventListener('click', closeMenu);
+  menu.querySelectorAll('.mobile-menu__link, .mobile-menu__sublink').forEach(function (a) {{
+    a.addEventListener('click', closeMenu);
+  }});
+  addEventListener('keydown', function (e) {{ if (e.key === 'Escape') closeMenu(); }});
 }})();
 </script>
 </body>
@@ -904,6 +975,8 @@ def build_privacy():
     sections = ''.join(
         '<section class="legal__section"><h2>%s</h2><p>%s</p></section>' % (title, text)
         for title, text in PRIVACY_SECTIONS)
+    mobile_menu_items = render_mobile_menu()
+    mobile_socials = render_mobile_socials()
 
     html = f"""<!DOCTYPE html>
 <html lang="ru">
@@ -926,11 +999,22 @@ def build_privacy():
       <ul class="nav__list">{nav}</ul>
     </nav>
     <a class="btn btn--teal header__cta" href="/#zayavka">Забронировать зал</a>
-    <button class="burger" type="button" aria-label="Меню" aria-expanded="false">
+    <button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mobile-menu">
       <span></span><span></span><span></span>
     </button>
   </div>
 </header>
+
+<div class="mobile-menu" id="mobile-menu" hidden>
+  <div class="mobile-menu__inner">
+    <button class="mobile-menu__close" type="button" aria-label="Закрыть меню">
+      <span></span><span></span>
+    </button>
+    <ul class="mobile-menu__list">{mobile_menu_items}</ul>
+    <div class="mobile-menu__socials">{mobile_socials}</div>
+    <p class="mobile-menu__copy">© Развлекательный центр «Порхай»</p>
+  </div>
+</div>
 
 <main>
   <section class="section legal">
@@ -959,6 +1043,26 @@ document.getElementById('header').classList.toggle('is-stuck', scrollY > 40);
 addEventListener('scroll', function () {{
   document.getElementById('header').classList.toggle('is-stuck', scrollY > 40);
 }}, {{ passive: true }});
+
+var burger = document.querySelector('.burger');
+var menu = document.getElementById('mobile-menu');
+function closeMenu() {{
+  menu.hidden = true;
+  burger.setAttribute('aria-expanded', 'false');
+  document.body.style.overflow = '';
+}}
+burger.addEventListener('click', function () {{
+  var open = burger.getAttribute('aria-expanded') === 'true';
+  if (open) {{ closeMenu(); return; }}
+  menu.hidden = false;
+  burger.setAttribute('aria-expanded', 'true');
+  document.body.style.overflow = 'hidden';
+}});
+menu.querySelector('.mobile-menu__close').addEventListener('click', closeMenu);
+menu.querySelectorAll('.mobile-menu__link, .mobile-menu__sublink').forEach(function (a) {{
+  a.addEventListener('click', closeMenu);
+}});
+addEventListener('keydown', function (e) {{ if (e.key === 'Escape') closeMenu(); }});
 </script>
 </body>
 </html>
