@@ -1218,6 +1218,28 @@ RAZOVOE_PRICES = [
 ]
 
 
+def render_price_groups(groups):
+    """Прайслист (t812): группы по времени (у White Room/Loft Box — одна
+    группа без подписи, у Комбо+/Выпускного — две, «счастливые часы» и
+    вечер) — переиспользуется render_rental_page() и build_vypusknye()."""
+    return ''.join(
+        '<div class="pricelist__group">'
+        + ('<p class="pricelist__group-note">%s</p>' % g['note'] if g['note'] else '')
+        + '<div class="pricelist__group-items">'
+        + ''.join(
+            '<div class="pricelist__item"><div class="pricelist__row"><span>%s</span><span>%s</span></div>'
+            '<div class="pricelist__line"></div></div>' % row for row in g['items'])
+        + '</div></div>'
+        for g in groups)
+
+
+def render_checklist(items):
+    """«Что включено» (t491) — иконка + строка, 4 колонки по 260px."""
+    return ''.join(
+        '<div class="checklist__item"><img src="%s%s" alt="" width="35" height="35"><span>%s</span></div>'
+        % (IMG, img, title) for img, title in items)
+
+
 def render_slider(images, alt=''):
     slides = ''.join(
         '<div class="slider__slide" style="background-image:url(%s%s)" role="img" aria-label="%s"></div>'
@@ -1559,15 +1581,7 @@ def render_rental_page(slug):
             else '<span class="partners__name">%s</span>' % name)
         for img, name in PARTNERS)
 
-    price_groups = ''.join(
-        '<div class="pricelist__group">'
-        + ('<p class="pricelist__group-note">%s</p>' % g['note'] if g['note'] else '')
-        + '<div class="pricelist__group-items">'
-        + ''.join(
-            '<div class="pricelist__item"><div class="pricelist__row"><span>%s</span><span>%s</span></div>'
-            '<div class="pricelist__line"></div></div>' % row for row in g['items'])
-        + '</div></div>'
-        for g in p['price_groups'])
+    price_groups = render_price_groups(p['price_groups'])
 
     teasers = ''.join(
         '<div class="teasers__item"><img src="%s%s" alt="" loading="lazy" width="360" height="240">'
@@ -1981,6 +1995,201 @@ def build_denrozhdeniya():
     print('denrozhdeniya.html собран:', len(html), 'байт')
 
 
+# --- Выпускной (/vypusknye, page34767822) ----------------------------------
+# В отличие от /denrozhdeniya — переносится как есть, цены и состав пакета
+# не меняются (content/prices.md: «Выпускной... остаётся как есть»).
+# Исключение — то самое «Выпускные 2023 не за горами» (группа C аудита):
+# заказчик подтвердил замену на 2027 (content/prices.md, «Решено»).
+
+VP_COVER = 'tild6235-3331-4465-b435-386366663338__2.webp'
+VP_BG = '#dfddf5'
+
+VP_CHECKLIST = [
+    ('tild6331-6332-4134-b336-653838336437__photo.svg', 'Аренда зала – 4 часа, включён сбор гостей 30 минут'),
+    ('tild3061-6337-4234-a337-643237303762__photo.svg', 'Фотограф – 2 часа'),
+    ('tild6331-6332-4134-b336-653838336437__photo.svg', 'Анимационная программа 1,5 часа, ДВА анимационных героя + диджей'),
+    ('tild6331-6332-4134-b336-653838336437__photo.svg', 'Секретный бонус от «Порхай»'),
+    ('tild6331-6332-4134-b336-653838336437__photo.svg', 'Игры, задания, эстафеты'),
+    ('tild6331-6332-4134-b336-653838336437__photo.svg', 'Сопровождающие праздника'),
+    ('tild6331-6332-4134-b336-653838336437__photo.svg', 'Дискотека и светомузыка'),
+    ('tild6331-6332-4134-b336-653838336437__photo.svg', 'Скатерть и одноразовая посуда (цветная) + посуда для сервировки'),
+    ('tild6331-6332-4134-b336-653838336437__photo.svg', 'Чай/конфеты'),
+    ('tild6331-6332-4134-b336-653838336437__photo.svg', 'Лимонадница'),
+    ('tild6331-6332-4134-b336-653838336437__photo.svg', 'Электронные приглашения для ваших гостей'),
+    ('tild6331-6332-4134-b336-653838336437__photo.svg', 'Вместимость 50 человек'),
+]
+
+VP_GALLERY = [
+    'tild6331-3438-4163-a535-656238353162__photo_2022-03-17_18-.webp',
+    'tild3432-3362-4331-b834-313036663738__iii_7856.webp',
+    'tild6161-3435-4762-b532-326561313138__iii_3725_1.webp',
+    'tild3064-3635-4935-b165-373831306530__iii_7472_2.webp',
+    'tild3666-3531-4630-a230-386539313933__photo_2023-03-09_15-.webp',
+    'tild3235-3130-4761-b631-396335373639__iii_4774.webp',
+    'tild6235-3737-4539-a238-653733346564__iii_1669_2.webp',
+    'tild6534-6335-4133-b766-623231663139__ce4a0538.webp',
+    'tild6364-3561-4263-b534-366638623464__ce4a0718.webp',
+    'tild6362-3161-4138-b138-626164663464__iii_4586.webp',
+    'tild3239-6362-4435-b434-663233313534__iii_3202_1.webp',
+    'tild3537-6339-4537-a565-366139313332__iii_3447_1.webp',
+    'tild3066-6232-4239-b537-303466306634__iii_3204_1.webp',
+    'tild3734-3835-4437-b865-393038386639__iii_3488_1.webp',
+    'tild6532-6665-4533-a137-383934346536__iii_7613.webp',
+    'tild6164-3132-4435-a437-623534336333__iii_5366.webp',
+    'tild6432-6639-4765-a539-353231386534__photo_2022-07-10_10-.webp',
+]
+
+VP_PRICE_GROUPS = [
+    dict(note='«Счастливые часы» 10:00 — 14:00',
+         items=[('Будни', '54 800 ₽'), ('Выходные', '68 800 ₽')]),
+    dict(note='16:00 — 21:00',
+         items=[('Будни', '64 400 ₽'), ('Выходные', '79 800 ₽')]),
+]
+
+
+def build_vypusknye():
+    checklist = render_checklist(VP_CHECKLIST)
+    gallery = render_slider(VP_GALLERY, 'Выпускной «под ключ» в «Порхай»')
+    why = ''.join(
+        '<div class="features__item"><img src="%s%s" alt="" width="140" height="140">'
+        '<h3>%s</h3></div>' % (IMG, img, title) for img, title in DR_WHY)
+    price_groups = render_price_groups(VP_PRICE_GROUPS)
+
+    partners = ''.join(
+        '<div class="partners__item">%s</div>' % (
+            '<img src="%s%s" alt="" loading="lazy" width="160">' % (IMG, img) if img
+            else '<span class="partners__name">%s</span>' % name)
+        for img, name in PARTNERS)
+
+    reviews = ''.join(
+        '<img src="%s%s" alt="" loading="lazy" width="260">' % (IMG, img)
+        for img in REVIEWS)
+
+    popups = render_form_popup('header') + render_form_popup('vypusknye')
+    faq_ld = faq_jsonld()
+
+    html = f"""<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Выпускные «ПОД КЛЮЧ» в развлекательном центре «Порхай»</title>
+<meta name="description" content="Мы подготовили для вас идеальный пакет для выпускного, чтобы ваш праздник прошёл легко, без суеты и лишний траты времени на организацию.">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<script>document.documentElement.className+=' js'</script>
+
+{render_top_chrome()}
+
+<main>
+  <section class="split-hero" style="background:{VP_BG}">
+    <div class="stage">
+      <div class="split-hero__photo" style="background-image:url({IMG}{VP_COVER})"></div>
+      <div class="split-hero__text">
+        <h1 class="split-hero__title">Выпускные в&nbsp;«Порхай!»</h1>
+        <p class="split-hero__subtitle">Выпускные 2027 не&nbsp;за&nbsp;горами! Бронирования уже идут полным ходом, поэтому торопитесь занять нужную дату</p>
+        <span class="split-hero__line"></span>
+        <p class="split-hero__descr">Мы&nbsp;подготовили для&nbsp;вас идеальный пакет для&nbsp;выпускного, чтобы ваш праздник прошёл легко, без суеты и&nbsp;лишний траты времени на&nbsp;организацию</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="checklist">
+    <div class="stage">
+      <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Что включено</h2>
+      <div class="checklist__grid" style="margin-top:40px">{checklist}</div>
+    </div>
+  </section>
+
+  <p class="price-line">Стоимость от&nbsp;1090&nbsp;₽/чел.</p>
+
+  <div class="cta-band"><a class="btn btn--yellow" href="#popup:vypusknye" data-anim="zoomin" data-anim-dur="1">Записаться</a></div>
+
+  {band(flip=True)}
+
+  <section class="section" style="background:{VP_BG}">
+    <div class="stage">
+      <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Яркие эмоции и&nbsp;крутые фото&nbsp;— гарантированы!</h2>
+      {gallery}
+    </div>
+  </section>
+
+  <div class="cta-band" style="background:{VP_BG}"><a class="btn btn--yellow" href="#popup:vypusknye">Записаться</a></div>
+
+  {band()}
+
+  <section class="features">
+    <div class="stage">
+      <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Почему стоит провести праздник в&nbsp;«Порхай»?</h2>
+      <div class="features__grid">{why}</div>
+    </div>
+  </section>
+
+  {band(flip=True)}
+
+  <section class="pricelist" style="background:{VP_BG}">
+    <div class="stage">
+      <h2 class="pricelist__title">Стоимость выпускного «под&nbsp;ключ»</h2>
+      <div class="pricelist__grid">{price_groups}</div>
+    </div>
+  </section>
+
+  <div class="cta-band" style="background:{VP_BG}"><a class="btn btn--yellow" href="#popup:vypusknye">Записаться</a></div>
+
+  {band()}
+
+  <section class="section section--partners">
+    <div class="stage">
+      <div class="section__head">
+        <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Скидки от наших партнёров</h2>
+        <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">При заказе аренды зала</p>
+      </div>
+      <div class="partners">{partners}</div>
+    </div>
+  </section>
+
+  {band(flip=True)}
+
+  <section class="section" style="background:{VP_BG}" id="otziv">
+    <div class="stage">
+      <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Отзывы ❤️</h2>
+      <div class="reviews">
+        <button class="reviews__arrow reviews__arrow--prev" type="button" aria-label="Предыдущий отзыв">{SLIDER_ARROW}</button>
+        <div class="reviews__track">{reviews}</div>
+        <button class="reviews__arrow reviews__arrow--next" type="button" aria-label="Следующий отзыв">{SLIDER_ARROW}</button>
+      </div>
+    </div>
+  </section>
+
+  {band()}
+
+  {render_faq_section()}
+
+  {band(flip=True)}
+
+  {render_contact_section()}
+</main>
+
+{render_footer()}
+
+{render_float_button()}
+
+<script type="application/ld+json">{faq_ld}</script>
+<script type="application/ld+json">{BUSINESS_LD}</script>
+
+{popups}
+
+{PAGE_SCRIPT}
+</body>
+</html>
+"""
+    path = os.path.join(HERE, 'vypusknye.html')
+    with open(path, 'w', encoding='utf-8') as f:
+        f.write(html)
+    print('vypusknye.html собран:', len(html), 'байт')
+
+
 if __name__ == '__main__':
     build()
     build_privacy()
@@ -1989,3 +2198,4 @@ if __name__ == '__main__':
     render_rental_page('loftbox')
     render_rental_page('combo')
     build_denrozhdeniya()
+    build_vypusknye()
