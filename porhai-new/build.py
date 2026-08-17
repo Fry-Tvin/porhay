@@ -2190,6 +2190,196 @@ def build_vypusknye():
     print('vypusknye.html собран:', len(html), 'байт')
 
 
+# --- Корпоратив (/korporativ, page35225004) --------------------------------
+# Переносится как есть (content/prices.md: цены не трогаем — здесь их и
+# не было, корпоративы считаются индивидуально). Единственная из трёх
+# страниц «под ключ» без фиксированной цены и без прайслиста.
+
+KP_COVER = 'tild3136-6632-4265-a336-383961633533__3.webp'
+KP_BG = '#dffffe'
+
+# Галочка (rec569129947) — та же inline SVG, что и в оригинале, тёмно-бирюзовая.
+KP_CHECK_SVG = (
+    '<svg role="presentation" viewBox="0 0 100 100" fill="#38a2a5" xmlns="http://www.w3.org/2000/svg">'
+    '<path d="M50.1 98.9c-26.7 0-48.5-21.8-48.5-48.5S23.4 1.9 50.1 1.9c8.9 0 17.5 2.4 25.1 7 .7.4.9 1.4.5 2.1-.4.7-1.4.9-2.1.5C66.5 7.2 58.4 5 50.1 5 25 4.9 4.6 25.3 4.6 50.4S25 95.9 50.1 95.9s45.5-20.4 45.5-45.5c0-3.2-.3-6.4-1-9.5-.2-.8.3-1.6 1.2-1.8.8-.2 1.6.3 1.8 1.2.7 3.3 1.1 6.7 1.1 10.1-.1 26.7-21.8 48.5-48.6 48.5z"/>'
+    '<path d="M50.1 63.9c-.4 0-.8-.2-1.1-.4L24.8 39.2c-.6-.6-.6-1.5 0-2.1.6-.6 1.5-.6 2.1 0l23.2 23.2 46.8-48c.6-.6 1.5-.6 2.1 0 .6.6.6 1.5 0 2.1l-47.8 49c-.3.3-.7.5-1.1.5z"/>'
+    '</svg>'
+)
+
+KP_PROBLEMS = [
+    'Стрессы на работе',
+    'Дедлайны и семейные дела',
+    'Порой просто необходимо отключиться и выплеснуть эмоции',
+]
+
+KP_GALLERY = [
+    'tild6166-3937-4534-b434-646434633034__photo_2021-07-20_18-.webp',
+    'tild3062-3563-4262-b732-633665643165__photo_2023-03-05_15-.webp',
+    'tild6465-3935-4130-a439-333334626432__photo_2023-03-05_15-.webp',
+    'tild3435-3662-4038-b161-636335303838__photo_2023-03-05_19-.webp',
+    'tild3163-3736-4434-b134-323638366236__photo_2023-03-09_15-.webp',
+    'tild3164-6464-4866-a134-373438646231__photo_2023-03-09_15-.webp',
+    'tild3565-3136-4666-b930-393066653439__photo_2023-03-09_15-.webp',
+    'tild3739-6336-4562-b334-386330656633__photo_2023-03-09_15-.webp',
+    'tild6238-6562-4136-b132-316562666362__photo_2023-03-09_15-.webp',
+    'tild3938-6533-4538-b432-366330313832__photo_2023-03-09_15-.webp',
+    'tild3432-3037-4166-a361-353763623031__photo_2023-03-09_15-.webp',
+    'tild6630-6536-4637-b435-663534393064__photo_2023-03-09_15-.webp',
+    'tild3632-3332-4062-b234-356230356466__photo_2023-03-09_15-.webp',
+    'tild3961-3433-4431-b462-376361663265__photo_2023-03-09_15-.webp',
+    'tild3738-3061-4632-b539-613337366635__photo_2023-03-09_15-.webp',
+    'tild6134-3839-4432-b465-313030373366__photo_2023-03-09_15-.webp',
+    'tild3164-3061-4633-b062-666236333732__photo_2023-03-09_15-.webp',
+    'tild3138-3431-4161-b365-656563633664__photo_2023-03-09_15-.webp',
+    'tild6265-3732-4639-a233-663565633139__photo_2023-03-09_15-.webp',
+    'tild6264-3264-4766-b830-323362613331__photo_2023-03-09_15-.webp',
+    'tild3565-3464-4362-a463-303965336639__photo_2021-06-30_10-.webp',
+]
+
+KP_WHY = [
+    ('tild3466-3431-4330-b734-626337376335___9.webp', 'С&nbsp;игрой в&nbsp;мафию или играми на&nbsp;сплочение'),
+    ('tild3933-3832-4134-b737-636334376463__frame_23.webp', 'Различными мастер-классами, с&nbsp;ведущими и&nbsp;диджеем'),
+    ('tild3234-6362-4830-a661-386232316430___8.webp', 'Или любым другим наполнением по&nbsp;вашему желанию'),
+]
+
+
+def build_korporativ():
+    problems = ''.join(
+        '<li class="problems__item">%s<span>%s</span></li>' % (KP_CHECK_SVG, text)
+        for text in KP_PROBLEMS)
+
+    gallery = render_slider(KP_GALLERY, 'Корпоратив «под ключ» в «Порхай»')
+
+    why = ''.join(
+        '<div class="features__item"><img src="%s%s" alt="" width="140" height="140">'
+        '<h3>%s</h3></div>' % (IMG, img, title) for img, title in KP_WHY)
+
+    partners = ''.join(
+        '<div class="partners__item">%s</div>' % (
+            '<img src="%s%s" alt="" loading="lazy" width="160">' % (IMG, img) if img
+            else '<span class="partners__name">%s</span>' % name)
+        for img, name in PARTNERS)
+
+    reviews = ''.join(
+        '<img src="%s%s" alt="" loading="lazy" width="260">' % (IMG, img)
+        for img in REVIEWS)
+
+    popups = render_form_popup('header') + render_form_popup('korporativ')
+    faq_ld = faq_jsonld()
+
+    html = f"""<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Корпоратив «ПОД КЛЮЧ» в развлекательном центре «Порхай»</title>
+<meta name="description" content="Пишите, чтобы организовать свой идеальный корпоратив — с игрой в мафию или играми на сплочение, различными мастер-классами, с ведущими и диджеем, или любым другим наполнением по вашему желанию.">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<script>document.documentElement.className+=' js'</script>
+
+{render_top_chrome()}
+
+<main>
+  <section class="split-hero" style="background:{KP_BG}">
+    <div class="stage">
+      <div class="split-hero__photo" style="background-image:url({IMG}{KP_COVER})"></div>
+      <div class="split-hero__text">
+        <h1 class="split-hero__title">Корпоратив в&nbsp;«Порхай!»</h1>
+        <span class="split-hero__line"></span>
+        <p class="split-hero__descr">Проведите время с&nbsp;удовольствием в&nbsp;кругу коллег в&nbsp;неформальной обстановке, это не&nbsp;только объединяет коллектив и&nbsp;улучшает психологическую обстановку, но&nbsp;и&nbsp;повышает мотивацию и&nbsp;результаты</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="problems">
+    <div class="stage">
+      <div class="section__head">
+        <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Качественный отдых для&nbsp;вашего коллектива</h2>
+        <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">Взрослые нуждаются в&nbsp;отдыхе ничуть не&nbsp;меньше детей</p>
+      </div>
+      <ul class="problems__list">{problems}</ul>
+    </div>
+  </section>
+
+  <div class="cta-band"><a class="btn btn--yellow" href="#popup:korporativ" data-anim="zoomin" data-anim-dur="1">Записаться</a></div>
+
+  {band(flip=True)}
+
+  <section class="section" style="background:{KP_BG}">
+    <div class="stage">
+      <div class="section__head">
+        <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Приходите повеселиться в&nbsp;«Порхай!»</h2>
+        <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">Попрыгать в&nbsp;бассейн с&nbsp;шарами, сделать крутые фото и&nbsp;просто испытать незабываемые эмоции!</p>
+      </div>
+      {gallery}
+      <p class="price-line">Корпоративы просчитываются индивидуально под количество человек, программу и&nbsp;наполнение</p>
+    </div>
+  </section>
+
+  {band()}
+
+  <section class="features">
+    <div class="stage">
+      <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Пишите, чтобы организовать свой идеальный корпоратив</h2>
+      <div class="features__grid">{why}</div>
+    </div>
+  </section>
+
+  <div class="cta-band"><a class="btn btn--yellow" href="#popup:korporativ">Записаться</a></div>
+
+  {band(flip=True)}
+
+  <section class="section section--partners" style="background:{KP_BG}">
+    <div class="stage">
+      <div class="section__head">
+        <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Скидки от наших партнёров</h2>
+        <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">При заказе аренды зала</p>
+      </div>
+      <div class="partners">{partners}</div>
+    </div>
+  </section>
+
+  {band()}
+
+  <section class="section" id="otziv">
+    <div class="stage">
+      <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Отзывы ❤️</h2>
+      <div class="reviews">
+        <button class="reviews__arrow reviews__arrow--prev" type="button" aria-label="Предыдущий отзыв">{SLIDER_ARROW}</button>
+        <div class="reviews__track">{reviews}</div>
+        <button class="reviews__arrow reviews__arrow--next" type="button" aria-label="Следующий отзыв">{SLIDER_ARROW}</button>
+      </div>
+    </div>
+  </section>
+
+  {render_faq_section()}
+
+  {band(flip=True)}
+
+  {render_contact_section()}
+</main>
+
+{render_footer()}
+
+{render_float_button()}
+
+<script type="application/ld+json">{faq_ld}</script>
+<script type="application/ld+json">{BUSINESS_LD}</script>
+
+{popups}
+
+{PAGE_SCRIPT}
+</body>
+</html>
+"""
+    path = os.path.join(HERE, 'korporativ.html')
+    with open(path, 'w', encoding='utf-8') as f:
+        f.write(html)
+    print('korporativ.html собран:', len(html), 'байт')
+
+
 if __name__ == '__main__':
     build()
     build_privacy()
@@ -2199,3 +2389,4 @@ if __name__ == '__main__':
     render_rental_page('combo')
     build_denrozhdeniya()
     build_vypusknye()
+    build_korporativ()

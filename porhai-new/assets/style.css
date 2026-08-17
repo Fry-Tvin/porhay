@@ -1478,6 +1478,20 @@ ul { margin: 0; padding: 0; list-style: none; }
   .programs { padding: 40px 0 56px; }
 }
 
+/* --- Корпоратив (rec569129947 и др., /korporativ) ------------------------- */
+.problems { padding: 60px 0; }
+.problems__list { max-width: 800px; margin: 40px auto 0; }
+.problems__item { display: flex; align-items: center; gap: 24px; padding: 16px 0; }
+.problems__item svg { width: 55px; height: 55px; flex-shrink: 0; }
+.problems__item span { font-size: 20px; line-height: 1.4; font-weight: 400; color: var(--ink); }
+
+@media (max-width: 1000px) {
+  .problems { padding: 40px 0; }
+  .problems__item { gap: 16px; }
+  .problems__item svg { width: 40px; height: 40px; }
+  .problems__item span { font-size: 16px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
   [data-anim] { opacity: 1; transform: none; }
