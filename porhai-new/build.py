@@ -9,6 +9,7 @@
 Запуск:  python build.py
 """
 import os
+import json
 from html import escape
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -299,6 +300,25 @@ PARTNERS = [
     (None, 'Café Tree'),
 ]
 
+# FAQ (rec560783948) — дословно из оригинального аккордеона (data-tooltip
+# тут ни при чём, текст снят прямо из <button>/<div class="t668__text">).
+FAQ = [
+    ('Есть ли у вас вода?',
+     'Холодная/горячая вода, чай в свободном доступе в неограниченном количестве для ваших гостей.'),
+    ('Для чего светлые носочки?',
+     'Мы очень бережно относимся к вам и к чистоте центра. А темные и яркие носочки окрашивают шарики в наших бассейнах, поэтому для посещения бассейнов необходимо наличие носочков.'),
+    ('За взрослого надо платить?',
+     'Да, вход для взрослого платный. Мы создаём комфортные условия отдыха не только для детей, но и для Взрослых. Включено посещение всех фотозоны, бассейнов, вы можете выпить чай с конфетками, и здорово отдохнуть.'),
+    ('Нужна ли сменная обувь?',
+     'При желании можно взять свою сменную обувь, либо мы выдадим вам сменные тапочки.'),
+    ('По записи ли посещения?',
+     'Посещения не по записи, но за день до посещения или в необходимый день вы можете позвонить или написать нам и мы сориентируем по времени, когда будут доступны все зоны для посещения.'),
+    ('За сколько можно приезжать на день рождение?',
+     'За 15 минут до мероприятия.'),
+    ('Можно ли с едой?',
+     'Если вы арендуете зал, то в этом случае предусмотрены банкетные зоны. На посещениях банкетные зоны не предоставляются.'),
+]
+
 # Мелкий декор первого экрана: (файл, left %, top %, ширина px)
 HERO_DECOR = [
     ('tild3534-3832-4661-b631-393736383835__ff62ebf0-cb8e-41b8-8.svg', 13.0, 21.0, 11),
@@ -425,6 +445,23 @@ def build():
     gallery = ''.join(
         '<img src="%s%s" alt="" loading="lazy" width="280">' % (IMG, img)
         for img in GALLERY)
+
+    faq = ''.join(
+        '<details class="faq__item"%s>'
+        '<summary class="faq__q">%s<span class="faq__icon" aria-hidden="true"></span></summary>'
+        '<div class="faq__a">%s</div>'
+        '</details>'
+        % (' open' if n == 0 else '', q, a)
+        for n, (q, a) in enumerate(FAQ))
+
+    faq_ld = json.dumps({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        'mainEntity': [{
+            '@type': 'Question', 'name': q,
+            'acceptedAnswer': {'@type': 'Answer', 'text': a},
+        } for q, a in FAQ],
+    }, ensure_ascii=False)
 
     partners = ''.join(
         '<div class="partners__item">%s</div>' % (
@@ -562,7 +599,18 @@ def build():
       <div class="partners">{partners}</div>
     </div>
   </section>
+
+  {band()}
+
+  <section class="section section--faq" id="faq">
+    <div class="stage">
+      <h2 class="section__title" data-anim="fadeinup" data-anim-dur="1">Отвечаем на ваши вопросы</h2>
+      <div class="faq">{faq}</div>
+    </div>
+  </section>
 </main>
+
+<script type="application/ld+json">{faq_ld}</script>
 
 {popups}
 
