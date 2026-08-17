@@ -353,6 +353,44 @@ ul { margin: 0; padding: 0; list-style: none; }
   color: var(--ink);
 }
 
+/* --- Плитка «4 шага» ------------------------------------------------------ */
+/* У общего .section отступы подобраны под секцию с карточками. Здесь другой
+   зазор до заголовка (140px, а не 109) и ниже ещё плитка шагов —
+   у секции свои верх и низ, сняты прямым замером оригинала. */
+.section--steps { padding: 140px 0 105px; }
+
+.steps {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  max-width: 1160px;
+  margin: 75px auto 0;
+}
+.step { position: relative; width: 260px; text-align: center; }
+.step__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 120px;
+}
+.step__icon img { display: block; max-width: 120px; }
+.step__title {
+  margin: 25px 0 0;
+  font-size: 18px;
+  line-height: 1.35;
+  font-weight: 700;
+  color: var(--ink);
+}
+.step__arrow {
+  position: absolute;
+  top: 60px;
+  left: -50px;
+  width: 60px;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+.step__arrow svg { display: block; width: 100%; }
+
 /* --- Анимации ----------------------------------------------------------- */
 /* Появление при прокрутке. Стили и длительности взяты из оригинала:
    fadeinright и fadeinup со сдвигом 100px, zoomin с масштабом 0,6. */
@@ -400,6 +438,15 @@ ul { margin: 0; padding: 0; list-style: none; }
   .cards { grid-template-columns: 1fr; gap: 62px; max-width: 360px; }
   .section { padding: 64px 0; }
   .section__title { font-size: 32px; }
+
+  .steps { flex-direction: column; align-items: center; gap: 0; max-width: 260px; margin-top: 48px; }
+  .step__arrow {
+    position: static;
+    width: 40px;
+    margin: 30px auto;
+    top: auto; left: auto;
+    transform: rotate(90deg);
+  }
   .section__lead { font-size: 16px; line-height: 21px; }
 }
 

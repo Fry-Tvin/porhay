@@ -108,6 +108,19 @@ CARDS = [
      'Наша волшебная комната с&nbsp;фонариками'),
 ]
 
+# Плитка «4 шага»: (файл иконки, текст)
+STEPS = [
+    ('tild3731-6636-4962-b130-626633363163__frame_11.svg', 'Бронируйте зал на&nbsp;нужную дату'),
+    ('tild3463-6661-4338-a662-623335396263__frame_12.svg', 'Выбирайте тематику и&nbsp;программу'),
+    ('tild3266-3436-4062-a439-646530363831__frame_13.svg', 'Закажите любимые угощения и&nbsp;сладости'),
+    ('tild3139-3761-4734-b865-326566393261__frame_14.svg', 'Приходите в&nbsp;назначенный день с&nbsp;хорошим настроением'),
+]
+
+# Стрелка между шагами — инлайновая SVG из оригинала, обводка бирюзовая.
+STEP_ARROW = ('<span class="step__arrow" aria-hidden="true">'
+              '<svg viewBox="0 0 40 18.7" stroke="#38a2a5" fill="none" xmlns="http://www.w3.org/2000/svg">'
+              '<path d="M4.2 9.4h32.1"/><path d="M31.3 13.4l5-4-5-4"/></svg></span>')
+
 # Мелкий декор первого экрана: (файл, left %, top %, ширина px)
 HERO_DECOR = [
     ('tild3534-3832-4661-b631-393736383835__ff62ebf0-cb8e-41b8-8.svg', 13.0, 21.0, 11),
@@ -149,6 +162,13 @@ def build():
         '<figcaption class="card__caption">%s</figcaption>'
         '</figure>' % (IMG, IMG, IMG, img, cap.replace('"', '&quot;'), IMG, cap)
         for n, (img, cap) in enumerate(CARDS))
+
+    steps = ''.join(
+        '<div class="step" data-anim="zoomin" data-anim-dur="1" data-anim-delay="%.2f">%s'
+        '<span class="step__icon"><img src="%s%s" alt="" '
+        'width="120" height="120"></span><p class="step__title">%s</p></div>'
+        % (n * 0.15, STEP_ARROW if n else '', IMG, icon, title)
+        for n, (icon, title) in enumerate(STEPS))
 
     html = f"""<!DOCTYPE html>
 <html lang="ru">
@@ -209,11 +229,12 @@ def build():
 
   {band(flip=True)}
 
-  <section class="section section--mint">
+  <section class="section section--mint section--steps">
     <div class="stage">
       <div class="section__head">
         <h2 class="section__title">Организуйте праздник в 4 шага:</h2>
       </div>
+      <div class="steps">{steps}</div>
     </div>
   </section>
 </main>
