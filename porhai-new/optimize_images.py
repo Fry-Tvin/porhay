@@ -149,8 +149,10 @@ QUALITY = 82
 
 
 def collect():
-    html = open(os.path.join(HERE, 'index.html'), encoding='utf-8').read()
-    srcs = set(re.findall(r'src="([^"]+)"', html)) | set(re.findall(r'url\(([^)]+)\)', html))
+    srcs = set()
+    for page in ('index.html', 'privacy.html'):
+        html = open(os.path.join(HERE, page), encoding='utf-8').read()
+        srcs |= set(re.findall(r'src="([^"]+)"', html)) | set(re.findall(r'url\(([^)]+)\)', html))
     return sorted({os.path.basename(s) for s in srcs if 'assets/img/' in s})
 
 

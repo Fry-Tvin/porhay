@@ -727,6 +727,59 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 .contact__map iframe { display: block; width: 100%; height: 400px; border: 0; }
 
+/* --- Политика конфиденциальности ----------------------------------------- */
+.legal { padding-top: calc(var(--header-h) + 60px); }
+.legal .section__title { text-align: left; font-size: 40px; }
+.legal__section { max-width: 800px; margin-top: 40px; }
+.legal__section h2 { font-size: 22px; font-weight: 700; color: var(--ink); }
+.legal__section p { margin-top: 12px; font-size: 16px; line-height: 1.6; color: var(--ink); }
+
+/* --- Подвал ------------------------------------------------------------- */
+.footer {
+  padding: 60px 0 90px;
+  background: var(--ink);
+  text-align: center;
+}
+.footer__badge { display: block; width: 180px; height: auto; margin: 0 auto; }
+.footer__title {
+  margin-top: 20px;
+  font-size: 26px;
+  font-weight: 400;
+  color: #c2c2c2;
+}
+.footer__nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 28px;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.footer__link {
+  display: inline-block;
+  padding: 9px 18px 8px;
+  font-size: 12px;
+  color: var(--ink);
+  background: var(--white);
+  border-radius: 30px;
+  transition: background-color .15s ease;
+}
+.footer__link:hover { background: var(--mint); }
+.footer__copy {
+  margin-top: 32px;
+  font-size: 13px;
+  color: #c2c2c2;
+}
+.footer__policy { color: #c2c2c2; text-decoration: underline; }
+.footer__policy:hover { color: var(--white); }
+.footer__requisites {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #8a8a8a;
+}
+
 /* --- Поп-апы программ ----------------------------------------------------- */
 /* Своя оболочка модалки — в оригинале это стандартный поп-ап Тильды без
    привязки к дизайн-системе, поэтому оформлена в общем стиле сайта
@@ -899,6 +952,10 @@ ul { margin: 0; padding: 0; list-style: none; }
   .contact__text { font-size: 17px; line-height: 26px; }
   .contact__socials { justify-content: center; }
   .contact__map, .contact__map iframe { min-height: 280px; height: 280px; }
+
+  .footer { padding: 48px 0 64px; }
+  .footer__title { font-size: 20px; }
+  .footer__nav { margin-top: 24px; }
 }
 
 /* Кегли и отступы первого экрана на телефоне — из спеки, брейкпоинт 479. */
