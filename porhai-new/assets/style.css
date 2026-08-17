@@ -1304,6 +1304,94 @@ ul { margin: 0; padding: 0; list-style: none; }
   .cover__descr { font-size: 17px; }
 }
 
+/* --- Аренда залов: White Room / Loft Box / Комбо+ (rec561673678 и другие) */
+/* Общие компоненты для трёх страниц аренды залов — блоки в экспорте
+   у них дословно совпадают по типам (t337/t490/t372/t812/t692), отличается
+   только контент, поэтому все три страницы используют один набор классов. */
+.cover-hero {
+  position: relative;
+  height: 60vh;
+  min-height: 420px;
+  max-height: 760px;
+  background-size: cover;
+  background-position: center;
+}
+.cover-hero__avatar {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translate(-50%, 50%);
+  width: 164px;
+  height: 164px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid var(--white);
+  background: var(--white);
+}
+.cover-hero__content { max-width: 760px; margin: 0 auto; padding: 105px 32px 30px; text-align: center; }
+.cover-hero__title { font-size: 36px; line-height: 1.23; font-weight: 700; color: var(--ink); text-transform: uppercase; }
+.cover-hero__descr { margin-top: 10px; font-size: 16px; line-height: 1.55; font-weight: 400; color: var(--ink); }
+
+.amenities { padding: 30px 0 75px; background: var(--white); }
+.amenities__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 260px);
+  column-gap: 40px;
+  row-gap: 90px;
+  justify-content: center;
+}
+.amenities__item { text-align: center; }
+.amenities__item img { width: 60px; height: 60px; margin: 0 auto; }
+.amenities__item h3 { margin-top: 16px; font-size: 24px; line-height: 1.17; font-weight: 700; color: var(--ink); }
+.amenities__item p { margin-top: 8px; font-size: 16px; line-height: 1.55; font-weight: 400; color: var(--ink); }
+
+.finetext { padding: 15px 0; font-size: 20px; line-height: 1.55; font-weight: 400; color: var(--ink); text-align: center; }
+.finetext--note { padding: 60px 0; color: var(--plum); }
+.finetext--note .finetext__rule { display: block; width: 60px; height: 3px; margin: 0 auto 20px; background: var(--teal); }
+
+.pricelist { padding: 90px 0 15px; background: var(--white); text-align: center; }
+.pricelist__title { font-size: 42px; line-height: 1.23; font-weight: 700; color: var(--ink); }
+.pricelist__descr { margin-top: 20px; font-size: 24px; line-height: 1.5; font-weight: 400; color: var(--ink); }
+.pricelist__grid {
+  display: flex;
+  justify-content: center;
+  gap: 60px;
+  max-width: 720px;
+  margin: 60px auto 0;
+  flex-wrap: wrap;
+}
+.pricelist__item { flex: 1 1 260px; max-width: 300px; }
+.pricelist__row { display: flex; justify-content: space-between; font-size: 18px; font-weight: 700; color: var(--ink); text-transform: uppercase; }
+.pricelist__line { margin-top: 10px; border-top: 1px solid var(--teal); opacity: .3; }
+
+.teasers { padding: 45px 0 105px; background: var(--mint); }
+.teasers__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; max-width: 1160px; margin: 0 auto; }
+.teasers__item { text-align: center; }
+.teasers__item img { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 16px; }
+.teasers__item h3 { margin-top: 16px; font-size: 24px; font-weight: 700; }
+.teasers__item h3 a { color: var(--ink); }
+.teasers__item p { margin-top: 4px; font-size: 16px; font-weight: 400; color: var(--ink); }
+
+@media (max-width: 1000px) {
+  .cover-hero { height: 50vh; min-height: 320px; }
+  .cover-hero__avatar { width: 110px; height: 110px; }
+  .cover-hero__content { padding: 75px 20px 24px; }
+  .cover-hero__title { font-size: 24px; }
+
+  .amenities { padding: 24px 0 48px; }
+  .amenities__grid { grid-template-columns: repeat(2, 1fr); column-gap: 24px; row-gap: 48px; }
+  .amenities__item img { width: 48px; height: 48px; }
+  .amenities__item h3 { font-size: 19px; margin-top: 10px; }
+
+  .pricelist { padding: 56px 0 15px; }
+  .pricelist__title { font-size: 26px; }
+  .pricelist__descr { font-size: 18px; }
+  .pricelist__grid { margin-top: 36px; gap: 32px; }
+
+  .teasers { padding: 40px 0 56px; }
+  .teasers__grid { grid-template-columns: 1fr; gap: 32px; max-width: 340px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
   [data-anim] { opacity: 1; transform: none; }

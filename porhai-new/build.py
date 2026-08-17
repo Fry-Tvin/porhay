@@ -1349,7 +1349,226 @@ def build_razovoe():
     print('razovoe.html собран:', len(html), 'байт')
 
 
+# --- Аренда залов: White Room / Loft Box / Комбо+ -------------------------
+# У трёх страниц (whiteroom/loftbox/combo) в экспорте дословно совпадают
+# типы блоков (t337 обложка с аватаром, t490 плитка удобств, t372 короткая
+# заметка, t812 прайслист, t692 три тизера пакетов) — общий шаблон
+# render_rental_page() ниже, различается только содержимое в RENTAL_PAGES.
+
+# Тизеры «Праздник под ключ» (rec562302930 и аналоги) — одинаковые на всех
+# трёх страницах аренды, ссылки на подстраницы пакетов.
+RENTAL_TEASERS = [
+    ('tild3232-3239-4564-b565-326437363265__slide_4_3_-_2_2.webp', '/denrozhdeniya', 'День рождения'),
+    ('tild6534-3264-4138-a130-346466323833__slide_4_3_-_3_2.webp', '/vypusknye', 'Выпускной'),
+    ('tild3635-3137-4365-b436-383461646637__slide_4_3_-_4_2.webp', '/korporativ', 'Корпоратив'),
+]
+
+RENTAL_PAGES = {
+    'whiteroom': dict(
+        meta_title='Аренда зала «WHITE ROOM» развлекательного центра «Порхай»',
+        meta_descr='Стильная, светлая, просторная комната, которую вы можете арендовать под свой праздник и отметить любое мероприятие только в кругу близких.',
+        cover='tild3461-3239-4265-b438-393435616565__iii_3488_1.webp',
+        avatar='tild3161-3162-4730-a239-353134636136__frame_15.svg',
+        title='Аренда зала «White Room»',
+        descr='Наша стильная, светлая, просторная комната, которую вы можете арендовать под свой праздник и отметить любое мероприятие только в кругу близких',
+        price_line='Стоимость от&nbsp;5 000&nbsp;₽/час',
+        amenities=[
+            ('tild6664-6339-4432-b631-623332393537__frame_16.svg', 'Самый глубокий бассейн',
+             'Белый бассейн с&nbsp;шариками, качели, канаты, обручи, скалодром.'),
+            ('tild3265-6639-4363-a166-356565396536__frame_16.svg', 'Неоновая подсветка',
+             'Можно менять цвет под&nbsp;вашу тематику.'),
+            ('tild3265-6639-4363-a166-356565396536__frame_16.svg', 'Телевизор', 'Музыкальная колонка'),
+            ('tild3265-6639-4363-a166-356565396536__frame_16.svg', 'Кулер с&nbsp;горячей и&nbsp;холодной водой',
+             'И микроволновая печь'),
+            ('tild6266-3834-4535-b733-633732373564__frame_16.svg', 'Банкетная зона', None),
+            ('tild3265-6639-4363-a166-356565396536__frame_16.svg', 'Барная стойка', None),
+            ('tild3265-6639-4363-a166-356565396536__frame_16.svg', 'Интерактивный проектор', None),
+            ('tild3265-6639-4363-a166-356565396536__frame_16.svg', 'Светомузыка', None),
+        ],
+        note='НЕТ ДОСТУПА К&nbsp;ФОТОЗОНАМ',
+        gallery_title='«White Room»',
+        gallery_descr='Можно пригласить аниматоров или&nbsp;любую&nbsp;шоу-программу',
+        gallery=[
+            'tild3235-3130-4761-b631-396335373639__iii_4774.webp',
+            'tild6362-3161-4138-b138-626164663464__iii_4586.webp',
+            'tild3130-3665-4365-b165-636638646261__photo_2021-06-30_10-.webp',
+            'tild6166-3937-4534-b434-646434633034__photo_2021-07-20_18-.webp',
+            'tild3765-3035-4265-b466-356434313563__ce4a6738.webp',
+            'tild3361-3665-4731-b038-643331323935__dsc_0492jpg.webp',
+            'tild3239-6362-4435-b434-663233313534__iii_3202_1.webp',
+            'tild3066-6232-4239-b537-303466306634__iii_3204_1.webp',
+            'tild6161-3961-4563-b066-626365393064__iii_3438_1.webp',
+            'tild3537-6339-4537-a565-366139313332__iii_3447_1.webp',
+            'tild3734-3835-4437-b865-393038386639__iii_3488_1.webp',
+            'tild6161-3435-4762-b532-326561313138__iii_3725_1.webp',
+            'tild6234-6366-4231-a530-656562616666__iii_4488_1.webp',
+            'tild6531-3337-4931-b264-393135343833__iii_4496_1.webp',
+            'tild3964-6466-4232-a532-323634363063__iii_4604_1.webp',
+            'tild6532-6665-4533-a137-383934346536__iii_7613.webp',
+            'tild3462-3039-4261-b162-333963383736__iii_8697_1.webp',
+            'tild3930-3031-4763-b038-366661353962__photo_2021-06-30_10-.webp',
+            'tild3562-6133-4236-b738-353861613763__photo_2022-03-08_12-.webp',
+            'tild3435-3938-4866-b831-623939303835__photo_2023-03-11_16-.webp',
+        ],
+        price_title='Стоимость за&nbsp;1 час аренды',
+        price_descr='От&nbsp;3‑х часов, каждый последующий час со&nbsp;скидкой 50%',
+        price_items=[('Будни', '5 000 ₽'), ('Выходные', '7 000 ₽')],
+        footnote='*Стоимость указана за&nbsp;15 гостей (взрослые и&nbsp;дети).<br>'
+                  'Свыше 15 гостей&nbsp;— доплата 300 ₽/человек за&nbsp;всё время пребывания.',
+    ),
+}
+
+
+def render_rental_page(slug):
+    p = RENTAL_PAGES[slug]
+
+    amenities = ''.join(
+        '<div class="amenities__item"><img src="%s%s" alt="" width="60" height="60">'
+        '<h3>%s</h3>%s</div>'
+        % (IMG, img, title, ('<p>%s</p>' % descr) if descr else '')
+        for img, title, descr in p['amenities'])
+
+    gallery = render_slider(p['gallery'], p['title'])
+
+    partners = ''.join(
+        '<div class="partners__item">%s</div>' % (
+            '<img src="%s%s" alt="" loading="lazy" width="160">' % (IMG, img) if img
+            else '<span class="partners__name">%s</span>' % name)
+        for img, name in PARTNERS)
+
+    price_rows = ''.join(
+        '<div class="pricelist__item"><div class="pricelist__row"><span>%s</span><span>%s</span></div>'
+        '<div class="pricelist__line"></div></div>' % row for row in p['price_items'])
+
+    teasers = ''.join(
+        '<div class="teasers__item"><img src="%s%s" alt="" loading="lazy" width="360" height="240">'
+        '<h3><a href="%s">%s</a></h3><p>Подробнее</p></div>'
+        % (IMG, img, href, title) for img, href, title in RENTAL_TEASERS)
+
+    reviews = ''.join(
+        '<img src="%s%s" alt="" loading="lazy" width="260">' % (IMG, img)
+        for img in REVIEWS)
+
+    popups = render_form_popup('header') + render_form_popup(slug)
+    faq_ld = faq_jsonld()
+
+    html = f"""<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{p['meta_title']}</title>
+<meta name="description" content="{p['meta_descr']}">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<script>document.documentElement.className+=' js'</script>
+
+{render_top_chrome()}
+
+<main>
+  <section class="cover-hero" style="background-image:url({IMG}{p['cover']})">
+    <img class="cover-hero__avatar" src="{IMG}{p['avatar']}" alt="">
+  </section>
+  <div class="cover-hero__content">
+    <h1 class="cover-hero__title">{p['title']}</h1>
+    <p class="cover-hero__descr">{p['descr']}</p>
+  </div>
+
+  <section class="amenities">
+    <div class="stage"><div class="amenities__grid">{amenities}</div></div>
+  </section>
+
+  <p class="finetext finetext--note"><span class="finetext__rule"></span>✖ {p['note']}</p>
+
+  <p class="price-line">{p['price_line']}</p>
+
+  <div class="cta-band"><a class="btn btn--yellow" href="#popup:{slug}" data-anim="zoomin" data-anim-dur="1">Записаться</a></div>
+
+  {band(flip=True)}
+
+  <section class="section section--mint">
+    <div class="stage">
+      <div class="section__head">
+        <h2 class="section__title" data-anim="fadeinup" data-anim-dur="1">{p['gallery_title']}</h2>
+        <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">{p['gallery_descr']}</p>
+      </div>
+      {gallery}
+    </div>
+  </section>
+
+  <section class="section section--partners section--mint">
+    <div class="stage">
+      <div class="section__head">
+        <h2 class="section__title" data-anim="fadeinup" data-anim-dur="1">Скидки от наших партнёров</h2>
+        <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">При заказе аренды зала</p>
+      </div>
+      <div class="partners">{partners}</div>
+    </div>
+  </section>
+
+  {band()}
+
+  <section class="pricelist">
+    <div class="stage">
+      <h2 class="pricelist__title">{p['price_title']}</h2>
+      <p class="pricelist__descr">{p['price_descr']}</p>
+      <div class="pricelist__grid">{price_rows}</div>
+    </div>
+  </section>
+
+  <p class="finetext">{p['footnote']}</p>
+
+  <div class="cta-band"><a class="btn btn--yellow" href="#popup:{slug}">Записаться</a></div>
+
+  {band(flip=True)}
+
+  <section class="teasers">
+    <div class="stage">
+      <h2 class="section__title" data-anim="fadeinup" data-anim-dur="1">Также можете взять пакет «под ключ»</h2>
+      <div class="teasers__grid">{teasers}</div>
+    </div>
+  </section>
+
+  {band()}
+
+  <section class="section" id="otziv">
+    <div class="stage">
+      <h2 class="section__title" data-anim="fadeinup" data-anim-dur="1">Отзывы ❤️</h2>
+      <div class="reviews">
+        <button class="reviews__arrow reviews__arrow--prev" type="button" aria-label="Предыдущий отзыв">{SLIDER_ARROW}</button>
+        <div class="reviews__track">{reviews}</div>
+        <button class="reviews__arrow reviews__arrow--next" type="button" aria-label="Следующий отзыв">{SLIDER_ARROW}</button>
+      </div>
+    </div>
+  </section>
+
+  {band(flip=True)}
+
+  {render_contact_section()}
+</main>
+
+{render_footer()}
+
+{render_float_button()}
+
+<script type="application/ld+json">{faq_ld}</script>
+<script type="application/ld+json">{BUSINESS_LD}</script>
+
+{popups}
+
+{PAGE_SCRIPT}
+</body>
+</html>
+"""
+    path = os.path.join(HERE, f'{slug}.html')
+    with open(path, 'w', encoding='utf-8') as f:
+        f.write(html)
+    print(f'{slug}.html собран:', len(html), 'байт')
+
+
 if __name__ == '__main__':
     build()
     build_privacy()
     build_razovoe()
+    render_rental_page('whiteroom')
