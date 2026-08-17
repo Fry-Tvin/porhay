@@ -1620,7 +1620,7 @@ def render_rental_page(slug):
   <section class="section section--mint">
     <div class="stage">
       <div class="section__head">
-        <h2 class="section__title" data-anim="fadeinup" data-anim-dur="1">{p['gallery_title']}</h2>
+        <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">{p['gallery_title']}</h2>
         <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">{p['gallery_descr']}</p>
       </div>
       {gallery}
@@ -1630,7 +1630,7 @@ def render_rental_page(slug):
   <section class="section section--partners section--mint">
     <div class="stage">
       <div class="section__head">
-        <h2 class="section__title" data-anim="fadeinup" data-anim-dur="1">Скидки от наших партнёров</h2>
+        <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Скидки от наших партнёров</h2>
         <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">При заказе аренды зала</p>
       </div>
       <div class="partners">{partners}</div>
@@ -1655,7 +1655,7 @@ def render_rental_page(slug):
 
   <section class="teasers">
     <div class="stage">
-      <h2 class="section__title" data-anim="fadeinup" data-anim-dur="1">Также можете взять пакет «под ключ»</h2>
+      <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Также можете взять пакет «под ключ»</h2>
       <div class="teasers__grid">{teasers}</div>
     </div>
   </section>
@@ -1664,7 +1664,7 @@ def render_rental_page(slug):
 
   <section class="section" id="otziv">
     <div class="stage">
-      <h2 class="section__title" data-anim="fadeinup" data-anim-dur="1">Отзывы ❤️</h2>
+      <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Отзывы ❤️</h2>
       <div class="reviews">
         <button class="reviews__arrow reviews__arrow--prev" type="button" aria-label="Предыдущий отзыв">{SLIDER_ARROW}</button>
         <div class="reviews__track">{reviews}</div>

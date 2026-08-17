@@ -288,6 +288,18 @@ ul { margin: 0; padding: 0; list-style: none; }
   color: var(--ink);
   text-wrap: balance;
 }
+/* Тот же компонент (T030), что и .section__title, но на страницах аренды/
+   пакетов "под ключ" он даёт 36px, а не 48px — другой тайловый класс
+   Тильды (t-title_xxs у другого шаблона), проверено замером на whiteroom
+   и denrozhdeniya. */
+.section-title {
+  font-size: 36px;
+  line-height: 1.23;
+  font-weight: 700;
+  color: var(--ink);
+  text-align: center;
+  text-wrap: balance;
+}
 .section__lead {
   margin-top: 23px;
   font-size: 18px;
@@ -1064,6 +1076,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   .cards { grid-template-columns: 1fr; gap: 62px; max-width: 360px; }
   .section { padding: 64px 0; }
   .section__title { font-size: 32px; }
+  .section-title { font-size: 24px; }
 
   .steps { flex-direction: column; align-items: center; gap: 0; max-width: 260px; margin-top: 48px; }
   .step__arrow {
