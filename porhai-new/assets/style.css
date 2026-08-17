@@ -552,6 +552,49 @@ ul { margin: 0; padding: 0; list-style: none; }
 .group:hover .group__more { text-decoration: underline; }
 .group__more img { display: block; width: 20px; height: auto; }
 
+/* --- Отзывы --------------------------------------------------------------- */
+.reviews {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-top: 75px;
+}
+.reviews__track {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scroll-behavior: smooth;
+  padding-bottom: 4px;
+}
+.reviews__track img {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  width: 260px;
+  height: auto;
+  border-radius: 20px;
+  box-shadow: 0 6px 24px rgba(74, 74, 74, .12);
+}
+.reviews__arrow {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px; height: 60px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--mint);
+  cursor: pointer;
+  transition: background-color .15s ease;
+}
+.reviews__arrow:hover { background: var(--teal); }
+.reviews__arrow:hover svg polyline { stroke: var(--mint); }
+.reviews__arrow svg { display: block; width: 15px; height: 29px; }
+.reviews__arrow svg polyline { transition: stroke .15s ease; }
+.reviews__arrow--next svg { transform: scaleX(-1); }
+
 /* --- Поп-апы программ ----------------------------------------------------- */
 /* Своя оболочка модалки — в оригинале это стандартный поп-ап Тильды без
    привязки к дизайн-системе, поэтому оформлена в общем стиле сайта
@@ -699,6 +742,11 @@ ul { margin: 0; padding: 0; list-style: none; }
   .popup__box { padding: 36px 20px 28px; max-height: 90vh; }
   .popup__title { font-size: 22px; padding-right: 90px; }
   .popup__gallery { grid-template-columns: repeat(2, 1fr); }
+
+  .reviews { margin-top: 32px; gap: 8px; }
+  .reviews__arrow { width: 44px; height: 44px; }
+  .reviews__arrow svg { width: 11px; height: 21px; }
+  .reviews__track img { width: 200px; }
 }
 
 /* Кегли и отступы первого экрана на телефоне — из спеки, брейкпоинт 479. */

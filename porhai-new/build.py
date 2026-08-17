@@ -237,6 +237,34 @@ POPUPS = {
     ),
 }
 
+# Скриншоты отзывов (rec560770489) — прокручиваемая лента без JS-библиотек,
+# управление стрелками через element.scrollBy(). Первый файл содержит
+# замазанный номер телефона клиента (content/redacted/), это утечка чужих
+# персональных данных, поэтому её убираем сразу, без согласования.
+REVIEWS = [
+    'tild3036-3364-4462-b836-333063396135__photo_2023-02-19_16-.webp',
+    'tild3139-6336-4961-b439-303832396662__photo_2023-02-19_16-.webp',
+    'tild3163-6263-4363-a433-383636653234__photo_2023-02-19_16-.webp',
+    'tild3361-3033-4665-b330-393038343138__photo_2023-03-04_15-.webp',
+    'tild3430-3334-4834-b366-336632383438__photo_2023-02-19_16-.webp',
+    'tild3466-3335-4161-a431-386532613936__photo_2023-02-19_16-.webp',
+    'tild3563-3461-4264-b765-373436643066__photo_2023-02-19_16-.webp',
+    'tild3633-3365-4631-b939-353134393532__photo_2023-03-04_15-.webp',
+    'tild3738-3338-4363-b964-386430623832__photo_2023-03-04_15-.webp',
+    'tild3765-3630-4364-b138-326637333838__image_12.webp',
+    'tild3930-3739-4433-b834-663964383238__photo_2023-02-19_16-.webp',
+    'tild6138-6134-4864-b033-663261373635__photo_2023-02-19_16-.webp',
+    'tild6164-3362-4166-b439-363838303633__photo_2023-02-19_16-.webp',
+    'tild6164-3464-4537-a438-333232386339__photo_2023-02-19_16-.webp',
+    'tild6632-3632-4031-b365-613162316631__photo_2023-02-19_16-.webp',
+    'tild6665-3130-4561-a331-616633663930__photo_2023-02-19_16-.webp',
+]
+
+# Стрелка слайдера — та же ломаная, что и в оригинальном компоненте Тильды.
+SLIDER_ARROW = ('<svg viewBox="0 0 15.3 29" xmlns="http://www.w3.org/2000/svg">'
+                 '<polyline points="0.5,0.5 14.5,14.5 0.5,28.5" fill="none" '
+                 'stroke="#4a4a4a" stroke-width="1"/></svg>')
+
 # Мелкий декор первого экрана: (файл, left %, top %, ширина px)
 HERO_DECOR = [
     ('tild3534-3832-4661-b631-393736383835__ff62ebf0-cb8e-41b8-8.svg', 13.0, 21.0, 11),
@@ -356,6 +384,10 @@ def build():
 
     popups = render_popups(POPUPS)
 
+    reviews = ''.join(
+        '<img src="%s%s" alt="" loading="lazy" width="260">' % (IMG, img)
+        for img in REVIEWS)
+
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -454,6 +486,19 @@ def build():
       <div class="groups">{groups}</div>
     </div>
   </section>
+
+  {band()}
+
+  <section class="section" id="otziv">
+    <div class="stage">
+      <h2 class="section__title" data-anim="fadeinup" data-anim-dur="1">Отзывы ❤️</h2>
+      <div class="reviews">
+        <button class="reviews__arrow reviews__arrow--prev" type="button" aria-label="Предыдущий отзыв">{SLIDER_ARROW}</button>
+        <div class="reviews__track">{reviews}</div>
+        <button class="reviews__arrow reviews__arrow--next" type="button" aria-label="Следующий отзыв">{SLIDER_ARROW}</button>
+      </div>
+    </div>
+  </section>
 </main>
 
 {popups}
@@ -541,6 +586,17 @@ def build():
     dlg.querySelector('[data-popup-close]').addEventListener('click', function () {{ dlg.close(); }});
     dlg.addEventListener('click', function (e) {{ if (e.target === dlg) dlg.close(); }});
   }});
+
+  // 5. Лента отзывов: стрелки листают на ширину видимой области.
+  var track = document.querySelector('.reviews__track');
+  if (track) {{
+    document.querySelector('.reviews__arrow--prev').addEventListener('click', function () {{
+      track.scrollBy({{ left: -track.clientWidth * .8, behavior: 'smooth' }});
+    }});
+    document.querySelector('.reviews__arrow--next').addEventListener('click', function () {{
+      track.scrollBy({{ left: track.clientWidth * .8, behavior: 'smooth' }});
+    }});
+  }}
 }})();
 </script>
 </body>

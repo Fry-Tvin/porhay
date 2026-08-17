@@ -14,6 +14,10 @@ sys.stdout.reconfigure(encoding='utf-8')
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, 'assets', 'img')
 SRC = os.path.join(os.path.dirname(HERE), 'porhai-eds', 'images')
+# Правки картинок из экспорта (замазанные персональные данные и т.п.) —
+# porhai-eds не трогаем, это эталон, копии с правками лежат здесь под теми
+# же именами и имеют приоритет над экспортом.
+REDACTED = os.path.join(HERE, 'content', 'redacted')
 
 # файл -> ширина отображения в вёрстке (умножаем на 2 под плотные экраны)
 DISPLAY_WIDTH = {
@@ -98,6 +102,24 @@ DISPLAY_WIDTH = {
     'tild3238-6463-4062-a662-393861356366__photo_54451060745721.jpg': 260,
     'tild6133-3638-4431-b866-373733373432__photo_54451060745721.jpg': 260,
     'tild6437-3864-4439-a531-633735313838__photo_54451060745721.jpg': 260,
+    # Слайдер скриншотов отзывов (rec560770489). Первый файл — с замазанным
+    # телефоном клиента, версия лежит в content/redacted/.
+    'tild3036-3364-4462-b836-333063396135__photo_2023-02-19_16-.png': 260,
+    'tild3139-6336-4961-b439-303832396662__photo_2023-02-19_16-.png': 260,
+    'tild3163-6263-4363-a433-383636653234__photo_2023-02-19_16-.png': 260,
+    'tild3361-3033-4665-b330-393038343138__photo_2023-03-04_15-.png': 260,
+    'tild3430-3334-4834-b366-336632383438__photo_2023-02-19_16-.png': 260,
+    'tild3466-3335-4161-a431-386532613936__photo_2023-02-19_16-.png': 260,
+    'tild3563-3461-4264-b765-373436643066__photo_2023-02-19_16-.png': 260,
+    'tild3633-3365-4631-b939-353134393532__photo_2023-03-04_15-.png': 260,
+    'tild3738-3338-4363-b964-386430623832__photo_2023-03-04_15-.png': 260,
+    'tild3765-3630-4364-b138-326637333838__image_12.png': 260,
+    'tild3930-3739-4433-b834-663964383238__photo_2023-02-19_16-.png': 260,
+    'tild6138-6134-4864-b033-663261373635__photo_2023-02-19_16-.png': 260,
+    'tild6164-3362-4166-b439-363838303633__photo_2023-02-19_16-.png': 260,
+    'tild6164-3464-4537-a438-333232386339__photo_2023-02-19_16-.png': 260,
+    'tild6632-3632-4031-b365-613162316631__photo_2023-02-19_16-.png': 260,
+    'tild6665-3130-4561-a331-616633663930__photo_2023-02-19_16-.png': 260,
 }
 RETINA = 2
 QUALITY = 82
@@ -112,15 +134,15 @@ def collect():
 def find_source(name):
     """Готовые файлы в assets/img называются по исходнику, но .png/.jpg
     из экспорта у svg сохраняют расширение, а у растра меняют на .webp —
-    ищем исходник в экспорте по имени без расширения."""
+    ищем исходник в экспорте по имени без расширения. Правленая копия
+    в content/redacted, если есть, важнее оригинала из экспорта."""
     stem = os.path.splitext(name)[0]
-    if name.lower().endswith('.svg'):
-        p = os.path.join(SRC, name)
-        return p if os.path.exists(p) else None
-    for ext in ('.png', '.jpg', '.jpeg'):
-        p = os.path.join(SRC, stem + ext)
-        if os.path.exists(p):
-            return p
+    exts = ('.svg',) if name.lower().endswith('.svg') else ('.png', '.jpg', '.jpeg')
+    for base in (REDACTED, SRC):
+        for ext in exts:
+            p = os.path.join(base, stem + ext)
+            if os.path.exists(p):
+                return p
     return None
 
 
