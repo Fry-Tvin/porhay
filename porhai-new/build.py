@@ -525,9 +525,293 @@ def render_mobile_socials():
         % (url, name, svg) for name, url, svg in SOCIALS)
 
 
-def build():
+def render_top_chrome():
+    """Баннер cookie + шапка + мобильное меню — одинаковы на всех страницах
+    сайта. Кнопка шапки всегда открывает попап #popup:header — его должна
+    сгенерировать сама страница через render_form_popup('header')."""
     nav = ''.join('<li><a class="nav__link" href="%s">%s</a></li>' % (h, t) for t, h in NAV)
+    return (
+        render_cookie_banner() + '\n\n' +
+        '<header class="header" id="header">'
+        '<div class="stage header__inner">'
+        '<a class="header__logo" href="/" aria-label="Порхай — на главную">'
+        '<img src="%stild3166-3639-4666-b462-333535343563__photo.svg" alt="Порхай" width="150" height="46"></a>'
+        '<nav class="nav" aria-label="Основная навигация"><ul class="nav__list">%s</ul></nav>'
+        '<a class="btn btn--teal header__cta" href="#popup:header">Забронировать зал</a>'
+        '<button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mobile-menu">'
+        '<span></span><span></span><span></span></button>'
+        '</div></header>\n\n'
+        '<div class="mobile-menu" id="mobile-menu" hidden>'
+        '<div class="mobile-menu__inner">'
+        '<button class="mobile-menu__close" type="button" aria-label="Закрыть меню"><span></span><span></span></button>'
+        '<ul class="mobile-menu__list">%s</ul>'
+        '<div class="mobile-menu__socials">%s</div>'
+        '<p class="mobile-menu__copy">© Развлекательный центр «Порхай»</p>'
+        '</div></div>'
+        % (IMG, nav, render_mobile_menu(), render_mobile_socials())
+    )
 
+
+def render_faq_section(faq=None, title='Отвечаем на ваши вопросы'):
+    """FAQ-аккордеон на <details>, без JS. Один и тот же список вопросов
+    (rec567879748 и аналоги) переиспользуется почти на всех страницах."""
+    faq = FAQ if faq is None else faq
+    items = ''.join(
+        '<details class="faq__item"%s>'
+        '<summary class="faq__q">%s<span class="faq__icon" aria-hidden="true"></span></summary>'
+        '<div class="faq__a">%s</div>'
+        '</details>'
+        % (' open' if n == 0 else '', q, a)
+        for n, (q, a) in enumerate(faq))
+    return (
+        '<section class="section section--faq" id="faq">'
+        '<div class="stage">'
+        '<h2 class="section__title" data-anim="fadeinup" data-anim-dur="1">%s</h2>'
+        '<div class="faq">%s</div>'
+        '</div></section>' % (title, items)
+    )
+
+
+def faq_jsonld(faq=None):
+    faq = FAQ if faq is None else faq
+    return json.dumps({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        'mainEntity': [{
+            '@type': 'Question', 'name': q,
+            'acceptedAnswer': {'@type': 'Answer', 'text': a},
+        } for q, a in faq],
+    }, ensure_ascii=False)
+
+
+BUSINESS_LD = json.dumps({
+    '@context': 'https://schema.org',
+    '@type': 'LocalBusiness',
+    'name': 'Порхай',
+    'telephone': PHONE,
+    'address': {
+        '@type': 'PostalAddress',
+        'streetAddress': 'ул. Державина, 23',
+        'addressLocality': 'Владивосток',
+        'addressCountry': 'RU',
+    },
+    'openingHours': 'Mo-Su 10:00-21:00',
+}, ensure_ascii=False)
+
+
+def render_contact_section():
+    """Контакты (rec560792713) — один и тот же блок на всех страницах:
+    телефон, часы, адрес, соцсети, карта Яндекса по адресу."""
+    socials = ''.join(
+        '<a class="contact__social" href="%s" target="_blank" rel="nofollow" aria-label="%s">'
+        '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">%s</svg></a>'
+        % (url, name, svg) for name, url, svg in SOCIALS)
+    address_q = quote(ADDRESS)
+    return (
+        '<section class="section section--contact section--mint" id="kontakt">'
+        '<div class="stage"><div class="contact">'
+        '<div class="contact__info" data-anim="zoomin" data-anim-dur="1">'
+        '<h2 class="contact__title">Контакты</h2>'
+        '<p class="contact__text"><a href="%s">%s</a><br>%s<br>%s</p>'
+        '<div class="contact__socials">%s</div>'
+        '</div>'
+        '<div class="contact__map" data-anim="zoomin" data-anim-dur="1" data-anim-delay=".2">'
+        '<iframe src="https://yandex.ru/map-widget/v1/?text=%s&z=16&l=map" width="100%%" height="400" '
+        'frameborder="0" loading="lazy" title="Порхай на карте"></iframe>'
+        '</div>'
+        '</div></div></section>'
+        % (PHONE_HREF, PHONE, HOURS, ADDRESS, socials, address_q)
+    )
+
+
+def render_footer():
+    footer_links = ''.join(
+        '<li><a class="footer__link" href="%s">%s</a></li>' % (href, text)
+        for text, href in FOOTER_LINKS)
+    return (
+        '<footer class="footer"><div class="stage">'
+        '<img class="footer__badge" src="%stild3563-3865-4136-b066-653462313065___1.svg" alt="" width="180" height="126">'
+        '<p class="footer__title">Приходите повеселиться в&nbsp;«Порхай!»</p>'
+        '<ul class="footer__nav">%s</ul>'
+        '<p class="footer__copy">© Развлекательный центр «Порхай» &middot; '
+        '<a class="footer__policy" href="/privacy">Политика конфиденциальности</a></p>'
+        '<p class="footer__requisites">%s</p>'
+        '</div></footer>' % (IMG, footer_links, REQUISITES)
+    )
+
+
+def render_float_button():
+    float_links = ''.join(
+        '<a class="float__link" href="%s" target="_blank" rel="nofollow noopener noreferrer" aria-label="%s">'
+        '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">%s</svg></a>'
+        % (href, label, svg) for href, label, svg in FLOAT_LINKS)
+    return (
+        '<div class="float">'
+        '<input type="checkbox" class="float__input" id="float-toggle">'
+        '<div class="float__links">%s</div>'
+        '<label for="float-toggle" class="float__btn">'
+        '<svg class="float__icon float__icon--open" viewBox="0 0 35 32" xmlns="http://www.w3.org/2000/svg">'
+        '<path d="M11.2667 12.6981H23.3667M11.2667 16.4717H23.3667M4.8104 23.5777C2.4311 21.1909 1 18.1215 1 14.7736C1 7.16679 8.38723 1 17.5 1C26.6128 1 34 7.16679 34 14.7736C34 22.3804 26.6128 28.5472 17.5 28.5472C15.6278 28.5472 13.8286 28.2868 12.1511 27.8072L12 27.7925L5.03333 31V23.8219L4.8104 23.5777Z" '
+        'stroke="#dffffe" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>'
+        '<svg class="float__icon float__icon--close" viewBox="0 0 23 23" xmlns="http://www.w3.org/2000/svg">'
+        '<path d="M10.314 -3.686H12.314V26.314H10.314z" transform="rotate(-45 11.314 11.314)" fill="#dffffe"/>'
+        '<path d="M10.314 -3.686H12.314V26.314H10.314z" transform="rotate(45 11.314 11.314)" fill="#dffffe"/></svg>'
+        '</label>'
+        '<span class="float__label">Связаться с нами</span>'
+        '</div>' % float_links
+    )
+
+
+# Общий скрипт для всех страниц (0,3 КБ, без библиотек). Каждый пункт
+# защищён проверкой наличия элемента на странице — безопасно подключать
+# целиком, даже если часть блоков (например, лента отзывов) на странице нет.
+PAGE_SCRIPT = """<script>
+(function () {
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var header = document.getElementById('header');
+
+  // 1. Появление при прокрутке: fadeinright / fadeinup / zoomin.
+  var appear = [].slice.call(document.querySelectorAll('[data-anim]'));
+  function show(el) {
+    el.style.transitionDuration = (el.dataset.animDur || 1) + 's';
+    el.style.transitionDelay = (el.dataset.animDelay || 0) + 's';
+    el.classList.add('is-in');
+  }
+  if (reduce || !('IntersectionObserver' in window)) {
+    appear.forEach(function (el) { el.classList.add('is-in'); });
+  } else {
+    var seen = false;
+    var io = new IntersectionObserver(function (list) {
+      list.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        seen = true;
+        show(e.target);
+        io.unobserve(e.target);
+      });
+    }, { rootMargin: '0px 0px -12% 0px' });
+    appear.forEach(function (el) { io.observe(el); });
+    // Страховка: если наблюдатель за три секунды не отдал ни одного события,
+    // показываем всё как есть. Пустая страница хуже, чем несыгравшая анимация.
+    setTimeout(function () {
+      if (seen) return;
+      appear.forEach(function (el) { el.classList.add('is-in'); });
+    }, 3000);
+  }
+
+  // 2. Мерцание мелкого декора: прозрачность 1 -> 0,15 -> 1 с поворотом.
+  if (!reduce && document.body.animate) {
+    [].slice.call(document.querySelectorAll('[data-twinkle]')).forEach(function (el) {
+      el.animate([
+        { opacity: 1, transform: 'rotate(0deg)' },
+        { opacity: .15, transform: 'rotate(25deg)' },
+        { opacity: 1, transform: 'rotate(0deg)' }
+      ], { duration: +el.dataset.twinkle * 2, iterations: Infinity, easing: 'ease-in-out' });
+    });
+  }
+
+  // 3. Дрейф по прокрутке: шарики и чёрточки уезжают вправо и проворачиваются,
+  //    пока проходят через экран, затем возвращаются.
+  var drift = [].slice.call(document.querySelectorAll('[data-drift]'));
+  var queued = false;
+  function paint() {
+    queued = false;
+    var vh = innerHeight;
+    for (var i = 0; i < drift.length; i++) {
+      var el = drift[i], r = el.getBoundingClientRect();
+      if (r.bottom < -240 || r.top > vh + 240) continue;
+      var p = 1 - (r.top + r.height / 2) / (vh + r.height);
+      var wave = Math.sin(Math.max(0, Math.min(1, p)) * Math.PI);
+      var d = el.dataset.drift.split(',');
+      el.style.transform = 'translateX(' + (d[0] * wave).toFixed(2) + 'px)'
+                         + ' rotate(' + (d[1] * wave).toFixed(2) + 'deg)';
+    }
+  }
+  function onScroll() {
+    if (header) header.classList.toggle('is-stuck', scrollY > 40);
+    if (!queued && !reduce) { queued = true; requestAnimationFrame(paint); }
+  }
+  onScroll();
+  if (!reduce) paint();
+  addEventListener('scroll', onScroll, { passive: true });
+  addEventListener('resize', onScroll, { passive: true });
+
+  // 4. Поп-апы: открываются по ссылкам href="#popup:KEY".
+  //    <dialog> сам даёт фокус-ловушку и закрытие по Esc.
+  document.querySelectorAll('a[href^="#popup:"]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      e.preventDefault();
+      var dlg = document.getElementById('popup-' + a.getAttribute('href').split(':')[1]);
+      if (dlg) dlg.showModal();
+    });
+  });
+  document.querySelectorAll('.popup').forEach(function (dlg) {
+    dlg.querySelector('[data-popup-close]').addEventListener('click', function () { dlg.close(); });
+    dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+    var form = dlg.querySelector('[data-form]');
+    if (form) {
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        form.hidden = true;
+        dlg.querySelector('[data-form-thanks]').hidden = false;
+      });
+    }
+  });
+
+  // 5. Лента отзывов (если есть на странице): стрелки листают на ширину видимой области.
+  var track = document.querySelector('.reviews__track');
+  if (track) {
+    document.querySelector('.reviews__arrow--prev').addEventListener('click', function () {
+      track.scrollBy({ left: -track.clientWidth * .8, behavior: 'smooth' });
+    });
+    document.querySelector('.reviews__arrow--next').addEventListener('click', function () {
+      track.scrollBy({ left: track.clientWidth * .8, behavior: 'smooth' });
+    });
+  }
+
+  // 5b. Лента-слайдер фото (если есть на странице): те же стрелки, тот же приём.
+  var slider = document.querySelector('.slider__track');
+  if (slider) {
+    document.querySelector('.slider__arrow--prev').addEventListener('click', function () {
+      slider.scrollBy({ left: -slider.clientWidth, behavior: 'smooth' });
+    });
+    document.querySelector('.slider__arrow--next').addEventListener('click', function () {
+      slider.scrollBy({ left: slider.clientWidth, behavior: 'smooth' });
+    });
+  }
+
+  // 6. Мобильное меню.
+  var burger = document.querySelector('.burger');
+  var menu = document.getElementById('mobile-menu');
+  function closeMenu() {
+    menu.hidden = true;
+    burger.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  }
+  burger.addEventListener('click', function () {
+    var open = burger.getAttribute('aria-expanded') === 'true';
+    if (open) { closeMenu(); return; }
+    menu.hidden = false;
+    burger.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+  });
+  menu.querySelector('.mobile-menu__close').addEventListener('click', closeMenu);
+  menu.querySelectorAll('.mobile-menu__link, .mobile-menu__sublink').forEach(function (a) {
+    a.addEventListener('click', closeMenu);
+  });
+  addEventListener('keydown', function (e) { if (e.key === 'Escape') closeMenu(); });
+
+  // 7. Баннер согласия на cookie: показываем, если согласия ещё не было.
+  var cookieBanner = document.getElementById('cookie-banner');
+  if (!localStorage.getItem('cookie-consent')) cookieBanner.hidden = false;
+  document.getElementById('cookie-accept').addEventListener('click', function () {
+    localStorage.setItem('cookie-consent', '1');
+    cookieBanner.hidden = true;
+  });
+})();
+</script>"""
+
+
+def build():
     # Мелкий декор первого экрана мерцает по кругу: прозрачность 1 -> 0,15 -> 1
     # с поворотом на 25°. Длительности в оригинале у всех разные.
     twinkle = [2000, 2000, 1500, 1100, 2000, 3200, 2600, 2600]
@@ -584,55 +868,7 @@ def build():
         '<img src="%s%s" alt="" loading="lazy" width="280">' % (IMG, img)
         for img in GALLERY)
 
-    faq = ''.join(
-        '<details class="faq__item"%s>'
-        '<summary class="faq__q">%s<span class="faq__icon" aria-hidden="true"></span></summary>'
-        '<div class="faq__a">%s</div>'
-        '</details>'
-        % (' open' if n == 0 else '', q, a)
-        for n, (q, a) in enumerate(FAQ))
-
-    faq_ld = json.dumps({
-        '@context': 'https://schema.org',
-        '@type': 'FAQPage',
-        'mainEntity': [{
-            '@type': 'Question', 'name': q,
-            'acceptedAnswer': {'@type': 'Answer', 'text': a},
-        } for q, a in FAQ],
-    }, ensure_ascii=False)
-
-    address_q = quote(ADDRESS)
-
-    socials = ''.join(
-        '<a class="contact__social" href="%s" target="_blank" rel="nofollow" aria-label="%s">'
-        '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">%s</svg></a>'
-        % (url, name, svg) for name, url, svg in SOCIALS)
-
-    business_ld = json.dumps({
-        '@context': 'https://schema.org',
-        '@type': 'LocalBusiness',
-        'name': 'Порхай',
-        'telephone': PHONE,
-        'address': {
-            '@type': 'PostalAddress',
-            'streetAddress': 'ул. Державина, 23',
-            'addressLocality': 'Владивосток',
-            'addressCountry': 'RU',
-        },
-        'openingHours': 'Mo-Su 10:00-21:00',
-    }, ensure_ascii=False)
-
-    mobile_menu_items = render_mobile_menu()
-    mobile_socials = render_mobile_socials()
-
-    float_links = ''.join(
-        '<a class="float__link" href="%s" target="_blank" rel="nofollow noopener noreferrer" aria-label="%s">'
-        '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">%s</svg></a>'
-        % (href, label, svg) for href, label, svg in FLOAT_LINKS)
-
-    footer_links = ''.join(
-        '<li><a class="footer__link" href="%s">%s</a></li>' % (href, text)
-        for text, href in FOOTER_LINKS)
+    faq_ld = faq_jsonld()
 
     partners = ''.join(
         '<div class="partners__item">%s</div>' % (
@@ -652,33 +888,7 @@ def build():
 <body>
 <script>document.documentElement.className+=' js'</script>
 
-{render_cookie_banner()}
-
-<header class="header" id="header">
-  <div class="stage header__inner">
-    <a class="header__logo" href="/" aria-label="Порхай — на главную">
-      <img src="{IMG}tild3166-3639-4666-b462-333535343563__photo.svg" alt="Порхай" width="150" height="46">
-    </a>
-    <nav class="nav" aria-label="Основная навигация">
-      <ul class="nav__list">{nav}</ul>
-    </nav>
-    <a class="btn btn--teal header__cta" href="#popup:header">Забронировать зал</a>
-    <button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mobile-menu">
-      <span></span><span></span><span></span>
-    </button>
-  </div>
-</header>
-
-<div class="mobile-menu" id="mobile-menu" hidden>
-  <div class="mobile-menu__inner">
-    <button class="mobile-menu__close" type="button" aria-label="Закрыть меню">
-      <span></span><span></span>
-    </button>
-    <ul class="mobile-menu__list">{mobile_menu_items}</ul>
-    <div class="mobile-menu__socials">{mobile_socials}</div>
-    <p class="mobile-menu__copy">© Развлекательный центр «Порхай»</p>
-  </div>
-</div>
+{render_top_chrome()}
 
 <main>
   <section class="hero">
@@ -786,201 +996,23 @@ def build():
 
   {band()}
 
-  <section class="section section--faq" id="faq">
-    <div class="stage">
-      <h2 class="section__title" data-anim="fadeinup" data-anim-dur="1">Отвечаем на ваши вопросы</h2>
-      <div class="faq">{faq}</div>
-    </div>
-  </section>
+  {render_faq_section()}
 
   {band(flip=True)}
 
-  <section class="section section--contact section--mint" id="kontakt">
-    <div class="stage">
-      <div class="contact">
-        <div class="contact__info" data-anim="zoomin" data-anim-dur="1">
-          <h2 class="contact__title">Контакты</h2>
-          <p class="contact__text">
-            <a href="{PHONE_HREF}">{PHONE}</a><br>
-            {HOURS}<br>
-            {ADDRESS}
-          </p>
-          <div class="contact__socials">{socials}</div>
-        </div>
-        <div class="contact__map" data-anim="zoomin" data-anim-dur="1" data-anim-delay=".2">
-          <iframe src="https://yandex.ru/map-widget/v1/?text={address_q}&z=16&l=map" width="100%" height="400" frameborder="0" loading="lazy" title="Порхай на карте"></iframe>
-        </div>
-      </div>
-    </div>
-  </section>
+  {render_contact_section()}
 </main>
 
-<footer class="footer">
-  <div class="stage">
-    <img class="footer__badge" src="{IMG}tild3563-3865-4136-b066-653462313065___1.svg" alt="" width="180" height="126">
-    <p class="footer__title">Приходите повеселиться в&nbsp;«Порхай!»</p>
-    <ul class="footer__nav">{footer_links}</ul>
-    <p class="footer__copy">
-      © Развлекательный центр «Порхай» &middot;
-      <a class="footer__policy" href="/privacy">Политика конфиденциальности</a>
-    </p>
-    <p class="footer__requisites">{REQUISITES}</p>
-  </div>
-</footer>
+{render_footer()}
 
-<div class="float">
-  <input type="checkbox" class="float__input" id="float-toggle">
-  <div class="float__links">{float_links}</div>
-  <label for="float-toggle" class="float__btn">
-    <svg class="float__icon float__icon--open" viewBox="0 0 35 32" xmlns="http://www.w3.org/2000/svg">
-      <path d="M11.2667 12.6981H23.3667M11.2667 16.4717H23.3667M4.8104 23.5777C2.4311 21.1909 1 18.1215 1 14.7736C1 7.16679 8.38723 1 17.5 1C26.6128 1 34 7.16679 34 14.7736C34 22.3804 26.6128 28.5472 17.5 28.5472C15.6278 28.5472 13.8286 28.2868 12.1511 27.8072L12 27.7925L5.03333 31V23.8219L4.8104 23.5777Z" stroke="#dffffe" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-    </svg>
-    <svg class="float__icon float__icon--close" viewBox="0 0 23 23" xmlns="http://www.w3.org/2000/svg">
-      <path d="M10.314 -3.686H12.314V26.314H10.314z" transform="rotate(-45 11.314 11.314)" fill="#dffffe"/>
-      <path d="M10.314 -3.686H12.314V26.314H10.314z" transform="rotate(45 11.314 11.314)" fill="#dffffe"/>
-    </svg>
-  </label>
-  <span class="float__label">Связаться с нами</span>
-</div>
+{render_float_button()}
 
 <script type="application/ld+json">{faq_ld}</script>
-<script type="application/ld+json">{business_ld}</script>
+<script type="application/ld+json">{BUSINESS_LD}</script>
 
 {popups}
 
-<script>
-(function () {{
-  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var header = document.getElementById('header');
-
-  // 1. Появление при прокрутке: fadeinright / fadeinup / zoomin.
-  var appear = [].slice.call(document.querySelectorAll('[data-anim]'));
-  function show(el) {{
-    el.style.transitionDuration = (el.dataset.animDur || 1) + 's';
-    el.style.transitionDelay = (el.dataset.animDelay || 0) + 's';
-    el.classList.add('is-in');
-  }}
-  if (reduce || !('IntersectionObserver' in window)) {{
-    appear.forEach(function (el) {{ el.classList.add('is-in'); }});
-  }} else {{
-    var seen = false;
-    var io = new IntersectionObserver(function (list) {{
-      list.forEach(function (e) {{
-        if (!e.isIntersecting) return;
-        seen = true;
-        show(e.target);
-        io.unobserve(e.target);
-      }});
-    }}, {{ rootMargin: '0px 0px -12% 0px' }});
-    appear.forEach(function (el) {{ io.observe(el); }});
-    // Страховка: если наблюдатель за три секунды не отдал ни одного события,
-    // показываем всё как есть. Пустая страница хуже, чем несыгравшая анимация.
-    setTimeout(function () {{
-      if (seen) return;
-      appear.forEach(function (el) {{ el.classList.add('is-in'); }});
-    }}, 3000);
-  }}
-
-  // 2. Мерцание мелкого декора: прозрачность 1 -> 0,15 -> 1 с поворотом.
-  if (!reduce && document.body.animate) {{
-    [].slice.call(document.querySelectorAll('[data-twinkle]')).forEach(function (el) {{
-      el.animate([
-        {{ opacity: 1, transform: 'rotate(0deg)' }},
-        {{ opacity: .15, transform: 'rotate(25deg)' }},
-        {{ opacity: 1, transform: 'rotate(0deg)' }}
-      ], {{ duration: +el.dataset.twinkle * 2, iterations: Infinity, easing: 'ease-in-out' }});
-    }});
-  }}
-
-  // 3. Дрейф по прокрутке: шарики и чёрточки уезжают вправо и проворачиваются,
-  //    пока проходят через экран, затем возвращаются.
-  var drift = [].slice.call(document.querySelectorAll('[data-drift]'));
-  var queued = false;
-  function paint() {{
-    queued = false;
-    var vh = innerHeight;
-    for (var i = 0; i < drift.length; i++) {{
-      var el = drift[i], r = el.getBoundingClientRect();
-      if (r.bottom < -240 || r.top > vh + 240) continue;
-      var p = 1 - (r.top + r.height / 2) / (vh + r.height);
-      var wave = Math.sin(Math.max(0, Math.min(1, p)) * Math.PI);
-      var d = el.dataset.drift.split(',');
-      el.style.transform = 'translateX(' + (d[0] * wave).toFixed(2) + 'px)'
-                         + ' rotate(' + (d[1] * wave).toFixed(2) + 'deg)';
-    }}
-  }}
-  function onScroll() {{
-    header.classList.toggle('is-stuck', scrollY > 40);
-    if (!queued && !reduce) {{ queued = true; requestAnimationFrame(paint); }}
-  }}
-  onScroll();
-  if (!reduce) paint();
-  addEventListener('scroll', onScroll, {{ passive: true }});
-  addEventListener('resize', onScroll, {{ passive: true }});
-
-  // 4. Поп-апы программ: открываются по ссылкам href="#popup:KEY".
-  //    <dialog> сам даёт фокус-ловушку и закрытие по Esc.
-  document.querySelectorAll('a[href^="#popup:"]').forEach(function (a) {{
-    a.addEventListener('click', function (e) {{
-      e.preventDefault();
-      var dlg = document.getElementById('popup-' + a.getAttribute('href').split(':')[1]);
-      if (dlg) dlg.showModal();
-    }});
-  }});
-  document.querySelectorAll('.popup').forEach(function (dlg) {{
-    dlg.querySelector('[data-popup-close]').addEventListener('click', function () {{ dlg.close(); }});
-    dlg.addEventListener('click', function (e) {{ if (e.target === dlg) dlg.close(); }});
-    var form = dlg.querySelector('[data-form]');
-    if (form) {{
-      form.addEventListener('submit', function (e) {{
-        e.preventDefault();
-        form.hidden = true;
-        dlg.querySelector('[data-form-thanks]').hidden = false;
-      }});
-    }}
-  }});
-
-  // 5. Лента отзывов: стрелки листают на ширину видимой области.
-  var track = document.querySelector('.reviews__track');
-  if (track) {{
-    document.querySelector('.reviews__arrow--prev').addEventListener('click', function () {{
-      track.scrollBy({{ left: -track.clientWidth * .8, behavior: 'smooth' }});
-    }});
-    document.querySelector('.reviews__arrow--next').addEventListener('click', function () {{
-      track.scrollBy({{ left: track.clientWidth * .8, behavior: 'smooth' }});
-    }});
-  }}
-
-  // 6. Мобильное меню.
-  var burger = document.querySelector('.burger');
-  var menu = document.getElementById('mobile-menu');
-  function closeMenu() {{
-    menu.hidden = true;
-    burger.setAttribute('aria-expanded', 'false');
-    document.body.style.overflow = '';
-  }}
-  burger.addEventListener('click', function () {{
-    var open = burger.getAttribute('aria-expanded') === 'true';
-    if (open) {{ closeMenu(); return; }}
-    menu.hidden = false;
-    burger.setAttribute('aria-expanded', 'true');
-    document.body.style.overflow = 'hidden';
-  }});
-  menu.querySelector('.mobile-menu__close').addEventListener('click', closeMenu);
-  menu.querySelectorAll('.mobile-menu__link, .mobile-menu__sublink').forEach(function (a) {{
-    a.addEventListener('click', closeMenu);
-  }});
-  addEventListener('keydown', function (e) {{ if (e.key === 'Escape') closeMenu(); }});
-
-  // 7. Баннер согласия на cookie: показываем, если согласия ещё не было.
-  var cookieBanner = document.getElementById('cookie-banner');
-  if (!localStorage.getItem('cookie-consent')) cookieBanner.hidden = false;
-  document.getElementById('cookie-accept').addEventListener('click', function () {{
-    localStorage.setItem('cookie-consent', '1');
-    cookieBanner.hidden = true;
-  }});
-}})();
-</script>
+{PAGE_SCRIPT}
 </body>
 </html>
 """
@@ -993,8 +1025,7 @@ def build():
 # Политика конфиденциальности (группа B аудита — обязательная страница,
 # в оригинале «Политика конфиденциальности» в подвале была просто текстом
 # без ссылки, страницы не существовало). Текст — типовой для 152-ФЗ
-# с реальными реквизитами из content/prices.md; юридическую формулировку
-# стоит показать заказчику или юристу перед публикацией.
+# с реальными реквизитами из content/prices.md, согласован с заказчиком 17.08.2026.
 PRIVACY_SECTIONS = [
     ('1. Общие положения',
      'Настоящая политика в отношении обработки персональных данных (далее — Политика) '
@@ -1054,33 +1085,7 @@ def build_privacy():
 <body>
 <script>document.documentElement.className+=' js'</script>
 
-{render_cookie_banner()}
-
-<header class="header" id="header">
-  <div class="stage header__inner">
-    <a class="header__logo" href="/" aria-label="Порхай — на главную">
-      <img src="{IMG}tild3166-3639-4666-b462-333535343563__photo.svg" alt="Порхай" width="150" height="46">
-    </a>
-    <nav class="nav" aria-label="Основная навигация">
-      <ul class="nav__list">{nav}</ul>
-    </nav>
-    <a class="btn btn--teal header__cta" href="#popup:header">Забронировать зал</a>
-    <button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mobile-menu">
-      <span></span><span></span><span></span>
-    </button>
-  </div>
-</header>
-
-<div class="mobile-menu" id="mobile-menu" hidden>
-  <div class="mobile-menu__inner">
-    <button class="mobile-menu__close" type="button" aria-label="Закрыть меню">
-      <span></span><span></span>
-    </button>
-    <ul class="mobile-menu__list">{mobile_menu_items}</ul>
-    <div class="mobile-menu__socials">{mobile_socials}</div>
-    <p class="mobile-menu__copy">© Развлекательный центр «Порхай»</p>
-  </div>
-</div>
+{render_top_chrome()}
 
 <main>
   <section class="section legal">
