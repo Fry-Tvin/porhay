@@ -1385,7 +1385,8 @@ RENTAL_PAGES = {
             ('tild3265-6639-4363-a166-356565396536__frame_16.svg', 'Интерактивный проектор', None),
             ('tild3265-6639-4363-a166-356565396536__frame_16.svg', 'Светомузыка', None),
         ],
-        note='НЕТ ДОСТУПА К&nbsp;ФОТОЗОНАМ',
+        note='✖ НЕТ ДОСТУПА К&nbsp;ФОТОЗОНАМ',
+        note_plum=True,
         gallery_title='«White Room»',
         gallery_descr='Можно пригласить аниматоров или&nbsp;любую&nbsp;шоу-программу',
         gallery=[
@@ -1412,7 +1413,7 @@ RENTAL_PAGES = {
         ],
         price_title='Стоимость за&nbsp;1 час аренды',
         price_descr='От&nbsp;3‑х часов, каждый последующий час со&nbsp;скидкой 50%',
-        price_items=[('Будни', '5 000 ₽'), ('Выходные', '7 000 ₽')],
+        price_groups=[dict(note=None, items=[('Будни', '5 000 ₽'), ('Выходные', '7 000 ₽')])],
         footnote='*Стоимость указана за&nbsp;15 гостей (взрослые и&nbsp;дети).<br>'
                   'Свыше 15 гостей&nbsp;— доплата 300 ₽/человек за&nbsp;всё время пребывания.',
     ),
@@ -1434,7 +1435,8 @@ RENTAL_PAGES = {
             ('tild3265-6639-4363-a166-356565396536__frame_16.svg', 'Музыкальная колонка', None),
             ('tild3265-6639-4363-a166-356565396536__frame_16.svg', 'Барная стойка', None),
         ],
-        note='НЕТ ДОСТУПА К&nbsp;БЕЛОМУ БАССЕЙНУ',
+        note='✖ НЕТ ДОСТУПА К&nbsp;БЕЛОМУ БАССЕЙНУ',
+        note_plum=True,
         gallery_title='«Loft Box»',
         gallery_descr='При аренде Loft Box в&nbsp;банкетной зоне арендаторы находятся одни, но&nbsp;в&nbsp;музее и&nbsp;бассейнах возможно нахождение людей, которые пришли на&nbsp;часовое посещение.',
         gallery=[
@@ -1459,9 +1461,83 @@ RENTAL_PAGES = {
         ],
         price_title='Стоимость за&nbsp;1 час аренды',
         price_descr='От&nbsp;3‑х часов, каждый последующий час со&nbsp;скидкой 50%',
-        price_items=[('Будни', '5 000 ₽'), ('Выходные', '7 000 ₽')],
+        price_groups=[dict(note=None, items=[('Будни', '5 000 ₽'), ('Выходные', '7 000 ₽')])],
         footnote='*Стоимость указана за&nbsp;15 гостей (взрослые и&nbsp;дети).<br>'
                   'Свыше 15 гостей&nbsp;— доплата 300 ₽/человек за&nbsp;всё время пребывания.',
+    ),
+    'combo': dict(
+        meta_title='Аренда зала «КОМБО +» развлекательного центра «Порхай»',
+        meta_descr='Для больших компаний свыше 25 человек — АБСОЛЮТНО ВЕСЬ ЦЕНТР (335 м²).',
+        cover='tild3262-6636-4733-a238-656564323236__iii_9551_3.webp',
+        avatar='tild3161-3162-4730-a239-353134636136__frame_15.svg',
+        title='Аренда залов «Комбо+»',
+        descr='Для больших компаний свыше 25 человек, мы предлагаем к&nbsp;аренде АБСОЛЮТНО ВЕСЬ ЦЕНТР (335 кв.м.)',
+        price_line='Стоимость от&nbsp;8 000&nbsp;₽/час',
+        amenities=[
+            ('tild6664-6339-4432-b631-623332393537__frame_16.svg', '3 сухих бассейна',
+             'Самый глубокий&nbsp;— Белый, средний&nbsp;— Попкорн, маленький&nbsp;— Арбуз'),
+            ('tild3265-6639-4363-a166-356565396536__frame_16.svg', 'ВСЕ фотозоны центра', None),
+            ('tild3265-6639-4363-a166-356565396536__frame_16.svg', 'Телевизор', 'Музыкальная колонка'),
+            ('tild3265-6639-4363-a166-356565396536__frame_16.svg', 'Кулер с&nbsp;горячей и&nbsp;холодной водой',
+             'И микроволновая печь'),
+            ('tild6266-3834-4535-b733-633732373564__frame_16.svg', '2 банкетных зала', None),
+            ('tild3265-6639-4363-a166-356565396536__frame_16.svg', 'Барная стойка', None),
+            ('tild3265-6639-4363-a166-356565396536__frame_16.svg', 'Интерактивный проектор', None),
+            ('tild3265-6639-4363-a166-356565396536__frame_16.svg', 'Светомузыка', None),
+        ],
+        note='Вместимость 50 человек',
+        note_plum=False,
+        gallery_title='«Комбо+»',
+        gallery_descr='Только представьте, вся площадка для вас и&nbsp;ваших друзей. Каждый гость заберёт с&nbsp;собой сотни красивейших фото и&nbsp;море незабываемых эмоций!',
+        gallery=[
+            'tild3235-3130-4761-b631-396335373639__iii_4774.webp',
+            'tild3664-6438-4433-b133-643634313535__iii_1669_2.webp',
+            'tild6239-3538-4233-b666-383662623461__photo_2021-06-30_10-.webp',
+            'tild6362-3161-4138-b138-626164663464__iii_4586.webp',
+            'tild3130-3665-4365-b165-636638646261__photo_2021-06-30_10-.webp',
+            'tild3338-3338-4836-b165-653866316665__iii_5366.webp',
+            'tild6166-3937-4534-b434-646434633034__photo_2021-07-20_18-.webp',
+            'tild3765-3035-4265-b466-356434313563__ce4a6738.webp',
+            'tild3361-3665-4731-b038-643331323935__dsc_0492jpg.webp',
+            'tild3239-6362-4435-b434-663233313534__iii_3202_1.webp',
+            'tild3066-6232-4239-b537-303466306634__iii_3204_1.webp',
+            'tild6161-3961-4563-b066-626365393064__iii_3438_1.webp',
+            'tild3537-6339-4537-a565-366139313332__iii_3447_1.webp',
+            'tild3734-3835-4437-b865-393038386639__iii_3488_1.webp',
+            'tild6161-3435-4762-b532-326561313138__iii_3725_1.webp',
+            'tild6234-6366-4231-a530-656562616666__iii_4488_1.webp',
+            'tild6531-3337-4931-b264-393135343833__iii_4496_1.webp',
+            'tild3964-6466-4232-a532-323634363063__iii_4604_1.webp',
+            'tild6532-6665-4533-a137-383934346536__iii_7613.webp',
+            'tild3462-3039-4261-b162-333963383736__iii_8697_1.webp',
+            'tild3731-3632-4136-a339-646235623032__ce4a0538.webp',
+            'tild3664-3632-4838-a465-623732356433__ce4a1064.webp',
+            'tild3930-3031-4763-b038-366661353962__photo_2021-06-30_10-.webp',
+            'tild3562-6133-4236-b738-353861613763__photo_2022-03-08_12-.webp',
+            'tild3435-3938-4866-b831-623939303835__photo_2023-03-11_16-.webp',
+            'tild3032-3862-4564-b963-373164343738__ce4a7518.webp',
+            'tild3335-3432-4533-a566-313266316230__ce4a9472.webp',
+            'tild3962-3933-4837-b933-356666373662__iii_7472_2.webp',
+            'tild3666-3466-4361-a163-323666326339__photo_2021-06-26_17-.webp',
+            'tild3363-3262-4135-b834-646264623965__photo_2021-06-30_10-.webp',
+            'tild6531-3962-4632-b837-323237656534__photo_2022-03-17_18-.webp',
+            'tild6634-6466-4462-b038-303437346261__photo_2023-03-09_15-.webp',
+            'tild3262-3931-4335-a262-396637376430__photo_2023-03-09_15-.webp',
+            'tild3731-3861-4662-b761-663939323164__photo_2023-03-09_15-.webp',
+            'tild6530-6132-4535-b864-626331396663__photo_2023-03-09_15-.webp',
+            'tild3230-3338-4435-b636-313362333739__photo_2023-03-09_15-.webp',
+            'tild3334-6130-4266-b231-623766663261__photo_2023-03-09_15-.webp',
+            'tild6361-3339-4364-a234-306138303337__photo_2023-03-09_15-.webp',
+        ],
+        price_title='Стоимость за&nbsp;1 час аренды',
+        price_descr='От&nbsp;3‑х часов, каждый последующий час со&nbsp;скидкой 50%',
+        price_groups=[
+            dict(note='«Счастливые часы» 10:00 — 12:00',
+                 items=[('Будни', '8 000 ₽'), ('Выходные', '12 000 ₽')]),
+            dict(note='12:00 — 21:00',
+                 items=[('Будни', '11 000 ₽'), ('Выходные', '16 000 ₽')]),
+        ],
+        footnote='*Вместимость 50 человек.',
     ),
 }
 
@@ -1483,9 +1559,15 @@ def render_rental_page(slug):
             else '<span class="partners__name">%s</span>' % name)
         for img, name in PARTNERS)
 
-    price_rows = ''.join(
-        '<div class="pricelist__item"><div class="pricelist__row"><span>%s</span><span>%s</span></div>'
-        '<div class="pricelist__line"></div></div>' % row for row in p['price_items'])
+    price_groups = ''.join(
+        '<div class="pricelist__group">'
+        + ('<p class="pricelist__group-note">%s</p>' % g['note'] if g['note'] else '')
+        + '<div class="pricelist__group-items">'
+        + ''.join(
+            '<div class="pricelist__item"><div class="pricelist__row"><span>%s</span><span>%s</span></div>'
+            '<div class="pricelist__line"></div></div>' % row for row in g['items'])
+        + '</div></div>'
+        for g in p['price_groups'])
 
     teasers = ''.join(
         '<div class="teasers__item"><img src="%s%s" alt="" loading="lazy" width="360" height="240">'
@@ -1498,6 +1580,7 @@ def render_rental_page(slug):
 
     popups = render_form_popup('header') + render_form_popup(slug)
     faq_ld = faq_jsonld()
+    note_class = 'finetext finetext--note' if p.get('note_plum') else 'finetext'
 
     html = f"""<!DOCTYPE html>
 <html lang="ru">
@@ -1526,7 +1609,7 @@ def render_rental_page(slug):
     <div class="stage"><div class="amenities__grid">{amenities}</div></div>
   </section>
 
-  <p class="finetext finetext--note"><span class="finetext__rule"></span>✖ {p['note']}</p>
+  <p class="{note_class}"><span class="finetext__rule"></span>{p['note']}</p>
 
   <p class="price-line">{p['price_line']}</p>
 
@@ -1560,7 +1643,7 @@ def render_rental_page(slug):
     <div class="stage">
       <h2 class="pricelist__title">{p['price_title']}</h2>
       <p class="pricelist__descr">{p['price_descr']}</p>
-      <div class="pricelist__grid">{price_rows}</div>
+      <div class="pricelist__grid">{price_groups}</div>
     </div>
   </section>
 
@@ -1620,3 +1703,4 @@ if __name__ == '__main__':
     build_razovoe()
     render_rental_page('whiteroom')
     render_rental_page('loftbox')
+    render_rental_page('combo')
