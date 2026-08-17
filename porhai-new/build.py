@@ -2468,6 +2468,57 @@ def build_partner():
     print('partner.html собран:', len(html), 'байт')
 
 
+# --- Страница 404 (page35430778) --------------------------------------
+NOT_FOUND_COVER = 'tild3035-3035-4238-a562-306235333438__photo_2021-06-30_10-.webp'
+NOT_FOUND_LOGO = 'tild6331-3966-4337-b038-376262386463___.svg'
+
+
+def build_not_found():
+    popups = render_form_popup('header')
+
+    html = f"""<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ошибка 404 — Порхай</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<script>document.documentElement.className+=' js'</script>
+
+{render_top_chrome()}
+
+<main>
+  <section class="cover cover--full" style="background-image:url({IMG}{NOT_FOUND_COVER})">
+    <div class="cover__inner">
+      <img class="cover__logo" src="{IMG}{NOT_FOUND_LOGO}" alt="">
+      <h1 class="cover__title">Упс! Что-то пошло не&nbsp;так, этой страницы не&nbsp;существует</h1>
+      <p class="cover__descr">Но&nbsp;на&nbsp;нашем сайте еще много интересного ;)</p>
+      <a class="btn btn--yellow" href="/">Перейти на главную</a>
+    </div>
+  </section>
+</main>
+
+{render_footer()}
+
+{render_float_button()}
+
+<script type="application/ld+json">{BUSINESS_LD}</script>
+
+{popups}
+
+{PAGE_SCRIPT}
+</body>
+</html>
+"""
+    path = os.path.join(HERE, '404.html')
+    with open(path, 'w', encoding='utf-8') as f:
+        f.write(html)
+    print('404.html собран:', len(html), 'байт')
+
+
 if __name__ == '__main__':
     build()
     build_privacy()
@@ -2479,3 +2530,4 @@ if __name__ == '__main__':
     build_vypusknye()
     build_korporativ()
     build_partner()
+    build_not_found()
