@@ -1173,6 +1173,183 @@ document.getElementById('cookie-accept').addEventListener('click', function () {
     print('privacy.html собран:', len(html), 'байт')
 
 
+# --- Разовое посещение (/razovoe, page34753409) --------------------------
+
+# Слайдер фото (rec561633640) — 17 кадров, тот же приём без библиотек,
+# что и .reviews на главной (скролл + стрелки), но во всю ширину секции.
+RAZOVOE_GALLERY = [
+    'tild3130-3766-4534-b433-633130366331__ce4a0538.webp',
+    'tild3866-6530-4237-b861-303936373563__iii_0276.webp',
+    'tild3764-3261-4133-b964-656431653863__iii_0786.webp',
+    'tild6362-3161-4138-b138-626164663464__iii_4586.webp',
+    'tild3130-3665-4365-b165-636638646261__photo_2021-06-30_10-.webp',
+    'tild3235-3130-4761-b631-396335373639__iii_4774.webp',
+    'tild3336-3561-4730-b461-666163363236__photo_2021-06-30_10-.webp',
+    'tild3364-3065-4139-a565-313233663262__iii_7856.webp',
+    'tild3437-3234-4637-b933-356133653631__iii_8072.webp',
+    'tild3535-6330-4166-a566-303134643062__iii_9854.webp',
+    'tild3566-3662-4566-a564-303733356162__iii_8101.webp',
+    'tild3933-6636-4161-b138-353563353935__iii_8348.webp',
+    'tild6166-3937-4534-b434-646434633034__photo_2021-07-20_18-.webp',
+    'tild6366-3332-4264-b936-316336303431__iii_5366.webp',
+    'tild6532-6630-4133-b334-643534613066__img_9886.webp',
+    'tild6535-6230-4531-a238-393366393763__img_9887.webp',
+    'tild6634-3535-4434-b939-376130346434__photo_2021-06-30_10-.webp',
+]
+
+# Что включено (rec561501064) — 6 карточек, дословно из экспорта.
+RAZOVOE_FEATURES = [
+    ('tild3965-3138-4164-b031-643434613061___3.webp', 'Сеанс 55&nbsp;минут', None),
+    ('tild6137-6231-4338-a238-616561373330___6_1.webp', 'Посещение 3&nbsp;бассейнов',
+     'Самый глубокий Белый бассейн, «Попкорн» и&nbsp;«Арбуз»'),
+    ('tild3234-3666-4132-a432-363833343336___5_1.webp', 'Все фотозоны', None),
+    ('tild3862-3436-4430-a161-636139666238___7_1.webp', 'Все ростовые фигуры', None),
+    ('tild6332-3366-4066-a332-333164626231___4_1.webp', 'Наша волшебная комната',
+     'С фонариками'),
+    ('tild3938-6630-4662-b861-316565626462___8_1.webp', 'Вода и чай в&nbsp;свободном доступе', None),
+]
+
+# Стоимость сеанса (rec561634968) — заменили устаревшую картинку-таблицу
+# из экспорта («от 400 ₽») на настоящую таблицу с цифрами из content/prices.md,
+# подтверждёнными заказчиком 17.08.2026.
+RAZOVOE_PRICES = [
+    ('1 человек', '500 ₽', '600 ₽'),
+    ('Семейный: 1 родитель + 1 ребёнок до 10 лет', '900 ₽', '1 000 ₽'),
+]
+
+
+def render_slider(images, alt=''):
+    slides = ''.join(
+        '<div class="slider__slide" style="background-image:url(%s%s)" role="img" aria-label="%s"></div>'
+        % (IMG, img, alt) for img in images)
+    return (
+        '<div class="slider">'
+        '<button class="slider__arrow slider__arrow--prev" type="button" aria-label="Предыдущее фото">%s</button>'
+        '<div class="slider__track">%s</div>'
+        '<button class="slider__arrow slider__arrow--next" type="button" aria-label="Следующее фото">%s</button>'
+        '</div>' % (SLIDER_ARROW, slides, SLIDER_ARROW)
+    )
+
+
+def build_razovoe():
+    slider = render_slider(RAZOVOE_GALLERY, 'Разовое посещение «Порхай»')
+
+    features = ''.join(
+        '<div class="features__item"><img src="%s%s" alt="" width="140" height="140">'
+        '<h3>%s</h3>%s</div>'
+        % (IMG, img, title, ('<p>%s</p>' % descr) if descr else '')
+        for img, title, descr in RAZOVOE_FEATURES)
+
+    price_rows = ''.join(
+        '<tr><td>%s</td><td>%s</td><td>%s</td></tr>' % row for row in RAZOVOE_PRICES)
+
+    popups = render_form_popup('header') + render_form_popup('razovoe')
+    faq_ld = faq_jsonld()
+
+    html = f"""<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Разовое посещение развлекательного центра «Порхай»</title>
+<meta name="description" content="Разовое посещение центра «Порхай» во Владивостоке — 3 бассейна с шариками, 15 фотозон, ростовые фигуры и волшебная комната с фонариками.">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<script>document.documentElement.className+=' js'</script>
+
+{render_top_chrome()}
+
+<main>
+  <section class="page-hero">
+    <div class="stage">
+      <div class="page-hero__uptitle" data-anim="fadeinup" data-anim-dur="1">«Порхай»</div>
+      <h1 class="page-hero__title" data-anim="fadeinup" data-anim-dur="1">Разовые посещения</h1>
+      <p class="page-hero__descr" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".1">Мы&nbsp;рады вам каждый день без повода❤️</p>
+    </div>
+  </section>
+
+  <div class="stage">{slider}</div>
+
+  <p class="price-line">Стоимость от&nbsp;500&nbsp;₽/55&nbsp;минут</p>
+
+  <div class="cta-band"><a class="btn btn--yellow" href="#popup:razovoe" data-anim="zoomin" data-anim-dur="1">Записаться</a></div>
+
+  {band()}
+
+  <section class="features">
+    <div class="stage">
+      <h2 class="features__title" data-anim="fadeinup" data-anim-dur="1">Что включено в&nbsp;наше разовое посещение?</h2>
+      <div class="features__grid">{features}</div>
+    </div>
+  </section>
+
+  {band(flip=True)}
+
+  <section class="quote">
+    <div class="stage">
+      <p class="quote__text" data-anim="zoomin" data-anim-dur="1">А ещё мы дарим скидку 50% на второй час! Потому что мы точно знаем&nbsp;— уходить вам не захочется ;)</p>
+      <div class="quote__author">
+        <img src="{IMG}tild3566-3138-4961-a631-363663616362__noroot.webp" alt="" width="80" height="80">
+        <p class="quote__author-name">«Порхай»</p>
+        <p class="quote__author-role">Развлекательный центр</p>
+      </div>
+    </div>
+  </section>
+
+  {band()}
+
+  <section class="price-table">
+    <div class="stage">
+      <div class="price-table__uptitle">«Порхай»</div>
+      <h2 class="price-table__title">Стоимость сеанса<br>(55 минут)</h2>
+      <table class="price-table__grid">
+        <thead><tr><th></th><th>Будни</th><th>Выходные и праздники</th></tr></thead>
+        <tbody>{price_rows}</tbody>
+      </table>
+      <p class="price-table__descr">Продление&nbsp;−50%.<br>Если одна из&nbsp;15 площадок занята, то&nbsp;скидка на&nbsp;посещение&nbsp;−30%.</p>
+    </div>
+  </section>
+
+  <div class="cta-band"><a class="btn btn--yellow" href="#popup:razovoe">Записаться</a></div>
+
+  {band(flip=True)}
+
+  {render_faq_section()}
+
+  {band()}
+
+  {render_contact_section()}
+
+  <section class="cover" style="background-image:url({IMG}tild6236-6163-4830-b539-643563323133__iii_5366.webp)">
+    <div class="cover__inner">
+      <h2 class="cover__title">Вы не заметите, как пролетит время</h2>
+      <p class="cover__descr">У&nbsp;нас действительно много крутых локаций, чтобы&nbsp;за час сеанса вам не&nbsp;пришлось скучать!</p>
+      <a class="btn btn--yellow" href="#popup:razovoe">Записаться</a>
+    </div>
+  </section>
+</main>
+
+{render_footer()}
+
+{render_float_button()}
+
+<script type="application/ld+json">{faq_ld}</script>
+<script type="application/ld+json">{BUSINESS_LD}</script>
+
+{popups}
+
+{PAGE_SCRIPT}
+</body>
+</html>
+"""
+    path = os.path.join(HERE, 'razovoe.html')
+    with open(path, 'w', encoding='utf-8') as f:
+        f.write(html)
+    print('razovoe.html собран:', len(html), 'байт')
+
+
 if __name__ == '__main__':
     build()
     build_privacy()
+    build_razovoe()
