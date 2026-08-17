@@ -478,6 +478,137 @@ ul { margin: 0; padding: 0; list-style: none; }
 .tariff__more:hover { text-decoration: underline; }
 .tariff__more img { display: block; width: 20px; height: auto; }
 
+/* --- Предложения для организованных групп -------------------------------- */
+.section--groups { padding: 140px 0 155px; }
+
+.groups {
+  display: grid;
+  grid-template-columns: repeat(3, 360px);
+  column-gap: 40px;
+  row-gap: 111px;
+  justify-content: center;
+  max-width: 1160px;
+  margin: 62px auto 0;
+}
+/* «Мастер-классы» — седьмая карточка, одна в последнем ряду, под второй
+   колонкой; межрядный интервал у неё на 8px меньше, чем у остальных. */
+.group:nth-child(7) { grid-column: 2; margin-top: -8px; }
+
+.group {
+  position: relative;
+  display: block;
+  width: 360px;
+  height: 200px;
+  margin-top: 49px;
+  padding: 102px 24px 0;
+  box-sizing: border-box;
+  border-radius: 35px;
+  background: var(--mint-deep);
+  text-align: center;
+}
+.group__icon {
+  position: absolute;
+  top: -49px; left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 134px; height: 134px;
+}
+.group__icon::before,
+.group__icon::after {
+  content: '';
+  position: absolute;
+  width: 142px; height: 142px;
+  border-radius: 50%;
+}
+.group__icon::before { top: -5px; left: -1px; border: 2px solid #f5cf37; }
+.group__icon::after  { top: -4px; left: -6px; border: 2px solid #369c9f; }
+.group__icon img {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 134px; height: 134px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.group__title {
+  font-size: 24px;
+  line-height: 1.2;
+  font-weight: 700;
+  color: var(--ink);
+}
+.group__more {
+  position: absolute;
+  bottom: 32px; left: 0; right: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.group:hover .group__more { text-decoration: underline; }
+.group__more img { display: block; width: 20px; height: auto; }
+
+/* --- Поп-апы программ ----------------------------------------------------- */
+/* Своя оболочка модалки — в оригинале это стандартный поп-ап Тильды без
+   привязки к дизайн-системе, поэтому оформлена в общем стиле сайта
+   (радиусы, цвета), но не снята замером как остальные секции. */
+.popup {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  width: 100%;
+  max-width: 760px;
+  max-height: 85vh;
+  margin: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 35px;
+  background: var(--white);
+  color: var(--ink);
+}
+.popup::backdrop { background: rgba(74, 74, 74, .55); }
+.popup__box { position: relative; padding: 48px 40px 40px; overflow-y: auto; max-height: 85vh; }
+.popup__close {
+  position: sticky;
+  float: right;
+  top: 0;
+  margin: -8px -8px 0 16px;
+  height: 40px;
+  padding: 0 24px;
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--white);
+  background: var(--teal);
+  border: 0;
+  border-radius: 20px;
+  cursor: pointer;
+}
+.popup__title { font-size: 28px; line-height: 1.25; font-weight: 700; color: var(--ink); padding-right: 100px; }
+.popup__subtitle { margin-top: 14px; font-size: 18px; line-height: 1.35; font-weight: 700; color: var(--teal); }
+.popup__subtitle p { margin: 6px 0 0; }
+.popup__subtitle p:first-child { margin-top: 0; }
+.popup__text { margin-top: 18px; font-size: 16px; line-height: 1.5; }
+.popup__text p { margin: 12px 0 0; }
+.popup__text p:first-child { margin-top: 0; }
+.popup__gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+  margin-top: 24px;
+}
+.popup__gallery img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 16px;
+}
+
 /* --- Анимации ----------------------------------------------------------- */
 /* Появление при прокрутке. Стили и длительности взяты из оригинала:
    fadeinright и fadeinup со сдвигом 100px, zoomin с масштабом 0,6. */
@@ -554,6 +685,20 @@ ul { margin: 0; padding: 0; list-style: none; }
   }
   .tariff__desc, .tariff__note, .tariff__price { margin-top: 12px; }
   .tariff__more { margin-top: 20px; }
+
+  .section--groups { padding: 64px 0; }
+  .groups {
+    grid-template-columns: 1fr;
+    row-gap: 62px;
+    max-width: 335px;
+    margin-top: 56px;
+  }
+  .group:nth-child(7) { grid-column: 1; margin-top: 49px; }
+
+  .popup { max-width: 92vw; max-height: 90vh; }
+  .popup__box { padding: 36px 20px 28px; max-height: 90vh; }
+  .popup__title { font-size: 22px; padding-right: 90px; }
+  .popup__gallery { grid-template-columns: repeat(2, 1fr); }
 }
 
 /* Кегли и отступы первого экрана на телефоне — из спеки, брейкпоинт 479. */
