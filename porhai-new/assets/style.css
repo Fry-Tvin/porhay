@@ -1492,6 +1492,47 @@ ul { margin: 0; padding: 0; list-style: none; }
   .problems__item span { font-size: 16px; }
 }
 
+/* --- Скидки от партнёров, полная страница (rec570036748, /partner) ------- */
+.partner-page { padding: 135px 0 90px; }
+.partner-page__title { font-size: 42px; line-height: 1.23; font-weight: 700; color: var(--ink); text-align: center; }
+.partner-page__descr { margin-top: 20px; font-size: 24px; line-height: 1.5; font-weight: 400; color: var(--ink); text-align: center; }
+.partner-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 48px 40px;
+  max-width: 1160px;
+  margin: 60px auto 0;
+}
+.partner-card { display: flex; align-items: center; gap: 24px; }
+.partner-card__logo { width: 160px; height: 129px; object-fit: contain; flex-shrink: 0; }
+.partner-card__placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 160px;
+  height: 129px;
+  flex-shrink: 0;
+  border-radius: 16px;
+  background: var(--mint);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+  text-align: center;
+  padding: 8px;
+}
+.partner-card__body p { font-size: 18px; line-height: 1.55; font-weight: 400; color: var(--ink); }
+.partner-card__discount { margin-top: 4px; font-weight: 700; color: var(--teal); }
+.partner-card__link { display: inline-block; margin-top: 8px; font-size: 16px; color: var(--teal); }
+
+@media (max-width: 1000px) {
+  .partner-page { padding: 64px 0 48px; }
+  .partner-page__title { font-size: 26px; }
+  .partner-page__descr { font-size: 17px; }
+  .partner-list { grid-template-columns: 1fr; gap: 32px; margin-top: 36px; }
+  .partner-card { gap: 16px; }
+  .partner-card__logo, .partner-card__placeholder { width: 110px; height: 89px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
   [data-anim] { opacity: 1; transform: none; }

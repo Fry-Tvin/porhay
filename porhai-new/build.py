@@ -2380,6 +2380,94 @@ def build_korporativ():
     print('korporativ.html собран:', len(html), 'байт')
 
 
+# --- Скидки от партнёров, полная страница (/partner, page35281299) --------
+# В оригинале здесь 16 карточек с Instagram-ссылками — почти все устарели
+# (страница не обновлялась с 2023). Список пересобран по content/partners.md:
+# 7 из 16 партнёров экспорта ещё работают + 1 новый (Café Tree), ссылки —
+# только на реальные сайты/телеграм (Instagram убран целиком, см. partners.md).
+# Логотипы те же файлы, что и в сетке партнёров на главной (PARTNERS),
+# только здесь ещё текст описания/скидки/ссылки — их в экспорте не было
+# у самой сетки на главной, только на этой отдельной странице.
+PARTNER_LOGO = {
+    'Пингвин': 'tild3031-3462-4834-b463-336166373761__frame_3.webp',
+    'Шипучка шоу': 'tild6663-3862-4232-b431-613335663562__frame_5.webp',
+    'Kiss Kiss праздник': 'tild3261-6430-4637-b734-646434626161__frame_6.webp',
+    'Anime': 'tild6233-3936-4732-b163-393332323262__frame_7.webp',
+    'MaxiBoom': 'tild6366-3935-4136-b063-646232626366__frame_14.webp',
+    'Пицца Просто Находка': 'tild3937-3166-4035-b338-346233316366__frame_12.webp',
+}
+
+PARTNER_LIST = [
+    ('Пингвин', 'Детские шоу, аниматоры, ростовые куклы', '−10%', 'https://t.me/s/pingvin_vl'),
+    ('Шипучка шоу', 'Крио-праздники, крио-шоу, слаймы, крио-кухня, химическое шоу', '500 ₽', 'https://party-s.ru/programs'),
+    ('Kiss Kiss праздник', 'Детские праздники, впечатляющие костюмы', '−10%', 'https://kisskissprazdnik.ru'),
+    ('Anime', 'Доставка японской кухни', '−10% от 1 500 ₽, −15% от 3 000 ₽, бесплатная доставка от 1 500 ₽', 'https://animevl.ru'),
+    ('MaxiBoom', 'Детские праздники, шоу-программы, квесты, спектакли', '−10%', 'https://animator-vl.ru'),
+    ('Пицца Просто Находка', 'Доставка пиццы', '−10%', 'https://vl.pizza-prosto.ru'),
+    ('ВладФуршет', 'Кейтеринг, выездное обслуживание, фуршеты, банкеты', '−10%', 'https://vladfurshet.ru'),
+    ('Café Tree', 'Кафе, кейтеринг, домашняя кулинария, фуд-боксы', '−10%', 'https://cafetree.ru'),
+]
+
+
+def build_partner():
+    cards = []
+    for name, descr, discount, url in PARTNER_LIST:
+        logo = PARTNER_LOGO.get(name)
+        pic = ('<img class="partner-card__logo" src="%s%s" alt="%s" loading="lazy">' % (IMG, logo, name)
+               if logo else '<span class="partner-card__placeholder">%s</span>' % name)
+        cards.append(
+            '<div class="partner-card">%s'
+            '<div class="partner-card__body"><p>%s</p>'
+            '<p class="partner-card__discount">%s</p>'
+            '<a class="partner-card__link" href="%s" target="_blank" rel="nofollow noopener noreferrer">%s</a>'
+            '</div></div>'
+            % (pic, descr, discount, url, url.replace('https://', '')))
+    partner_cards = ''.join(cards)
+
+    popups = render_form_popup('header')
+
+    html = f"""<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Скидки от партнёров развлекательного центра «Порхай»</title>
+<meta name="description" content="Скидки от партнёров развлекательного центра «Порхай» при аренде залов во Владивостоке.">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<script>document.documentElement.className+=' js'</script>
+
+{render_top_chrome()}
+
+<main>
+  <section class="partner-page">
+    <div class="stage">
+      <h1 class="partner-page__title">Скидки от&nbsp;партнёров</h1>
+      <p class="partner-page__descr">При аренде залов развлекательного центра «Порхай»</p>
+      <div class="partner-list">{partner_cards}</div>
+    </div>
+  </section>
+</main>
+
+{render_footer()}
+
+{render_float_button()}
+
+<script type="application/ld+json">{BUSINESS_LD}</script>
+
+{popups}
+
+{PAGE_SCRIPT}
+</body>
+</html>
+"""
+    path = os.path.join(HERE, 'partner.html')
+    with open(path, 'w', encoding='utf-8') as f:
+        f.write(html)
+    print('partner.html собран:', len(html), 'байт')
+
+
 if __name__ == '__main__':
     build()
     build_privacy()
@@ -2390,3 +2478,4 @@ if __name__ == '__main__':
     build_denrozhdeniya()
     build_vypusknye()
     build_korporativ()
+    build_partner()
