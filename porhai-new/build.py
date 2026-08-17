@@ -121,6 +121,56 @@ STEP_ARROW = ('<span class="step__arrow" aria-hidden="true">'
               '<svg viewBox="0 0 40 18.7" stroke="#38a2a5" fill="none" xmlns="http://www.w3.org/2000/svg">'
               '<path d="M4.2 9.4h32.1"/><path d="M31.3 13.4l5-4-5-4"/></svg></span>')
 
+# Варианты аренды залов: три карточки. Цены актуальные (content/prices.md),
+# не из экспорта. «White Room» — так зал называют сейчас; в экспорте было
+# «White Box». Вместимость «Комбо+» — «до 50 человек» (совпадает по всему
+# сайту), в экспорте было «50–55».
+TARIFFS = [
+    dict(color='#ecbdc7', big='tild6139-6135-4965-b164-663136663630__6c636ea6-a060-4fcf-9.webp',
+         small='tild6364-3665-4162-a166-633932326531__9a1357ad-f456-47ed-8.webp', href='/whiteroom',
+         title='White Room',
+         desc='Самый глубокий белый бассейн с&nbsp;шариками и&nbsp;разными активностями&nbsp;— качели, канаты, обручи, скалодром',
+         note='НЕТ ДОСТУПА К&nbsp;ФОТОЗОНАМ',
+         price='Стоимость от&nbsp;5 000 ₽/час'),
+    dict(color='#dffffe', big='tild3866-3833-4662-a438-323839343863__ellipse_46.webp',
+         small='tild6136-3362-4834-b234-663035363664__ellipse_45.webp', href='/loftbox',
+         title='Loft Box',
+         desc='Отдельный банкетный зал + средний и&nbsp;маленький бассейны + все фотозоны музея',
+         note='НЕТ ДОСТУПА К&nbsp;БЕЛОМУ БАССЕЙНУ',
+         price='Стоимость от&nbsp;5 000 ₽/час'),
+    dict(color='#ffedb5', big='tild3632-3630-4962-b133-326461616532__ellipse_39.webp',
+         small='tild3764-6136-4033-a235-646232373930__ellipse_38.webp', href='/combo',
+         title='Комбо +',
+         desc='Для больших компаний свыше 25 человек, мы предлагаем к&nbsp;аренде АБСОЛЮТНО ВЕСЬ ЦЕНТР',
+         note='Вместимость до&nbsp;50 человек',
+         price='Стоимость от&nbsp;8 000 ₽/час'),
+]
+
+# Праздники «под ключ»: тот же карточный компонент, что и у аренды залов
+# (те же рамки, те же 3 цвета). Цены дня рождения актуальные из content/prices.md
+# — на главной показываем самый дешёвый пакет «Мини» (16 500 ₽, 15 гостей).
+# Выпускной и корпоратив не трогаем — заказчик просил оставить как есть.
+KEYS = [
+    dict(color='#ecbdc7', big='tild6262-3832-4039-a364-343835613338__ellipse_34-1.webp',
+         small='tild3138-3237-4938-b536-343663643239__ellipse_35-1.webp', href='/denrozhdeniya',
+         title='День рождения',
+         desc='Мы&nbsp;собрали всё необходимое для&nbsp;вашего дня рождения, вам останется только наполнить праздник угощениями для&nbsp;гостей',
+         note='Включено 15 гостей',
+         price='Стоимость от&nbsp;16 500 ₽'),
+    dict(color='#dffffe', big='tild3939-6462-4031-a365-626561303136__ellipse_34.webp',
+         small='tild3434-6363-4566-a530-396430336365__ellipse_37.webp', href='/vypusknye',
+         title='Выпускной',
+         desc='Идеальный пакет для выпускного, чтобы ваш праздник прошёл легко, без&nbsp;суеты и&nbsp;лишний траты времени на&nbsp;организацию',
+         note='Вместимость 50 человек',
+         price='Стоимость от&nbsp;1090 ₽/чел.'),
+    dict(color='#ffedb5', big='tild3932-6239-4463-b232-616230636431__ellipse_43.webp',
+         small='tild3831-6137-4662-a462-383763353036__ellipse_34.webp', href='/korporativ',
+         title='Корпоратив',
+         desc='Организуйте свой лучший корпоратив&nbsp;— с&nbsp;игрой в&nbsp;мафию или играми на&nbsp;сплочение, различными мастер-классами или любым другим наполнением по&nbsp;вашему желанию',
+         note=None,
+         price=None),
+]
+
 # Мелкий декор первого экрана: (файл, left %, top %, ширина px)
 HERO_DECOR = [
     ('tild3534-3832-4661-b631-393736383835__ff62ebf0-cb8e-41b8-8.svg', 13.0, 21.0, 11),
@@ -132,6 +182,31 @@ HERO_DECOR = [
     ('tild3965-3136-4931-b931-366132373463__1ec79619-150c-43cf-a.svg', 49.2, 70.1, 23),
     ('tild3735-3661-4434-b232-356665616664__62cd18bc-e6e5-46d3-a.svg', 89.9, 14.5, 12),
 ]
+
+
+def render_tariff_cards(cards):
+    """Карточка с двойной рамкой (teal+yellow) и парой круглых фото —
+    общий компонент для «Варианты аренды залов» и «Праздники под ключ».
+    note/price необязательны — у карточки «Корпоратив» их нет в оригинале."""
+    out = []
+    for n, t in enumerate(cards):
+        note = '<p class="tariff__note">%s</p>' % t['note'] if t['note'] else ''
+        price = '<p class="tariff__price">%s</p>' % t['price'] if t['price'] else ''
+        out.append(
+            '<article class="tariff" style="background:%s" data-anim="zoomin" data-anim-dur="1" data-anim-delay="%.1f">'
+            '<span class="tariff__frame tariff__frame--teal"><img src="%stild3031-6236-4236-a561-356461643236__e19497dc-0442-4f7b-b.svg" alt=""></span>'
+            '<span class="tariff__frame tariff__frame--yellow"><img src="%stild3934-3735-4063-b837-356461626263__04c0fbd0-c82b-48fb-a.svg" alt=""></span>'
+            '<span class="tariff__photo tariff__photo--big"><img src="%s%s" alt="" width="196" height="196"></span>'
+            '<span class="tariff__photo tariff__photo--small"><img src="%s%s" alt="" width="162" height="162"></span>'
+            '<h3 class="tariff__title">%s</h3>'
+            '<p class="tariff__desc">%s</p>'
+            '%s%s'
+            '<a class="tariff__more" href="%s">Подробнее'
+            '<img src="%stild6461-6262-4664-a333-343239356263__arrow_7.svg" alt="" width="20" height="11"></a>'
+            '</article>'
+            % (t['color'], n * 0.1, IMG, IMG, IMG, t['big'], IMG, t['small'], t['title'], t['desc'],
+               note, price, t['href'], IMG))
+    return ''.join(out)
 
 
 def build():
@@ -169,6 +244,9 @@ def build():
         'width="120" height="120"></span><p class="step__title">%s</p></div>'
         % (n * 0.15, STEP_ARROW if n else '', IMG, icon, title)
         for n, (icon, title) in enumerate(STEPS))
+
+    tariffs = render_tariff_cards(TARIFFS)
+    keys = render_tariff_cards(KEYS)
 
     html = f"""<!DOCTYPE html>
 <html lang="ru">
@@ -237,6 +315,30 @@ def build():
       <div class="steps">{steps}</div>
     </div>
   </section>
+
+  {band()}
+
+  <section class="section section--tariffs" id="zaly">
+    <div class="stage">
+      <div class="section__head">
+        <h2 class="section__title" data-anim="fadeinup" data-anim-dur="1">Варианты аренды залов</h2>
+        <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">Без организации мероприятия и&nbsp;шоу-программы</p>
+      </div>
+      <div class="tariffs">{tariffs}</div>
+    </div>
+  </section>
+
+  <section class="section section--tariffs section--keys" id="pod-kluch">
+    <div class="stage">
+      <div class="section__head">
+        <h2 class="section__title" data-anim="fadeinup" data-anim-dur="1">Праздники «под ключ»</h2>
+        <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">Аниматор/шоу-программа и&nbsp;фотограф включены в&nbsp;стоимость</p>
+      </div>
+      <div class="tariffs">{keys}</div>
+    </div>
+  </section>
+
+  {band(flip=True)}
 </main>
 
 <script>

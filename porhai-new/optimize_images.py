@@ -13,6 +13,7 @@ sys.stdout.reconfigure(encoding='utf-8')
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, 'assets', 'img')
+SRC = os.path.join(os.path.dirname(HERE), 'porhai-eds', 'images')
 
 # файл -> ширина отображения в вёрстке (умножаем на 2 под плотные экраны)
 DISPLAY_WIDTH = {
@@ -20,6 +21,18 @@ DISPLAY_WIDTH = {
     'tild6631-6530-4933-a263-616162353439__rectangle_10.png': 335,
     'tild3662-3462-4531-b130-666539343532__rectangle_13.png': 335,
     'tild3463-6130-4836-a539-636430646232__vector.png': 511,
+    'tild6139-6135-4965-b164-663136663630__6c636ea6-a060-4fcf-9.png': 196,
+    'tild6364-3665-4162-a166-633932326531__9a1357ad-f456-47ed-8.png': 162,
+    'tild3866-3833-4662-a438-323839343863__ellipse_46.png': 196,
+    'tild6136-3362-4834-b234-663035363664__ellipse_45.png': 162,
+    'tild3632-3630-4962-b133-326461616532__ellipse_39.png': 196,
+    'tild3764-6136-4033-a235-646232373930__ellipse_38.png': 162,
+    'tild6262-3832-4039-a364-343835613338__ellipse_34-1.png': 196,
+    'tild3138-3237-4938-b536-343663643239__ellipse_35-1.png': 162,
+    'tild3939-6462-4031-a365-626561303136__ellipse_34.png': 196,
+    'tild3434-6363-4566-a530-396430336365__ellipse_37.png': 162,
+    'tild3932-6239-4463-b232-616230636431__ellipse_43.png': 196,
+    'tild3831-6137-4662-a462-383763353036__ellipse_34.png': 162,
 }
 RETINA = 2
 QUALITY = 82
@@ -28,7 +41,22 @@ QUALITY = 82
 def collect():
     html = open(os.path.join(HERE, 'index.html'), encoding='utf-8').read()
     srcs = set(re.findall(r'src="([^"]+)"', html)) | set(re.findall(r'url\(([^)]+)\)', html))
-    return sorted({s for s in srcs if 'images/' in s})
+    return sorted({os.path.basename(s) for s in srcs if 'assets/img/' in s})
+
+
+def find_source(name):
+    """Готовые файлы в assets/img называются по исходнику, но .png/.jpg
+    из экспорта у svg сохраняют расширение, а у растра меняют на .webp —
+    ищем исходник в экспорте по имени без расширения."""
+    stem = os.path.splitext(name)[0]
+    if name.lower().endswith('.svg'):
+        p = os.path.join(SRC, name)
+        return p if os.path.exists(p) else None
+    for ext in ('.png', '.jpg', '.jpeg'):
+        p = os.path.join(SRC, stem + ext)
+        if os.path.exists(p):
+            return p
+    return None
 
 
 def main():
@@ -36,11 +64,10 @@ def main():
     total_before = total_after = 0
     rows = []
 
-    for rel in collect():
-        src = os.path.join(HERE, rel.replace('/', os.sep))
-        name = os.path.basename(src)
-        if not os.path.exists(src):
-            print('  пропуск (нет файла):', name)
+    for name in collect():
+        src = find_source(name)
+        if not src:
+            print('  пропуск (нет исходника в экспорте):', name)
             continue
 
         before = os.path.getsize(src)
@@ -51,7 +78,7 @@ def main():
             after = os.path.getsize(dst)
         else:
             im = Image.open(src)
-            target = DISPLAY_WIDTH.get(name)
+            target = DISPLAY_WIDTH.get(os.path.basename(src))
             if target:
                 target *= RETINA
                 if im.width > target:

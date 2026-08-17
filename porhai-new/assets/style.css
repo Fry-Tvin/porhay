@@ -391,6 +391,93 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 .step__arrow svg { display: block; width: 100%; }
 
+/* --- Варианты аренды залов ----------------------------------------------- */
+.section--tariffs { padding: 90px 0 57px; }
+.section--tariffs .section__lead { margin-top: 26px; }
+/* «Праздники под ключ» — тот же компонент, но карточки на 40px выше
+   (у «Корпоратива» нет строк note/price, только пустое место под ними,
+   как и в оригинале), поэтому свой нижний отступ. */
+.section--keys { padding-bottom: 97px; }
+
+.tariffs {
+  display: flex;
+  justify-content: center;
+  gap: 38px;
+  margin: 74px auto 0;
+}
+.tariff {
+  position: relative;
+  width: 360px;
+  min-height: 528px;
+  border-radius: 35px;
+}
+/* Та же рамочная пара, что и у карточек «Мы делаем ваш праздник ярче»,
+   но крупнее и с другим поворотом — снято отдельным замером с этого блока. */
+.tariff__frame {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+}
+.tariff__frame--teal   { top: -9px;  left: -13px; width: 105.6%; }
+.tariff__frame--yellow { top: -11px; left: -11px; width: 105.6%; }
+.tariff__frame img { display: block; width: 100%; height: auto; }
+.tariff__photo {
+  position: absolute;
+  z-index: 2;
+  display: block;
+  border-radius: 50%;
+  overflow: hidden;
+}
+.tariff__photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.tariff__photo--big   { top: 16px; left: 18px;  width: 196px; height: 196px; }
+.tariff__photo--small { top: 79px; left: 180px; width: 162px; height: 162px; }
+
+.tariff__title {
+  position: absolute;
+  top: 250px; left: 18px; right: 18px;
+  font-size: 24px;
+  line-height: 1.2;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.tariff__desc {
+  position: absolute;
+  top: 294px; left: 18px; right: 18px;
+  font-size: 18px;
+  line-height: 1.2;
+  font-weight: 400;
+  color: var(--ink);
+}
+.tariff__note {
+  position: absolute;
+  top: 393px; left: 18px; right: 18px;
+  font-size: 18px;
+  line-height: 1.2;
+  font-weight: 400;
+  color: var(--ink);
+}
+.tariff__price {
+  position: absolute;
+  top: 424px; left: 18px; right: 18px;
+  font-size: 18px;
+  line-height: 1.2;
+  font-weight: 400;
+  color: var(--ink);
+}
+.tariff__more {
+  position: absolute;
+  top: 469px; left: 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.tariff__more:hover { text-decoration: underline; }
+.tariff__more img { display: block; width: 20px; height: auto; }
+
 /* --- Анимации ----------------------------------------------------------- */
 /* Появление при прокрутке. Стили и длительности взяты из оригинала:
    fadeinright и fadeinup со сдвигом 100px, zoomin с масштабом 0,6. */
@@ -448,6 +535,25 @@ ul { margin: 0; padding: 0; list-style: none; }
     transform: rotate(90deg);
   }
   .section__lead { font-size: 16px; line-height: 21px; }
+
+  .section--tariffs { padding: 64px 0; }
+  .section--tariffs .section__lead { margin-top: 16px; }
+  .tariffs { flex-direction: column; align-items: center; gap: 40px; margin-top: 40px; }
+  .tariff {
+    width: 100%;
+    max-width: 335px;
+    min-height: 0;
+    padding: 210px 24px 32px;
+    box-sizing: border-box;
+  }
+  .tariff__photo--big  { top: 16px; left: 5%; width: 56%; height: auto; aspect-ratio: 1; }
+  .tariff__photo--small { top: 84px; left: 48%; width: 46%; height: auto; aspect-ratio: 1; }
+  .tariff__title, .tariff__desc, .tariff__note, .tariff__price, .tariff__more {
+    position: static;
+    top: auto; left: auto; right: auto;
+  }
+  .tariff__desc, .tariff__note, .tariff__price { margin-top: 12px; }
+  .tariff__more { margin-top: 20px; }
 }
 
 /* Кегли и отступы первого экрана на телефоне — из спеки, брейкпоинт 479. */
