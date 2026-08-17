@@ -127,14 +127,24 @@
     }
   });
 
-  // 5. Лента отзывов (если есть на странице): стрелки листают на ширину видимой области.
+  // 5. Лента отзывов (если есть на странице): стрелки листают ровно на одну
+  //    карточку (ширина картинки + gap), а не на произвольную долю ширины
+  //    контейнера — иначе с proximity-снапом шаг постепенно расходится
+  //    с сеткой картинок и через 5-7 кликов показывает половину одного
+  //    скриншота и половину следующего.
   var track = document.querySelector('.reviews__track');
   if (track) {
+    var reviewsStep = function () {
+      var img = track.querySelector('img');
+      if (!img) return track.clientWidth;
+      var gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+      return img.getBoundingClientRect().width + gap;
+    };
     document.querySelector('.reviews__arrow--prev').addEventListener('click', function () {
-      track.scrollBy({ left: -track.clientWidth * .8, behavior: 'smooth' });
+      track.scrollBy({ left: -reviewsStep(), behavior: 'smooth' });
     });
     document.querySelector('.reviews__arrow--next').addEventListener('click', function () {
-      track.scrollBy({ left: track.clientWidth * .8, behavior: 'smooth' });
+      track.scrollBy({ left: reviewsStep(), behavior: 'smooth' });
     });
   }
 

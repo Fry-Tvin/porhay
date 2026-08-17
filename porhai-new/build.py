@@ -120,7 +120,7 @@ MOBILE_MENU = [
 # «Cтильные» начинается с латинской C — опечатка исходника, переносим как есть.
 CARDS = [
     ('tild6631-6164-4662-a432-643636393437__f8b680e9-d185-4e5c-a.webp',
-     '3 сухих бассейна: Белый бассейн, «Попкорн» и&nbsp;«Арбуз»'),
+     '3 сухих бассейна: Белый бассейн, «Пляж» и&nbsp;«Арбуз»'),
     ('tild6631-6530-4933-a263-616162353439__rectangle_10.webp',
      'Cтильные фотозоны и&nbsp;Ростовые&nbsp;фигуры'),
     ('tild3662-3462-4531-b130-666539343532__rectangle_13.webp',
@@ -175,7 +175,7 @@ KEYS = [
          title='День рождения',
          desc='Мы&nbsp;собрали всё необходимое для&nbsp;вашего дня рождения, вам останется только наполнить праздник угощениями для&nbsp;гостей',
          note='Включено 15 гостей',
-         price='Стоимость от&nbsp;16 500 ₽'),
+         price='Стоимость от&nbsp;16 500 ₽/3&nbsp;часа'),
     dict(color='#dffffe', big='tild3939-6462-4031-a365-626561303136__ellipse_34.webp',
          small='tild3434-6363-4566-a530-396430336365__ellipse_37.webp', href='/vypusknye',
          title='Выпускной',
@@ -286,35 +286,46 @@ SLIDER_ARROW = ('<svg viewBox="0 0 15.3 29" xmlns="http://www.w3.org/2000/svg">'
 # Галерея «Незабываемые эмоции» (rec560775553). В экспорте у каждого файла
 # есть ещё маленький blur-плейсхолдер "-__empty__..." для прогрессивной
 # подгрузки у Тильды — не нужен, у нас своя лёгкая loading="lazy".
+# В оригинале это T979 — Тильдовская justified-галерея, JS раскладывает
+# фото по строкам с разной шириной плитки в зависимости от пропорций
+# исходника (замерено на 1265px). Тащить для этого библиотеку/скрипт не
+# стали (проект держит 0 JS для декора), но саму пестроту плиток сохранили:
+# 'wide' — альбомные кадры (~3:2, замерено 1.37–1.5), 'tall' — портретные
+# (~2:3, замерено 0.66–0.75), раскладка через CSS grid-auto-flow: dense.
+# Жёлтый бассейн «Попкорн» (iii_9551_3) убран из галереи — бассейна с таким
+# оформлением больше нет, фото на замену ждём от заказчика.
 GALLERY = [
-    'tild3561-3964-4662-b637-353038656332__photo_2021-06-30_10-.webp',
-    'tild3664-3830-4265-b364-383836643865__photo_2022-07-10_10-.webp',
-    'tild3734-3361-4664-a338-376264373263__iii_8850_2.webp',
-    'tild3964-6461-4031-b762-383135653235__iii_5366.webp',
-    'tild6130-6261-4038-a264-653831303262__iii_9551_3.webp',
-    'tild6139-6263-4964-b831-396334303632__photo_2022-10-29_08-.webp',
-    'tild6166-3964-4535-b531-646432353565__f70a9379-1.webp',
-    'tild6239-3831-4534-a234-633535336337__photo_2022-10-29_09-.webp',
-    'tild6261-3031-4238-b634-343638303230__photo_2021-07-20_18-.webp',
-    'tild6337-3862-4436-b139-346435333238__ce4a0538.webp',
-    'tild6437-6438-4135-b735-663031393762__photo_2022-11-09_17-.webp',
-    'tild6666-3564-4564-a663-313035323039__img_1763.webp',
+    ('tild6337-3862-4436-b139-346435333238__ce4a0538.webp', 'wide'),
+    ('tild6166-3964-4535-b531-646432353565__f70a9379-1.webp', 'tall'),
+    ('tild3964-6461-4031-b762-383135653235__iii_5366.webp', 'wide'),
+    ('tild3734-3361-4664-a338-376264373263__iii_8850_2.webp', 'wide'),
+    ('tild6666-3564-4564-a663-313035323039__img_1763.webp', 'tall'),
+    ('tild3561-3964-4662-b637-353038656332__photo_2021-06-30_10-.webp', 'wide'),
+    ('tild6261-3031-4238-b634-343638303230__photo_2021-07-20_18-.webp', 'tall'),
+    ('tild3664-3830-4265-b364-383836643865__photo_2022-07-10_10-.webp', 'wide'),
+    ('tild6139-6263-4964-b831-396334303632__photo_2022-10-29_08-.webp', 'tall'),
+    ('tild6239-3831-4534-a234-633535336337__photo_2022-10-29_09-.webp', 'tall'),
+    ('tild6437-6438-4135-b735-663031393762__photo_2022-11-09_17-.webp', 'tall'),
 ]
 
 # Партнёры (rec560778321 на главной + актуальный список из content/partners.md,
-# сверенный со страницей /partner в экспорте — page35281299.html). Логотипы
-# нашлись для 6 из 8 действующих партнёров; для ВладФуршет и Café Tree
-# в экспорте логотипа нет вообще (Café Tree — новый партнёр), плитка
-# текстовая до появления реального лого.
+# сверенный со страницей /partner в экспорте — page35281299.html).
+# У «Весёлого пингвина» изначально был подставлен frame_3 в виде .jpg —
+# без альфа-канала, поэтому лого показывалось на белом квадрате, а не
+# на прозрачном фоне, как у остальных 5 круглых лого. В экспорте нашлась
+# другая копия того же лого — уже .png с настоящей прозрачностью
+# (frame_3, но другой tild-хеш) — переключили на неё.
+# ВладФуршет и Café Tree без лого сюда (в сетку на главной) не идут —
+# по просьбе заказчика показываем только партнёров с настоящим лого,
+# текстовые плитки без картинки убраны. На странице /partner (полный
+# список) они пока остаются — та страница ждёт своего раунда сверки.
 PARTNERS = [
-    ('tild3031-3462-4834-b463-336166373761__frame_3.webp', None),
+    ('tild3265-6338-4862-a566-376637393462__frame_3.webp', None),
     ('tild6663-3862-4232-b431-613335663562__frame_5.webp', None),
     ('tild3261-6430-4637-b734-646434626161__frame_6.webp', None),
     ('tild6233-3936-4732-b163-393332323262__frame_7.webp', None),
     ('tild6366-3935-4136-b063-646232626366__frame_14.webp', None),
     ('tild3937-3166-4035-b338-346233316366__frame_12.webp', None),
-    (None, 'ВладФуршет'),
-    (None, 'Café Tree'),
 ]
 
 # FAQ (rec560783948) — дословно из оригинального аккордеона (data-tooltip
@@ -414,8 +425,8 @@ def render_tariff_cards(cards):
         price = '<p class="tariff__price">%s</p>' % t['price'] if t['price'] else ''
         out.append(
             '<article class="tariff" style="background:%s" data-anim="zoomin" data-anim-dur="1" data-anim-delay="%.1f">'
-            '<span class="tariff__frame tariff__frame--teal"><img src="%stild3031-6236-4236-a561-356461643236__e19497dc-0442-4f7b-b.svg" alt=""></span>'
-            '<span class="tariff__frame tariff__frame--yellow"><img src="%stild3934-3735-4063-b837-356461626263__04c0fbd0-c82b-48fb-a.svg" alt=""></span>'
+            '<span class="tariff__frame tariff__frame--teal" data-drift="-10,0"><img src="%stild3031-6236-4236-a561-356461643236__e19497dc-0442-4f7b-b.svg" alt=""></span>'
+            '<span class="tariff__frame tariff__frame--yellow" data-drift="10,0"><img src="%stild3934-3735-4063-b837-356461626263__04c0fbd0-c82b-48fb-a.svg" alt=""></span>'
             '<span class="tariff__photo tariff__photo--big"><img src="%s%s" alt="" width="196" height="196"></span>'
             '<span class="tariff__photo tariff__photo--small"><img src="%s%s" alt="" width="162" height="162"></span>'
             '<h3 class="tariff__title">%s</h3>'
@@ -757,14 +768,24 @@ PAGE_SCRIPT = """<script>
     }
   });
 
-  // 5. Лента отзывов (если есть на странице): стрелки листают на ширину видимой области.
+  // 5. Лента отзывов (если есть на странице): стрелки листают ровно на одну
+  //    карточку (ширина картинки + gap), а не на произвольную долю ширины
+  //    контейнера — иначе с proximity-снапом шаг постепенно расходится
+  //    с сеткой картинок и через 5-7 кликов показывает половину одного
+  //    скриншота и половину следующего.
   var track = document.querySelector('.reviews__track');
   if (track) {
+    var reviewsStep = function () {
+      var img = track.querySelector('img');
+      if (!img) return track.clientWidth;
+      var gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+      return img.getBoundingClientRect().width + gap;
+    };
     document.querySelector('.reviews__arrow--prev').addEventListener('click', function () {
-      track.scrollBy({ left: -track.clientWidth * .8, behavior: 'smooth' });
+      track.scrollBy({ left: -reviewsStep(), behavior: 'smooth' });
     });
     document.querySelector('.reviews__arrow--next').addEventListener('click', function () {
-      track.scrollBy({ left: track.clientWidth * .8, behavior: 'smooth' });
+      track.scrollBy({ left: reviewsStep(), behavior: 'smooth' });
     });
   }
 
@@ -826,9 +847,9 @@ def build():
 
     cards = ''.join(
         '<figure class="card" data-anim="zoomin" data-anim-dur="1.3" data-anim-delay="%.2f">' % (n * 0.15) +
-        '<span class="card__frame card__frame--teal">'
+        '<span class="card__frame card__frame--teal" data-drift="-10,0">'
         '<img src="%stild3665-3464-4535-b763-386533363061__svg4.svg" alt=""></span>'
-        '<span class="card__frame card__frame--yellow">'
+        '<span class="card__frame card__frame--yellow" data-drift="10,0">'
         '<img src="%stild6338-3565-4263-b539-323163613235__svg3.svg" alt=""></span>'
         '<span class="card__photo" style="background-image:url(%s%s)" role="img" '
         'aria-label="%s"></span>'
@@ -865,8 +886,9 @@ def build():
         for img in REVIEWS)
 
     gallery = ''.join(
-        '<img src="%s%s" alt="" loading="lazy" width="280">' % (IMG, img)
-        for img in GALLERY)
+        '<div class="gallery__item gallery__item--%s">'
+        '<img src="%s%s" alt="" loading="lazy"></div>' % (size, IMG, img)
+        for img, size in GALLERY)
 
     faq_ld = faq_jsonld()
 
@@ -1201,7 +1223,7 @@ RAZOVOE_GALLERY = [
 RAZOVOE_FEATURES = [
     ('tild3965-3138-4164-b031-643434613061___3.webp', 'Сеанс 55&nbsp;минут', None),
     ('tild6137-6231-4338-a238-616561373330___6_1.webp', 'Посещение 3&nbsp;бассейнов',
-     'Самый глубокий Белый бассейн, «Попкорн» и&nbsp;«Арбуз»'),
+     'Самый глубокий Белый бассейн, «Пляж» и&nbsp;«Арбуз»'),
     ('tild3234-3666-4132-a432-363833343336___5_1.webp', 'Все фотозоны', None),
     ('tild3862-3436-4430-a161-636139666238___7_1.webp', 'Все ростовые фигуры', None),
     ('tild6332-3366-4066-a332-333164626231___4_1.webp', 'Наша волшебная комната',
@@ -1497,7 +1519,7 @@ RENTAL_PAGES = {
         price_line='Стоимость от&nbsp;8 000&nbsp;₽/час',
         amenities=[
             ('tild6664-6339-4432-b631-623332393537__frame_16.svg', '3 сухих бассейна',
-             'Самый глубокий&nbsp;— Белый, средний&nbsp;— Попкорн, маленький&nbsp;— Арбуз'),
+             'Самый глубокий&nbsp;— Белый, средний&nbsp;— Пляж, маленький&nbsp;— Арбуз'),
             ('tild3265-6639-4363-a166-356565396536__frame_16.svg', 'ВСЕ фотозоны центра', None),
             ('tild3265-6639-4363-a166-356565396536__frame_16.svg', 'Телевизор', 'Музыкальная колонка'),
             ('tild3265-6639-4363-a166-356565396536__frame_16.svg', 'Кулер с&nbsp;горячей и&nbsp;холодной водой',
@@ -2389,7 +2411,7 @@ def build_korporativ():
 # только здесь ещё текст описания/скидки/ссылки — их в экспорте не было
 # у самой сетки на главной, только на этой отдельной странице.
 PARTNER_LOGO = {
-    'Пингвин': 'tild3031-3462-4834-b463-336166373761__frame_3.webp',
+    'Пингвин': 'tild3265-6338-4862-a566-376637393462__frame_3.webp',
     'Шипучка шоу': 'tild6663-3862-4232-b431-613335663562__frame_5.webp',
     'Kiss Kiss праздник': 'tild3261-6430-4637-b734-646434626161__frame_6.webp',
     'Anime': 'tild6233-3936-4732-b163-393332323262__frame_7.webp',

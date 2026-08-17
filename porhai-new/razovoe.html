@@ -36,7 +36,7 @@
   <section class="features">
     <div class="stage">
       <h2 class="features__title" data-anim="fadeinup" data-anim-dur="1">Что включено в&nbsp;наше разовое посещение?</h2>
-      <div class="features__grid"><div class="features__item"><img src="assets/img/tild3965-3138-4164-b031-643434613061___3.webp" alt="" width="140" height="140"><h3>Сеанс 55&nbsp;минут</h3></div><div class="features__item"><img src="assets/img/tild6137-6231-4338-a238-616561373330___6_1.webp" alt="" width="140" height="140"><h3>Посещение 3&nbsp;бассейнов</h3><p>Самый глубокий Белый бассейн, «Попкорн» и&nbsp;«Арбуз»</p></div><div class="features__item"><img src="assets/img/tild3234-3666-4132-a432-363833343336___5_1.webp" alt="" width="140" height="140"><h3>Все фотозоны</h3></div><div class="features__item"><img src="assets/img/tild3862-3436-4430-a161-636139666238___7_1.webp" alt="" width="140" height="140"><h3>Все ростовые фигуры</h3></div><div class="features__item"><img src="assets/img/tild6332-3366-4066-a332-333164626231___4_1.webp" alt="" width="140" height="140"><h3>Наша волшебная комната</h3><p>С фонариками</p></div><div class="features__item"><img src="assets/img/tild3938-6630-4662-b861-316565626462___8_1.webp" alt="" width="140" height="140"><h3>Вода и чай в&nbsp;свободном доступе</h3></div></div>
+      <div class="features__grid"><div class="features__item"><img src="assets/img/tild3965-3138-4164-b031-643434613061___3.webp" alt="" width="140" height="140"><h3>Сеанс 55&nbsp;минут</h3></div><div class="features__item"><img src="assets/img/tild6137-6231-4338-a238-616561373330___6_1.webp" alt="" width="140" height="140"><h3>Посещение 3&nbsp;бассейнов</h3><p>Самый глубокий Белый бассейн, «Пляж» и&nbsp;«Арбуз»</p></div><div class="features__item"><img src="assets/img/tild3234-3666-4132-a432-363833343336___5_1.webp" alt="" width="140" height="140"><h3>Все фотозоны</h3></div><div class="features__item"><img src="assets/img/tild3862-3436-4430-a161-636139666238___7_1.webp" alt="" width="140" height="140"><h3>Все ростовые фигуры</h3></div><div class="features__item"><img src="assets/img/tild6332-3366-4066-a332-333164626231___4_1.webp" alt="" width="140" height="140"><h3>Наша волшебная комната</h3><p>С фонариками</p></div><div class="features__item"><img src="assets/img/tild3938-6630-4662-b861-316565626462___8_1.webp" alt="" width="140" height="140"><h3>Вода и чай в&nbsp;свободном доступе</h3></div></div>
     </div>
   </section>
 
@@ -187,14 +187,24 @@
     }
   });
 
-  // 5. Лента отзывов (если есть на странице): стрелки листают на ширину видимой области.
+  // 5. Лента отзывов (если есть на странице): стрелки листают ровно на одну
+  //    карточку (ширина картинки + gap), а не на произвольную долю ширины
+  //    контейнера — иначе с proximity-снапом шаг постепенно расходится
+  //    с сеткой картинок и через 5-7 кликов показывает половину одного
+  //    скриншота и половину следующего.
   var track = document.querySelector('.reviews__track');
   if (track) {
+    var reviewsStep = function () {
+      var img = track.querySelector('img');
+      if (!img) return track.clientWidth;
+      var gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+      return img.getBoundingClientRect().width + gap;
+    };
     document.querySelector('.reviews__arrow--prev').addEventListener('click', function () {
-      track.scrollBy({ left: -track.clientWidth * .8, behavior: 'smooth' });
+      track.scrollBy({ left: -reviewsStep(), behavior: 'smooth' });
     });
     document.querySelector('.reviews__arrow--next').addEventListener('click', function () {
-      track.scrollBy({ left: track.clientWidth * .8, behavior: 'smooth' });
+      track.scrollBy({ left: reviewsStep(), behavior: 'smooth' });
     });
   }
 

@@ -576,7 +576,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   display: flex;
   gap: 24px;
   overflow-x: auto;
-  scroll-snap-type: x proximity;
+  scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
   padding-bottom: 4px;
 }
@@ -605,22 +605,27 @@ ul { margin: 0; padding: 0; list-style: none; }
 .reviews__arrow:hover svg polyline { stroke: var(--mint); }
 .reviews__arrow svg { display: block; width: 15px; height: 29px; }
 .reviews__arrow svg polyline { transition: stroke .15s ease; }
-.reviews__arrow--next svg { transform: scaleX(-1); }
+.reviews__arrow--prev svg { transform: scaleX(-1); }
 
 /* --- Галерея «Незабываемые эмоции» ----------------------------------------- */
 .gallery {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(6, 1fr);
+  grid-auto-flow: dense;
   gap: 20px;
   margin-top: 60px;
 }
+.gallery__item--wide { grid-column: span 3; }
+.gallery__item--tall { grid-column: span 2; }
 .gallery img {
   display: block;
   width: 100%;
-  aspect-ratio: 4 / 3;
+  height: 100%;
   object-fit: cover;
   border-radius: 20px;
 }
+.gallery__item--wide img { aspect-ratio: 3 / 2; }
+.gallery__item--tall img { aspect-ratio: 2 / 3; }
 
 /* --- Скидки от партнёров --------------------------------------------------- */
 .section--partners { padding: 140px 0 135px; }
@@ -1060,7 +1065,24 @@ ul { margin: 0; padding: 0; list-style: none; }
   .burger { display: block; margin-left: auto; }
 
   /* Шапка на мобильной прозрачная и лежит поверх первого экрана,
-     как в оригинале: логотип заходит на картинку. */
+     как в оригинале: логотип заходит на картинку. В отличие от десктопа,
+     на мобильной оригинал НЕ получает мятный фон после прокрутки —
+     шапка остаётся прозрачной на всю страницу (замерено на 1500/3000/6000px
+     скролла). Наш .is-stuck класс всё ещё переключается по scrollY, поэтому
+     фон и тень глушим здесь, а не убираем логику целиком. */
+  .header.is-stuck { background: transparent; box-shadow: none; }
+
+  /* Лента-разделитель на мобильной у оригинала НЕ пересчитывается в %
+     ширины экрана — холст остаётся физически таким же (в масштабе
+     desktop), просто обрезается по бокам viewport'ом (overflow-x: clip
+     на html уже стоит). Поэтому в видимой полосе остаётся не 16 шариков
+     вплотную друг к другу, а всего 6–7 — так и должно быть (замерено на
+     оригинале при 375px). Если оставить .band__inner на 100% ширины
+     контейнера, все 16 шариков и 15 чёрточек сжимаются в 375px и
+     наезжают друг на друга. Фикс — вернуть холсту фиксированную ширину
+     --stage и отцентровать, как на десктопе. */
+  .band__inner { left: 50%; right: auto; width: var(--stage); max-width: none; margin: 0; transform: translateX(-50%); }
+
   .hero { padding-top: 0; }
   .hero__stage { flex-direction: column; min-height: 0; }
   .hero__content { max-width: 100%; padding: 23px 0 0; text-align: center; }
@@ -1075,11 +1097,12 @@ ul { margin: 0; padding: 0; list-style: none; }
 
   .cards { grid-template-columns: 1fr; gap: 62px; max-width: 360px; }
   .section { padding: 64px 0; }
-  .section__title { font-size: 32px; }
+  .section__title { font-size: 32px; line-height: 1.15; }
   .section-title { font-size: 24px; }
 
   .steps { flex-direction: column; align-items: center; gap: 0; max-width: 260px; margin-top: 48px; }
   .step__arrow {
+    display: block;
     position: static;
     width: 40px;
     margin: 30px auto;
@@ -1095,9 +1118,13 @@ ul { margin: 0; padding: 0; list-style: none; }
     width: 100%;
     max-width: 335px;
     min-height: 0;
-    padding: 210px 24px 32px;
+    padding: 250px 24px 32px;
     box-sizing: border-box;
   }
+  /* Второе (маленькое) фото раньше заканчивалось на 238px (top:84 + высота
+     154), а текст начинался с padding-top:210px — фото перекрывало
+     заголовок. Отступ увеличен до 250px, чтобы фото гарантированно не
+     задевало текст. */
   .tariff__photo--big  { top: 16px; left: 5%; width: 56%; height: auto; aspect-ratio: 1; }
   .tariff__photo--small { top: 84px; left: 48%; width: 46%; height: auto; aspect-ratio: 1; }
   .tariff__title, .tariff__desc, .tariff__note, .tariff__price, .tariff__more {
@@ -1127,6 +1154,8 @@ ul { margin: 0; padding: 0; list-style: none; }
   .reviews__track img { width: 200px; }
 
   .gallery { grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 32px; }
+  .gallery__item--wide { grid-column: span 2; }
+  .gallery__item--tall { grid-column: span 1; }
 
   .section--partners { padding: 64px 0; }
   .section--partners .section__lead { margin-top: 16px; }
@@ -1168,8 +1197,9 @@ ul { margin: 0; padding: 0; list-style: none; }
   .hero__text { font-size: 15px; line-height: 20px; margin: 18px auto 0; }
   .hero__cta { margin-top: 23px; }
   .btn--yellow { min-width: 193px; height: 59px; font-size: 15px; }
-  .band__bubble { width: 76px; height: 76px; }
-  .card__caption { font-size: 17px; line-height: 21px; }
+  /* По просьбе заказчика (не по замеру оригинала) — крупнее и жирнее
+     ради читаемости на фото на мобильной. */
+  .card__caption { font-size: 19px; line-height: 23px; font-weight: 700; }
 }
 
 /* --- Разовое посещение (rec562299786 и другие, /razovoe) ----------------- */
