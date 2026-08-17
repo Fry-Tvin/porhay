@@ -1,0 +1,19 @@
+User-Agent: *
+Disallow: /page34752821.html
+Disallow: /page34753201.html
+Disallow: /page35430778.html
+Disallow: /not-found
+Disallow: /tilda/form*
+Disallow: /tilda/rec*
+Disallow: /tilda/click*
+Disallow: /tilda/scroll*
+Disallow: /tilda/popup*
+Disallow: /tilda/cart*
+Disallow: /tilda/product*
+Disallow: /tilda/event*
+Disallow: /*_escaped_fragment_*
+Disallow:
+
+
+Sitemap: https://porhay.com/sitemap.xml
+Host: https://porhay.com

@@ -1,0 +1,393 @@
+/* ==========================================================================
+   Развлекательный центр «Порхай» — стили
+   Дизайн-система снята с оригинального сайта на Тильде без изменений.
+   ========================================================================== */
+
+/* --- Шрифт -------------------------------------------------------------- */
+/* Evolventa, SIL OFL. Локальная копия — основная, CDN Тильды — запасной путь
+   до тех пор, пока файлы не положены в assets/fonts/. */
+@font-face {
+  font-family: 'Evolventa';
+  src: url('fonts/Evolventa-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Evolventa';
+  src: url('fonts/Evolventa-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- Токены ------------------------------------------------------------- */
+:root {
+  --mint:        #DFFFFE;
+  --mint-deep:   #B9FFFD;
+  --mint-grey:   #C3E1DD;
+  --ink:         #4A4A4A;
+  --teal:        #38A2A5;
+  --teal-2:      #3AA9AC;
+  --yellow:      #F5CF37;
+  --coral:       #F95D51;
+  --coral-2:     #FF8562;
+  --pink:        #ECBDC7;
+  --peach:       #FFD6D2;
+  --cream:       #FFEEB6;
+  --cream-2:     #FFECCB;
+  --green:       #62C584;
+  --plum:        #88134B;
+  --white:       #FFFFFF;
+
+  --stage:       1265px;   /* ширина макета оригинала */
+  --header-h:    80px;
+
+  --font: 'Evolventa', Arial, Helvetica, sans-serif;
+}
+
+/* --- База --------------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+/* Кляксы лент намеренно вылезают за края секций по вертикали, поэтому
+   режем только по горизонтали: overflow-x:clip не превращает вторую ось
+   в скроллируемую, в отличие от overflow-x:hidden. */
+html { -webkit-text-size-adjust: 100%; overflow-x: clip; }
+
+body {
+  margin: 0;
+  background: var(--white);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+img { max-width: 100%; border: 0; }
+a { color: inherit; text-decoration: none; }
+h1, h2, h3, p, figure { margin: 0; }
+ul { margin: 0; padding: 0; list-style: none; }
+
+:focus-visible { outline: 3px solid var(--teal); outline-offset: 3px; }
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px;
+  margin: -1px; padding: 0; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+.stage {
+  position: relative;
+  width: 100%;
+  max-width: var(--stage);
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* --- Кнопки ------------------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font);
+  font-weight: 400;
+  text-align: center;
+  cursor: pointer;
+  border: 0;
+  transition: transform .15s ease, box-shadow .15s ease, background-color .15s ease;
+}
+.btn:hover { transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+
+.btn--yellow {
+  min-width: 199px;
+  height: 59px;
+  padding: 0 34px;
+  font-size: 16px;
+  color: var(--ink);
+  background: var(--yellow);
+  border-radius: 50px;
+}
+.btn--yellow:hover { box-shadow: 0 6px 18px rgba(245, 207, 55, .45); }
+
+.btn--teal {
+  height: 40px;
+  padding: 0 30px;
+  font-size: 14px;
+  color: var(--white);
+  background: var(--teal);
+  border-radius: 20px;
+}
+.btn--teal:hover { box-shadow: 0 6px 16px rgba(56, 162, 165, .38); }
+
+/* --- Шапка -------------------------------------------------------------- */
+.header {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 900;
+  height: var(--header-h);
+  display: flex;
+  align-items: center;
+  transition: background-color .25s ease, box-shadow .25s ease;
+}
+.header.is-stuck {
+  background: var(--mint);
+  box-shadow: 0 2px 18px rgba(74, 74, 74, .08);
+}
+.header__inner {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  width: 100%;
+}
+.header__logo { flex: 0 0 auto; display: block; }
+.header__logo img { display: block; height: 46px; width: auto; }
+
+.nav { flex: 1 1 auto; }
+.nav__list {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  justify-content: center;
+}
+.nav__link {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--ink);
+  white-space: nowrap;
+  padding: 8px 0;
+  border-bottom: 1px solid transparent;
+  transition: border-color .18s ease, color .18s ease;
+}
+.nav__link:hover { color: var(--teal); border-bottom-color: var(--teal); }
+
+.header__cta { flex: 0 0 auto; }
+
+.burger {
+  display: none;
+  width: 44px; height: 44px;
+  padding: 0;
+  background: none; border: 0;
+  cursor: pointer;
+}
+.burger span {
+  display: block;
+  width: 24px; height: 2px;
+  margin: 5px auto;
+  background: var(--ink);
+  border-radius: 2px;
+  transition: transform .2s ease, opacity .2s ease;
+}
+
+/* --- Первый экран ------------------------------------------------------- */
+.hero {
+  position: relative;
+  background: var(--mint);
+  padding-top: var(--header-h);
+  overflow: hidden;
+}
+.hero__stage {
+  position: relative;
+  min-height: 590px;
+  display: flex;
+  align-items: flex-start;
+}
+/* Отступы подобраны так, чтобы блоки встали на те же координаты,
+   что и в оригинале: флаг 122px от верха, H1 — 202, текст — 348, кнопка — 462. */
+.hero__content {
+  position: relative;
+  z-index: 3;
+  max-width: 660px;
+  padding: 42px 0 149px;
+}
+.hero__flag {
+  display: block;
+  width: 154px; height: auto;
+  margin-bottom: -34px;
+  margin-left: -2px;
+}
+.hero__title {
+  position: relative;
+  font-size: 58px;
+  line-height: 1;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.005em;
+  max-width: 660px;
+}
+.hero__text {
+  margin-top: 30px;
+  max-width: 632px;
+  font-size: 20px;
+  line-height: 26px;
+  font-weight: 400;
+  color: var(--ink);
+}
+.hero__text b { font-weight: 700; }
+.hero__cta { margin-top: 36px; }
+
+/* иллюстрация справа */
+.hero__art {
+  position: absolute;
+  z-index: 1;
+  top: -21px;          /* 59px от верха первого экрана, за вычетом шапки */
+  left: 53.5%;
+  width: 511px;
+  height: 511px;
+  pointer-events: none;
+}
+.hero__art img {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  object-fit: contain;
+}
+.hero__art img:nth-child(3) {
+  width: 97%; height: 97%;
+  top: 1.2%; left: 3.1%;
+}
+
+/* мелкий декор первого экрана */
+.decor { position: absolute; z-index: 2; pointer-events: none; }
+.decor img { display: block; width: 100%; height: auto; }
+.decor--dot { border-radius: 50%; background: var(--coral-2); }
+
+/* --- Лента-разделитель -------------------------------------------------- */
+/* Белые круги наплывают на секцию сверху и делают «пузырчатый» стык. */
+.band {
+  position: relative;
+  height: 28px;
+  z-index: 4;
+}
+.band__inner {
+  position: absolute;
+  inset: 0;
+  max-width: var(--stage);
+  margin: 0 auto;
+}
+.band__bubble {
+  position: absolute;
+  width: 109px; height: 109px;
+  border-radius: 50%;
+  background: var(--white);
+}
+.band__bit { position: absolute; }
+.band__bit img { display: block; width: 100%; height: auto; }
+
+/* --- Секция с карточками ------------------------------------------------ */
+.section { position: relative; padding: 109px 0 84px; background: var(--white); }
+.section--mint { background: var(--mint); }
+
+.section__head { text-align: center; max-width: 856px; margin: 0 auto; }
+.section__title {
+  font-size: 48px;
+  line-height: 64px;
+  font-weight: 700;
+  color: var(--ink);
+  text-wrap: balance;
+}
+.section__lead {
+  margin-top: 23px;
+  font-size: 18px;
+  line-height: 22px;
+  font-weight: 400;
+  color: var(--ink);
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 67px;
+  margin: 59px auto 0;
+  max-width: 1118px;
+}
+
+/* Карточка: фото со скруглением 35px и две SVG-рамки со смещением,
+   как в оригинале — бирюзовая повёрнута на +2.4°, жёлтая на −0.9°. */
+.card { position: relative; }
+.card__frame {
+  position: absolute;
+  pointer-events: none;
+  z-index: 1;
+}
+.card__frame--teal   { top: -13px; left: -9px;  width: 105.8%; }
+.card__frame--yellow { top: -11px; left: -10px; width: 102.7%; }
+.card__frame img { display: block; width: 100%; height: auto; }
+
+.card__photo {
+  position: relative;
+  z-index: 2;
+  display: block;
+  width: 100%;
+  aspect-ratio: 328 / 417;
+  border-radius: 35px;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+}
+.card__plate {
+  position: absolute;
+  z-index: 3;
+  left: 4.3%;
+  bottom: 5.8%;
+  width: 92%;
+}
+.card__plate img { display: block; width: 100%; height: auto; }
+.card__caption {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  bottom: 8%;
+  width: 85%;
+  transform: translateX(-50%);
+  text-align: center;
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 400;
+  color: var(--ink);
+}
+
+/* --- Адаптив ------------------------------------------------------------ */
+@media (max-width: 1200px) {
+  .nav__list { gap: 16px; }
+  .nav__link { font-size: 13px; }
+  .hero__art { left: 56%; width: 420px; height: 420px; }
+}
+
+@media (max-width: 1000px) {
+  .nav, .header__cta { display: none; }
+  .burger { display: block; margin-left: auto; }
+  .header { background: var(--mint); }
+
+  .hero__art {
+    position: relative;
+    top: auto; left: auto;
+    transform: none;
+    width: min(420px, 78vw);
+    height: min(420px, 78vw);
+    margin: 0 auto;
+  }
+  .hero__stage { flex-direction: column; min-height: 0; }
+  .hero__content { max-width: 100%; padding: 32px 0 8px; text-align: center; }
+  .hero__flag { margin: 0 auto -26px; width: 128px; }
+  .hero__title { font-size: 38px; }
+  .hero__text { font-size: 17px; line-height: 23px; margin-left: auto; margin-right: auto; }
+  .decor { display: none; }
+
+  .cards { grid-template-columns: 1fr; gap: 62px; max-width: 360px; }
+  .section { padding: 64px 0; }
+  .section__title { font-size: 32px; }
+  .section__lead { font-size: 16px; line-height: 21px; }
+}
+
+@media (max-width: 560px) {
+  .stage { padding: 0 20px; }
+  .hero__title { font-size: 30px; }
+  .band__bubble { width: 76px; height: 76px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}

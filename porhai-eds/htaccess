@@ -1,0 +1,45 @@
+ErrorDocument 403 /page35430778.html
+ErrorDocument 404 /page35430778.html
+
+DirectoryIndex page34664661.html
+
+RewriteEngine On
+
+RewriteCond %{HTTP:X-Forwarded-Proto} =http
+RewriteRule ^(.*)$ https://porhay\.com/$1 [R=301,L]
+
+RewriteCond %{HTTP:X-Forwarded-Proto} =https
+RewriteCond %{HTTP_HOST} ^www\.porhay.com [NC]
+RewriteRule ^(.*)$ https://porhay\.com/$1 [R=301,L]
+
+RewriteCond %{REQUEST_FILENAME} /robots.txt
+RewriteCond "%{DOCUMENT_ROOT}/robots_%{HTTP_HOST}.txt" -f
+RewriteRule ^(.*)$ robots_%{HTTP_HOST}.txt [NC,L]
+RewriteRule ^razovoe$ page34753409.html [NC]
+RewriteRule ^razovoe/$ page34753409.html [NC]
+
+RewriteRule ^whiteroom$ page34763107.html [NC]
+RewriteRule ^whiteroom/$ page34763107.html [NC]
+
+RewriteRule ^loftbox$ page35094636.html [NC]
+RewriteRule ^loftbox/$ page35094636.html [NC]
+
+RewriteRule ^combo$ page35099024.html [NC]
+RewriteRule ^combo/$ page35099024.html [NC]
+
+RewriteRule ^vypusknye$ page34767822.html [NC]
+RewriteRule ^vypusknye/$ page34767822.html [NC]
+
+RewriteRule ^denrozhdeniya$ page35111842.html [NC]
+RewriteRule ^denrozhdeniya/$ page35111842.html [NC]
+
+RewriteRule ^korporativ$ page35225004.html [NC]
+RewriteRule ^korporativ/$ page35225004.html [NC]
+
+RewriteRule ^partner$ page35281299.html [NC]
+RewriteRule ^partner/$ page35281299.html [NC]
+
+RewriteRule ^not-found$ page35430778.html [NC]
+RewriteRule ^not-found/$ page35430778.html [NC]
+
+
