@@ -1408,6 +1408,75 @@ ul { margin: 0; padding: 0; list-style: none; }
   .teasers__grid { grid-template-columns: 1fr; gap: 32px; max-width: 340px; }
 }
 
+/* --- Пакеты "под ключ": День рождения / Выпускной / Корпоратив (rec567316477 и др.) */
+.split-hero { padding: 75px 0 90px; }
+.split-hero .stage { display: flex; align-items: center; gap: 60px; }
+.split-hero__photo { flex: 1 1 50%; height: 560px; border-radius: 24px; background-size: cover; background-position: center; }
+.split-hero__text { flex: 1 1 50%; text-align: center; }
+.split-hero__title { font-size: 42px; line-height: 1.23; font-weight: 700; color: var(--ink); text-transform: uppercase; }
+.split-hero__line { width: 100px; height: 3px; margin: 20px auto; background: var(--yellow); }
+.split-hero__descr { font-size: 20px; line-height: 1.55; font-weight: 400; color: var(--ink); }
+
+.checklist { padding: 0 0 60px; background: var(--white); }
+.checklist__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 260px);
+  column-gap: 40px;
+  row-gap: 70px;
+  justify-content: center;
+}
+.checklist__item { display: flex; align-items: center; gap: 12px; text-align: left; }
+.checklist__item img { width: 35px; height: 35px; flex-shrink: 0; }
+.checklist__item span { font-size: 18px; line-height: 1.35; font-weight: 700; color: var(--ink); }
+
+.plans { padding: 90px 0; background: var(--white); }
+.plans__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; max-width: 1160px; margin: 60px auto 0; }
+.plan {
+  display: flex;
+  flex-direction: column;
+  padding: 32px 24px;
+  border-radius: 24px;
+  background: var(--mint);
+  text-align: center;
+}
+.plan--highlight { background: var(--yellow); }
+.plan__title { font-size: 24px; font-weight: 700; color: var(--ink); }
+.plan__price { margin-top: 12px; font-size: 28px; font-weight: 700; color: var(--ink); }
+.plan__meta { margin-top: 4px; font-size: 14px; font-weight: 400; color: var(--ink); opacity: .7; }
+.plan__list { margin-top: 20px; text-align: left; flex-grow: 1; }
+.plan__list li { position: relative; padding-left: 20px; margin-top: 8px; font-size: 14px; line-height: 1.4; color: var(--ink); }
+.plan__list li::before { content: '✓'; position: absolute; left: 0; color: var(--teal); font-weight: 700; }
+.plan .btn { margin-top: 24px; align-self: center; }
+
+.table-scroll { max-width: 1000px; margin: 40px auto 0; overflow-x: auto; }
+.data-table { width: 100%; min-width: 640px; margin: 0 auto; border-collapse: collapse; }
+.data-table th, .data-table td { padding: 14px 16px; border: 1px solid var(--mint-grey); font-size: 15px; line-height: 1.4; color: var(--ink); text-align: center; }
+.data-table th { background: var(--mint); font-weight: 700; }
+.data-table td:first-child, .data-table td:nth-child(2) { text-align: left; }
+.data-table caption { margin-bottom: 16px; font-size: 24px; font-weight: 700; color: var(--ink); caption-side: top; }
+
+.programs { padding: 60px 0 90px; background: var(--mint); }
+.programs__table { background: var(--white); border-radius: 16px; overflow: hidden; }
+
+@media (max-width: 1000px) {
+  .split-hero { padding: 48px 0; }
+  .split-hero .stage { flex-direction: column; gap: 32px; }
+  .split-hero__photo { flex: none; width: 100%; height: 280px; }
+  .split-hero__title { font-size: 26px; }
+  .split-hero__descr { font-size: 16px; }
+
+  .checklist { padding: 0 0 40px; }
+  .checklist__grid { grid-template-columns: 1fr; row-gap: 24px; max-width: 320px; }
+
+  .plans { padding: 48px 0; }
+  .plans__grid { grid-template-columns: 1fr; gap: 24px; margin-top: 32px; }
+
+  .data-table { font-size: 13px; }
+  .data-table th, .data-table td { padding: 8px; }
+
+  .programs { padding: 40px 0 56px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
   [data-anim] { opacity: 1; transform: none; }

@@ -1697,6 +1697,290 @@ def render_rental_page(slug):
     print(f'{slug}.html собран:', len(html), 'байт')
 
 
+# --- День рождения (/denrozhdeniya, page35111842) -------------------------
+# Заказчик пересобирает страницу: вместо одного пакета за 22 000 ₽ — четыре
+# тарифа (Мини/Под ключ/Вип/Супер Вип), см. content/prices.md. Поэтому блок
+# «Что включено» (rec567316480, описывал один пакет на 20 гостей) и старая
+# таблица цен (rec567316491, «от 22 000 руб.») из переноса исключены —
+# их заменяет секция .plans + сравнительная таблица + допы + программы
+# для Супер Вип, на том же месте по порядку страницы. Остальные блоки
+# (обложка, слайдер, «Почему стоит провести праздник», партнёры, отзывы,
+# FAQ, контакты) перенесены как в оригинале.
+
+DR_COVER = 'tild3835-3132-4262-a361-313163356435__1.webp'
+DR_BG = '#f5d4ec'
+
+DR_GALLERY = [
+    'tild3064-3635-4935-b165-373831306530__iii_7472_2.webp',
+    'tild6331-3438-4163-a535-656238353162__photo_2022-03-17_18-.webp',
+    'tild3432-3362-4331-b834-313036663738__iii_7856.webp',
+    'tild6161-3435-4762-b532-326561313138__iii_3725_1.webp',
+    'tild3666-3531-4630-a230-386539313933__photo_2023-03-09_15-.webp',
+    'tild3235-3130-4761-b631-396335373639__iii_4774.webp',
+    'tild6235-3737-4539-a238-653733346564__iii_1669_2.webp',
+    'tild6534-6335-4133-b766-623231663139__ce4a0538.webp',
+    'tild6364-3561-4263-b534-366638623464__ce4a0718.webp',
+    'tild6362-3161-4138-b138-626164663464__iii_4586.webp',
+    'tild3239-6362-4435-b434-663233313534__iii_3202_1.webp',
+    'tild3537-6339-4537-a565-366139313332__iii_3447_1.webp',
+    'tild3066-6232-4239-b537-303466306634__iii_3204_1.webp',
+    'tild3734-3835-4437-b865-393038386639__iii_3488_1.webp',
+    'tild6532-6665-4533-a137-383934346536__iii_7613.webp',
+    'tild6164-3132-4435-a437-623534336333__iii_5366.webp',
+    'tild6432-6639-4765-a539-353231386534__photo_2022-07-10_10-.webp',
+    'tild3634-3031-4463-b630-663038383466__photo_2021-06-26_17-.webp',
+    'tild3237-3263-4937-b939-303465393830__photo_2022-10-28_10-.webp',
+    'tild3133-6535-4663-b635-616266666561__photo_2022-11-10_12-.webp',
+]
+
+# «Почему стоит провести праздник в Порхай» (rec567316489) — те же 6 иконок,
+# что и «Что включено в наше разовое посещение» на /razovoe, уже оптимизированы.
+DR_WHY = [
+    ('tild3965-3138-4164-b031-643434613061___3.webp', 'Стильные локации = красивый праздник'),
+    ('tild6137-6231-4338-a238-616561373330___6_1.webp', 'Поможем с&nbsp;выбором тематики и&nbsp;оформлением зала'),
+    ('tild3234-3666-4132-a432-363833343336___5_1.webp', 'Подготовим программу мероприятия под любой повод'),
+    ('tild3862-3436-4430-a161-636139666238___7_1.webp', 'Большой список партнёров'),
+    ('tild6332-3366-4066-a332-333164626231___4_1.webp', 'Закажем и&nbsp;рассчитаем еду и&nbsp;угощения на&nbsp;всех гостей'),
+    ('tild3938-6630-4662-b861-316565626462___8_1.webp', 'Подготовим зал к&nbsp;проведению праздника: накроем стол, зажжём свечи и&nbsp;уберём всё после'),
+]
+
+# Тарифы (content/prices.md, подтверждено заказчиком 17.08.2026).
+DR_PLANS = [
+    dict(title='Мини', price='от 16 500 ₽', meta='15 гостей · 3 часа',
+         features=['Аренда зала 3 часа', 'Аниматор 1 час', 'Сервировка стола',
+                    'Скатерти, свечи', 'Электронные пригласительные',
+                    'Надпись из шаров «С днём рождения»']),
+    dict(title='Под ключ', price='от 24 500 ₽', meta='20 гостей · 3 часа',
+         features=['Всё из «Мини»', 'Серебряное шоу', 'Блеск-тату']),
+    dict(title='Вип', price='от 41 000 ₽', meta='20 гостей · 3 часа',
+         features=['Всё из «Под ключ»', 'Торт с дизайном на выбор, 2 кг',
+                    'Фонтан из 6 шаров и цифра', 'Фотограф 1 час',
+                    'Пиньята с наполнением']),
+    dict(title='Супер Вип', price='от 81 500 ₽', meta='50 гостей · 4 часа, вся площадка',
+         features=['Аниматор 1,5 часа + шоу', 'Фотограф 1,5 часа',
+                    'Персональный администратор',
+                    'Сервировка стола до 50 гостей', '14 программ на выбор']),
+]
+
+DR_COMPARE_ROWS = [
+    ('Аренда', '3 часа', '3 часа', '3 часа', '4 часа, вся площадка'),
+    ('Аниматор', '1 час', '1 час', '1 час', '1,5 часа + шоу'),
+    ('Сервировка стола', 'да', 'да', 'да', 'да, до 50 гостей'),
+    ('Скатерти, свечи', 'да', 'да', 'да', 'да'),
+    ('Электронные пригласительные', 'да', 'да', 'да', 'да'),
+    ('Серебряное шоу', '—', 'да', 'да', 'да'),
+    ('Блеск-тату', '—', 'да', 'да', 'да'),
+    ('Торт с дизайном на выбор, 2 кг', '—', '—', 'да', 'да'),
+    ('Фонтан из 6 шаров и цифра', '—', '—', 'да', 'да'),
+    ('Фотограф', '—', '—', '1 час', '1,5 часа'),
+    ('Пиньята с наполнением', '—', '—', 'да', 'да'),
+    ('Помощь администратора', 'да', 'да', 'да', 'да + персональный'),
+    ('Надпись из шаров «С днём рождения»', 'да', 'да', '—', '—'),
+]
+
+DR_ADDONS = [
+    ('Торт 2 кг с оформлением', '5 800 ₽'),
+    ('Аниматор, 1 час', '5 500 ₽'),
+    ('Серебряное шоу — старые ленты', '6 000 ₽'),
+    ('Серебряное шоу — новые ленты', '9 000 ₽'),
+    ('Ленточное шоу — старые ленты', '6 000 ₽'),
+    ('Ленточное шоу — новые ленты', '9 000 ₽'),
+    ('Фотограф, 1 час', '4 500 ₽'),
+    ('Пиньята с наполнением', '3 500 ₽'),
+    ('Блеск-тату', '3 500 ₽'),
+    ('Праздничная посуда и скатерть на 20 персон', '1 000 ₽'),
+]
+
+DR_PROGRAMS = [
+    ('«Волшебный театр»', 'Тематический спектакль и шоу мыльных пузырей', '90 мин', '2–5 лет'),
+    ('«Собачий переполох»', 'Шоу цирковых пуделей и развлекательная программа', '90 мин', '2–7 лет'),
+    ('«Королевский праздник»', 'Два сказочных героя и праздничная коронация', '90 мин', '2–8 лет'),
+    ('«Шоу волшебных пузырей»', 'Сказочный герой с шоу мыльных пузырей и праздничной коронацией', '90 мин', '2–7 лет'),
+    ('«Встреча со сказкой»', 'Сказочный герой с ростовой куклой и праздничный аквагрим', '90 мин', '2–8 лет'),
+    ('«Праздник за столом»', 'Настольные игры с ведущим', '120 мин', '8–18 лет'),
+    ('«Танцевальная вечеринка»', 'Современный ведущий и диджей', '90 мин', '6–12 лет'),
+    ('«Битва подушек»', 'Ведущий или сказочный герой и шоу подушек', '90 мин', '5–10 лет'),
+    ('«Лаборатория холода»', 'Изготовление мороженого, сахарной ваты и развлекательная программа со сказочным героем', '120 мин', '6–10 лет'),
+    ('«Безумная наука»', 'Эксперименты с сухим льдом, жидким азотом и развлекательная программа со сказочным героем', '120 мин', '6–10 лет'),
+    ('«Поролоновый взрыв»', 'Два сказочных героя или ведущих и поролоновое шоу', '90 мин', '4–8 лет'),
+    ('«Живые челленджи»', 'Ведущий и челлендж-шоу', '90 мин', '7–12 лет'),
+    ('«Тайны и фокусы»', 'Фокусник и сказочный герой с развлекательной программой', '90 мин', '4–8 лет'),
+    ('«Миссия выполнима»', 'Сказочный герой и тематический квест', '90 мин', '7–10 лет'),
+]
+
+
+def build_denrozhdeniya():
+    gallery = render_slider(DR_GALLERY, 'День рождения «под ключ» в «Порхай»')
+
+    why = ''.join(
+        '<div class="features__item"><img src="%s%s" alt="" width="140" height="140">'
+        '<h3>%s</h3></div>' % (IMG, img, title) for img, title in DR_WHY)
+
+    plans = ''.join(
+        '<div class="plan%s"><h3 class="plan__title">%s</h3>'
+        '<p class="plan__price">%s</p><p class="plan__meta">%s</p>'
+        '<ul class="plan__list">%s</ul>'
+        '<a class="btn btn--yellow" href="#popup:denrozhdeniya">Записаться</a></div>'
+        % (' plan--highlight' if pl['title'] == 'Супер Вип' else '', pl['title'], pl['price'], pl['meta'],
+           ''.join('<li>%s</li>' % f for f in pl['features']))
+        for pl in DR_PLANS)
+
+    compare_rows = ''.join(
+        '<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>' % row
+        for row in DR_COMPARE_ROWS)
+
+    addon_rows = ''.join(
+        '<tr><td>%s</td><td>%s</td></tr>' % row for row in DR_ADDONS)
+
+    program_rows = ''.join(
+        '<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>' % row
+        for row in DR_PROGRAMS)
+
+    partners = ''.join(
+        '<div class="partners__item">%s</div>' % (
+            '<img src="%s%s" alt="" loading="lazy" width="160">' % (IMG, img) if img
+            else '<span class="partners__name">%s</span>' % name)
+        for img, name in PARTNERS)
+
+    reviews = ''.join(
+        '<img src="%s%s" alt="" loading="lazy" width="260">' % (IMG, img)
+        for img in REVIEWS)
+
+    popups = render_form_popup('header') + render_form_popup('denrozhdeniya')
+    faq_ld = faq_jsonld()
+
+    html = f"""<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>День рождения «ПОД КЛЮЧ» в развлекательном центре «Порхай»</title>
+<meta name="description" content="Мы собрали всё необходимое для вашего дня рождения, вам останется только наполнить праздник угощениями для гостей.">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<script>document.documentElement.className+=' js'</script>
+
+{render_top_chrome()}
+
+<main>
+  <section class="split-hero" style="background:{DR_BG}">
+    <div class="stage">
+      <div class="split-hero__photo" style="background-image:url({IMG}{DR_COVER})"></div>
+      <div class="split-hero__text">
+        <h1 class="split-hero__title">День рождения в&nbsp;«Порхай!»</h1>
+        <span class="split-hero__line"></span>
+        <p class="split-hero__descr">Мы собрали всё необходимое для вашего дня рождения, вам останется только наполнить праздник угощениями для гостей</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="stage">
+      <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Пакеты «День рождения»</h2>
+      <div class="plans__grid">{plans}</div>
+
+      <table class="data-table">
+        <caption>Что входит</caption>
+        <thead><tr><th></th><th>Мини</th><th>Под ключ</th><th>Вип</th><th>Супер Вип</th></tr></thead>
+        <tbody>{compare_rows}</tbody>
+      </table>
+
+      <table class="data-table">
+        <caption>Дополнения</caption>
+        <thead><tr><th>Услуга</th><th>Цена</th></tr></thead>
+        <tbody>{addon_rows}</tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="programs">
+    <div class="stage">
+      <h2 class="section-title">Программы для пакета «Супер Вип»</h2>
+      <div class="table-scroll programs__table">
+        <table class="data-table" style="margin-top:0">
+          <thead><tr><th>Программа</th><th>Что входит</th><th>Длительность</th><th>Возраст</th></tr></thead>
+          <tbody>{program_rows}</tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <p class="price-line">Стоимость от&nbsp;16 500&nbsp;₽</p>
+
+  <div class="cta-band"><a class="btn btn--yellow" href="#popup:denrozhdeniya" data-anim="zoomin" data-anim-dur="1">Записаться</a></div>
+
+  {band(flip=True)}
+
+  <section class="section" style="background:{DR_BG}">
+    <div class="stage">
+      <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Яркие эмоции и&nbsp;крутые фото&nbsp;— гарантированы!</h2>
+      {gallery}
+    </div>
+  </section>
+
+  <div class="cta-band" style="background:{DR_BG}"><a class="btn btn--yellow" href="#popup:denrozhdeniya">Записаться</a></div>
+
+  {band()}
+
+  <section class="features">
+    <div class="stage">
+      <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Почему стоит провести праздник в&nbsp;«Порхай»?</h2>
+      <div class="features__grid">{why}</div>
+    </div>
+  </section>
+
+  <section class="section section--partners">
+    <div class="stage">
+      <div class="section__head">
+        <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Скидки от наших партнёров</h2>
+        <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">При заказе аренды зала</p>
+      </div>
+      <div class="partners">{partners}</div>
+    </div>
+  </section>
+
+  {band(flip=True)}
+
+  <section class="section" style="background:{DR_BG}" id="otziv">
+    <div class="stage">
+      <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Отзывы ❤️</h2>
+      <div class="reviews">
+        <button class="reviews__arrow reviews__arrow--prev" type="button" aria-label="Предыдущий отзыв">{SLIDER_ARROW}</button>
+        <div class="reviews__track">{reviews}</div>
+        <button class="reviews__arrow reviews__arrow--next" type="button" aria-label="Следующий отзыв">{SLIDER_ARROW}</button>
+      </div>
+    </div>
+  </section>
+
+  {band()}
+
+  {render_faq_section()}
+
+  {band(flip=True)}
+
+  {render_contact_section()}
+</main>
+
+{render_footer()}
+
+{render_float_button()}
+
+<script type="application/ld+json">{faq_ld}</script>
+<script type="application/ld+json">{BUSINESS_LD}</script>
+
+{popups}
+
+{PAGE_SCRIPT}
+</body>
+</html>
+"""
+    path = os.path.join(HERE, 'denrozhdeniya.html')
+    with open(path, 'w', encoding='utf-8') as f:
+        f.write(html)
+    print('denrozhdeniya.html собран:', len(html), 'байт')
+
+
 if __name__ == '__main__':
     build()
     build_privacy()
@@ -1704,3 +1988,4 @@ if __name__ == '__main__':
     render_rental_page('whiteroom')
     render_rental_page('loftbox')
     render_rental_page('combo')
+    build_denrozhdeniya()
