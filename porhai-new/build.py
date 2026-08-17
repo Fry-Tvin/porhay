@@ -283,6 +283,22 @@ GALLERY = [
     'tild6666-3564-4564-a663-313035323039__img_1763.webp',
 ]
 
+# Партнёры (rec560778321 на главной + актуальный список из content/partners.md,
+# сверенный со страницей /partner в экспорте — page35281299.html). Логотипы
+# нашлись для 6 из 8 действующих партнёров; для ВладФуршет и Café Tree
+# в экспорте логотипа нет вообще (Café Tree — новый партнёр), плитка
+# текстовая до появления реального лого.
+PARTNERS = [
+    ('tild3031-3462-4834-b463-336166373761__frame_3.webp', None),
+    ('tild6663-3862-4232-b431-613335663562__frame_5.webp', None),
+    ('tild3261-6430-4637-b734-646434626161__frame_6.webp', None),
+    ('tild6233-3936-4732-b163-393332323262__frame_7.webp', None),
+    ('tild6366-3935-4136-b063-646232626366__frame_14.webp', None),
+    ('tild3937-3166-4035-b338-346233316366__frame_12.webp', None),
+    (None, 'ВладФуршет'),
+    (None, 'Café Tree'),
+]
+
 # Мелкий декор первого экрана: (файл, left %, top %, ширина px)
 HERO_DECOR = [
     ('tild3534-3832-4661-b631-393736383835__ff62ebf0-cb8e-41b8-8.svg', 13.0, 21.0, 11),
@@ -410,6 +426,12 @@ def build():
         '<img src="%s%s" alt="" loading="lazy" width="280">' % (IMG, img)
         for img in GALLERY)
 
+    partners = ''.join(
+        '<div class="partners__item">%s</div>' % (
+            '<img src="%s%s" alt="" loading="lazy" width="160">' % (IMG, img) if img
+            else '<span class="partners__name">%s</span>' % name)
+        for img, name in PARTNERS)
+
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -526,6 +548,18 @@ def build():
     <div class="stage">
       <h2 class="section__title" data-anim="fadeinup" data-anim-dur="1">Незабываемые эмоции</h2>
       <div class="gallery">{gallery}</div>
+    </div>
+  </section>
+
+  {band(flip=True)}
+
+  <section class="section section--partners section--mint" id="partners">
+    <div class="stage">
+      <div class="section__head">
+        <h2 class="section__title" data-anim="fadeinup" data-anim-dur="1">Скидки от наших партнёров</h2>
+        <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">При заказе аренды зала</p>
+      </div>
+      <div class="partners">{partners}</div>
     </div>
   </section>
 </main>

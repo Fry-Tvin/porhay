@@ -610,6 +610,34 @@ ul { margin: 0; padding: 0; list-style: none; }
   border-radius: 20px;
 }
 
+/* --- Скидки от партнёров --------------------------------------------------- */
+.section--partners { padding: 140px 0 135px; }
+.section--partners .section__lead { margin-top: 26px; }
+
+.partners {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin-top: 60px;
+  border-top: 1px solid #dbdbdb;
+  border-left: 1px solid #dbdbdb;
+}
+.partners__item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 160px;
+  padding: 20px;
+  border-right: 1px solid #dbdbdb;
+  border-bottom: 1px solid #dbdbdb;
+}
+.partners__item img { display: block; max-width: 160px; width: 100%; height: auto; }
+.partners__name {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink);
+  text-align: center;
+}
+
 /* --- Поп-апы программ ----------------------------------------------------- */
 /* Своя оболочка модалки — в оригинале это стандартный поп-ап Тильды без
    привязки к дизайн-системе, поэтому оформлена в общем стиле сайта
@@ -764,6 +792,11 @@ ul { margin: 0; padding: 0; list-style: none; }
   .reviews__track img { width: 200px; }
 
   .gallery { grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 32px; }
+
+  .section--partners { padding: 64px 0; }
+  .section--partners .section__lead { margin-top: 16px; }
+  .partners { grid-template-columns: repeat(2, 1fr); margin-top: 32px; }
+  .partners__item { min-height: 120px; padding: 12px; }
 }
 
 /* Кегли и отступы первого экрана на телефоне — из спеки, брейкпоинт 479. */
