@@ -42,32 +42,46 @@ BUBBLES = [
     (94.23, -60),
 ]
 
-# Мелкие цветные кляксы: (x %, y px, ширина px, ключ файла, поворот °)
+# Мелкие цветные чёрточки на шариках:
+# (x %, y px, ширина px, ключ файла, начальный поворот °, дрейф по X px, доворот °)
+# Дрейф и доворот — из раскадровки оригинала: за ~200px прокрутки чёрточка
+# уезжает вправо на mx и проворачивается на ro, затем возвращается.
 CONFETTI = [
-    (7.08, -42, 16, 'd4abbe9e', -19), (10.58, -9, 16, '24e3675d', 0),
-    (16.50, -39, 16, 'ceeef3f3', 0), (24.00, -20, 16, 'ba8b36e1', 0),
-    (33.83, 1, 16, '13fdaa4f', 0), (36.91, -32, 16, 'a5847e0b', 0),
-    (44.41, -7, 16, 'c5a30fb3', -13), (54.49, -33, 16, 'fe3676d5', -28),
-    (59.66, 5, 16, '4bfa8c73', -10), (68.91, -36, 16, 'ce4b55ff', -13),
-    (73.40, -15, 16, '8c2a0952', 0), (78.82, -17, 16, '9cae1dcb', -12),
-    (86.49, -39, 16, 'd4abbe9e', -32), (90.49, -7, 16, '24e3675d', 0),
-    (95.90, -37, 16, 'ceeef3f3', -20),
+    (7.08, -42, 16, 'd4abbe9e', -19, 21, 35), (10.58, -9, 16, '24e3675d', 0, 24, 25),
+    (16.50, -39, 16, 'ceeef3f3', 0, 45, 85), (24.00, -20, 16, 'ba8b36e1', 0, 25, 100),
+    (33.83, 1, 16, '13fdaa4f', 0, 24, -15), (36.91, -32, 16, 'a5847e0b', 0, 21, 35),
+    (44.41, -7, 16, 'c5a30fb3', -13, 45, 85), (54.49, -33, 16, 'fe3676d5', -28, 25, 40),
+    (59.66, 5, 16, '4bfa8c73', -10, 24, 25), (68.91, -36, 16, 'ce4b55ff', -13, 21, 35),
+    (73.40, -15, 16, '8c2a0952', 0, 45, 85), (78.82, -17, 16, '9cae1dcb', -12, 24, 25),
+    (86.49, -39, 16, 'd4abbe9e', -32, 25, 100), (90.49, -7, 16, '24e3675d', 0, 21, 35),
+    (95.90, -37, 16, 'ceeef3f3', -20, 45, 60),
 ]
+
+# Шарики тоже дрейфуют — слабее, чем чёрточки.
+BUBBLE_DRIFT = (24, 25)
 
 
 def band(flip=False):
-    """Лента-разделитель. flip=True — кляксы свисают вниз (вариант Б)."""
+    """Лента-разделитель: шарики и чёрточки на них.
+
+    flip=True — чёрточки свисают вниз (вариант Б).
+    data-drift="mx,ro" — дрейф по прокрутке, читается скриптом внизу страницы.
+    """
     out = ['<div class="band" aria-hidden="true"><div class="band__inner">']
-    for x, y in BUBBLES:
-        out.append('<span class="band__bubble" style="left:%s%%;top:%dpx"></span>' % (x, y))
-    for x, y, w, key, rot in CONFETTI:
+    bmx, bro = BUBBLE_DRIFT
+    for i, (x, y) in enumerate(BUBBLES):
+        out.append('<span class="band__bubble" style="left:%s%%;top:%dpx" '
+                   'data-drift="%d,%d"></span>'
+                   % (x, y, bmx if i % 2 else -bmx, bro if i % 2 else -bro))
+    for x, y, w, key, rot, mx, ro in CONFETTI:
         yy = -y + 6 if flip else y
         rr = rot + 180 if flip else rot
-        style = 'left:%s%%;top:%dpx;width:%dpx' % (x, yy, w)
-        if rr:
-            style += ';transform:rotate(%ddeg)' % rr
-        out.append('<span class="band__bit" style="%s"><img src="%s%s" alt=""></span>'
-                   % (style, IMG, BIT[key]))
+        # Статичный поворот — на картинке, дрейф — на обёртке,
+        # чтобы скрипт не затирал поворот и наоборот.
+        out.append('<span class="band__bit" style="left:%s%%;top:%dpx;width:%dpx" '
+                   'data-drift="%d,%d"><img src="%s%s" alt="" '
+                   'style="transform:rotate(%ddeg)"></span>'
+                   % (x, yy, w, mx, ro, IMG, BIT[key], rr))
     out.append('</div></div>')
     return ''.join(out)
 
@@ -83,13 +97,15 @@ NAV = [
     ('Контакты', '#kontakt'),
 ]
 
+# Неразрывные пробелы — как в оригинале: они держат переносы строк.
+# «Cтильные» начинается с латинской C — опечатка исходника, переносим как есть.
 CARDS = [
     ('tild6631-6164-4662-a432-643636393437__f8b680e9-d185-4e5c-a.webp',
-     '3 сухих бассейна: Белый бассейн, «Попкорн» и «Арбуз»'),
+     '3 сухих бассейна: Белый бассейн, «Попкорн» и&nbsp;«Арбуз»'),
     ('tild6631-6530-4933-a263-616162353439__rectangle_10.webp',
-     'Cтильные фотозоны и Ростовые фигуры'),
+     'Cтильные фотозоны и&nbsp;Ростовые&nbsp;фигуры'),
     ('tild3662-3462-4531-b130-666539343532__rectangle_13.webp',
-     'Наша волшебная комната с фонариками'),
+     'Наша волшебная комната с&nbsp;фонариками'),
 ]
 
 # Мелкий декор первого экрана: (файл, left %, top %, ширина px)
@@ -108,17 +124,20 @@ HERO_DECOR = [
 def build():
     nav = ''.join('<li><a class="nav__link" href="%s">%s</a></li>' % (h, t) for t, h in NAV)
 
+    # Мелкий декор первого экрана мерцает по кругу: прозрачность 1 -> 0,15 -> 1
+    # с поворотом на 25°. Длительности в оригинале у всех разные.
+    twinkle = [2000, 2000, 1500, 1100, 2000, 3200, 2600, 2600]
     decor = ''.join(
-        '<span class="decor" style="left:%s%%;top:%s%%;width:%dpx">'
-        '<img src="%s%s" alt=""></span>' % (x, y, w, IMG, f)
-        for f, x, y, w in HERO_DECOR)
+        '<span class="decor" style="left:%s%%;top:%s%%;width:%dpx" data-twinkle="%d">'
+        '<img src="%s%s" alt=""></span>' % (x, y, w, twinkle[i % len(twinkle)], IMG, f)
+        for i, (f, x, y, w) in enumerate(HERO_DECOR))
     decor += ('<span class="decor decor--dot" style="left:44.5%;top:76.4%;'
               'width:59px;height:59px"></span>')
     decor += ('<span class="decor decor--dot" style="left:50.8%;top:76.4%;'
               'width:59px;height:59px"></span>')
 
     cards = ''.join(
-        '<figure class="card">'
+        '<figure class="card" data-anim="zoomin" data-anim-dur="1.3" data-anim-delay="%.2f">' % (n * 0.15) +
         '<span class="card__frame card__frame--teal">'
         '<img src="%stild3665-3464-4535-b763-386533363061__svg4.svg" alt=""></span>'
         '<span class="card__frame card__frame--yellow">'
@@ -129,7 +148,7 @@ def build():
         '<img src="%stild3661-3566-4834-a234-336436346262__photo.webp" alt=""></span>'
         '<figcaption class="card__caption">%s</figcaption>'
         '</figure>' % (IMG, IMG, IMG, img, cap.replace('"', '&quot;'), IMG, cap)
-        for img, cap in CARDS)
+        for n, (img, cap) in enumerate(CARDS))
 
     html = f"""<!DOCTYPE html>
 <html lang="ru">
@@ -141,6 +160,7 @@ def build():
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
+<script>document.documentElement.className+=' js'</script>
 
 <header class="header" id="header">
   <div class="stage header__inner">
@@ -161,15 +181,14 @@ def build():
   <section class="hero">
     <div class="stage hero__stage">
       <div class="hero__content">
-        <img class="hero__flag" src="{IMG}tild3236-6461-4137-a165-663934353632__b8bca4c5-59d4-4e8a-a.svg" alt="" width="154" height="113">
-        <h1 class="hero__title">Развлекательный центр для всей семьи</h1>
-        <p class="hero__text"><b>Проведение мероприятий во Владивостоке</b>: от дней
-          рождений и выпускных до взрослых корпоративов и романтических свиданий</p>
-        <a class="btn btn--yellow hero__cta" href="#zayavka">Записаться</a>
+        <img class="hero__flag" src="{IMG}tild3236-6461-4137-a165-663934353632__b8bca4c5-59d4-4e8a-a.svg" alt="" width="154" height="113" data-anim="zoomin" data-anim-dur="1" data-anim-delay=".6">
+        <h1 class="hero__title" data-anim="fadeinright" data-anim-dur="1.7">Развлекательный центр для всей семьи</h1>
+        <p class="hero__text" data-anim="fadeinright" data-anim-dur="1.7" data-anim-delay=".2">Проведение мероприятий <b>во&nbsp;Владивостоке</b>: от&nbsp;дней рождений и&nbsp;выпускных до&nbsp;взрослых корпоративов и&nbsp;романтических свиданий</p>
+        <a class="btn btn--yellow hero__cta" href="#zayavka" data-anim="zoomin" data-anim-dur="2.4" data-anim-delay=".4">Записаться</a>
       </div>
       <div class="hero__art">
-        <img src="{IMG}tild6638-3864-4939-b336-646563633937__svg.svg" alt="" width="511" height="511">
-        <img src="{IMG}tild6466-3632-4763-b135-636461656535__svg2.svg" alt="" width="511" height="511">
+        <img src="{IMG}tild6638-3864-4939-b336-646563633937__svg.svg" alt="" width="511" height="511" data-drift="20,0">
+        <img src="{IMG}tild6466-3632-4763-b135-636461656535__svg2.svg" alt="" width="511" height="511" data-drift="-20,0">
         <img src="{IMG}tild3463-6130-4836-a539-636430646232__vector.webp" alt="Дети в бассейне с шариками" width="496" height="497">
       </div>
       {decor}
@@ -181,10 +200,8 @@ def build():
   <section class="section">
     <div class="stage">
       <div class="section__head">
-        <h2 class="section__title">Мы делаем ваш праздник ярче</h2>
-        <p class="section__lead">В «Порхай» есть всё необходимое, чтобы вам осталось
-          только наслаждаться идеальным праздником без нервов и траты времени на
-          организационные моменты</p>
+        <h2 class="section__title" data-anim="fadeinup" data-anim-dur="1">Мы делаем ваш праздник ярче</h2>
+        <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">В «Порхай» есть всё необходимое, чтобы вам осталось только наслаждаться идеальным праздником без нервов и&nbsp;траты времени на&nbsp;организационные моменты</p>
       </div>
       <div class="cards">{cards}</div>
     </div>
@@ -202,12 +219,74 @@ def build():
 </main>
 
 <script>
-// Шапка становится плотной после прокрутки первого экрана.
 (function () {{
-  var h = document.getElementById('header');
-  var onScroll = function () {{ h.classList.toggle('is-stuck', window.scrollY > 40); }};
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var header = document.getElementById('header');
+
+  // 1. Появление при прокрутке: fadeinright / fadeinup / zoomin.
+  var appear = [].slice.call(document.querySelectorAll('[data-anim]'));
+  function show(el) {{
+    el.style.transitionDuration = (el.dataset.animDur || 1) + 's';
+    el.style.transitionDelay = (el.dataset.animDelay || 0) + 's';
+    el.classList.add('is-in');
+  }}
+  if (reduce || !('IntersectionObserver' in window)) {{
+    appear.forEach(function (el) {{ el.classList.add('is-in'); }});
+  }} else {{
+    var seen = false;
+    var io = new IntersectionObserver(function (list) {{
+      list.forEach(function (e) {{
+        if (!e.isIntersecting) return;
+        seen = true;
+        show(e.target);
+        io.unobserve(e.target);
+      }});
+    }}, {{ rootMargin: '0px 0px -12% 0px' }});
+    appear.forEach(function (el) {{ io.observe(el); }});
+    // Страховка: если наблюдатель за три секунды не отдал ни одного события,
+    // показываем всё как есть. Пустая страница хуже, чем несыгравшая анимация.
+    setTimeout(function () {{
+      if (seen) return;
+      appear.forEach(function (el) {{ el.classList.add('is-in'); }});
+    }}, 3000);
+  }}
+
+  // 2. Мерцание мелкого декора: прозрачность 1 -> 0,15 -> 1 с поворотом.
+  if (!reduce && document.body.animate) {{
+    [].slice.call(document.querySelectorAll('[data-twinkle]')).forEach(function (el) {{
+      el.animate([
+        {{ opacity: 1, transform: 'rotate(0deg)' }},
+        {{ opacity: .15, transform: 'rotate(25deg)' }},
+        {{ opacity: 1, transform: 'rotate(0deg)' }}
+      ], {{ duration: +el.dataset.twinkle * 2, iterations: Infinity, easing: 'ease-in-out' }});
+    }});
+  }}
+
+  // 3. Дрейф по прокрутке: шарики и чёрточки уезжают вправо и проворачиваются,
+  //    пока проходят через экран, затем возвращаются.
+  var drift = [].slice.call(document.querySelectorAll('[data-drift]'));
+  var queued = false;
+  function paint() {{
+    queued = false;
+    var vh = innerHeight;
+    for (var i = 0; i < drift.length; i++) {{
+      var el = drift[i], r = el.getBoundingClientRect();
+      if (r.bottom < -240 || r.top > vh + 240) continue;
+      var p = 1 - (r.top + r.height / 2) / (vh + r.height);
+      var wave = Math.sin(Math.max(0, Math.min(1, p)) * Math.PI);
+      var d = el.dataset.drift.split(',');
+      el.style.transform = 'translateX(' + (d[0] * wave).toFixed(2) + 'px)'
+                         + ' rotate(' + (d[1] * wave).toFixed(2) + 'deg)';
+    }}
+  }}
+  function onScroll() {{
+    header.classList.toggle('is-stuck', scrollY > 40);
+    if (!queued && !reduce) {{ queued = true; requestAnimationFrame(paint); }}
+  }}
   onScroll();
+  if (!reduce) paint();
   addEventListener('scroll', onScroll, {{ passive: true }});
+  addEventListener('resize', onScroll, {{ passive: true }});
 }})();
 </script>
 </body>
