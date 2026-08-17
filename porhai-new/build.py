@@ -265,6 +265,24 @@ SLIDER_ARROW = ('<svg viewBox="0 0 15.3 29" xmlns="http://www.w3.org/2000/svg">'
                  '<polyline points="0.5,0.5 14.5,14.5 0.5,28.5" fill="none" '
                  'stroke="#4a4a4a" stroke-width="1"/></svg>')
 
+# Галерея «Незабываемые эмоции» (rec560775553). В экспорте у каждого файла
+# есть ещё маленький blur-плейсхолдер "-__empty__..." для прогрессивной
+# подгрузки у Тильды — не нужен, у нас своя лёгкая loading="lazy".
+GALLERY = [
+    'tild3561-3964-4662-b637-353038656332__photo_2021-06-30_10-.webp',
+    'tild3664-3830-4265-b364-383836643865__photo_2022-07-10_10-.webp',
+    'tild3734-3361-4664-a338-376264373263__iii_8850_2.webp',
+    'tild3964-6461-4031-b762-383135653235__iii_5366.webp',
+    'tild6130-6261-4038-a264-653831303262__iii_9551_3.webp',
+    'tild6139-6263-4964-b831-396334303632__photo_2022-10-29_08-.webp',
+    'tild6166-3964-4535-b531-646432353565__f70a9379-1.webp',
+    'tild6239-3831-4534-a234-633535336337__photo_2022-10-29_09-.webp',
+    'tild6261-3031-4238-b634-343638303230__photo_2021-07-20_18-.webp',
+    'tild6337-3862-4436-b139-346435333238__ce4a0538.webp',
+    'tild6437-6438-4135-b735-663031393762__photo_2022-11-09_17-.webp',
+    'tild6666-3564-4564-a663-313035323039__img_1763.webp',
+]
+
 # Мелкий декор первого экрана: (файл, left %, top %, ширина px)
 HERO_DECOR = [
     ('tild3534-3832-4661-b631-393736383835__ff62ebf0-cb8e-41b8-8.svg', 13.0, 21.0, 11),
@@ -388,6 +406,10 @@ def build():
         '<img src="%s%s" alt="" loading="lazy" width="260">' % (IMG, img)
         for img in REVIEWS)
 
+    gallery = ''.join(
+        '<img src="%s%s" alt="" loading="lazy" width="280">' % (IMG, img)
+        for img in GALLERY)
+
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -497,6 +519,13 @@ def build():
         <div class="reviews__track">{reviews}</div>
         <button class="reviews__arrow reviews__arrow--next" type="button" aria-label="Следующий отзыв">{SLIDER_ARROW}</button>
       </div>
+    </div>
+  </section>
+
+  <section class="section" id="emotions">
+    <div class="stage">
+      <h2 class="section__title" data-anim="fadeinup" data-anim-dur="1">Незабываемые эмоции</h2>
+      <div class="gallery">{gallery}</div>
     </div>
   </section>
 </main>
