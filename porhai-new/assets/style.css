@@ -727,6 +727,81 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 .contact__map iframe { display: block; width: 100%; height: 400px; border: 0; }
 
+/* --- Плавающая кнопка связи ------------------------------------------------ */
+/* Раскрытие без единой строчки JS — чекбокс-приём, как и в оригинале. */
+.float {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 950;
+}
+.float__input {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px;
+  opacity: 0;
+}
+.float__btn {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  background: var(--teal);
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(56, 162, 165, .4);
+}
+.float__icon { position: absolute; width: 28px; height: auto; transition: opacity .15s ease; }
+.float__icon--close { opacity: 0; width: 16px; }
+.float__input:checked ~ .float__btn .float__icon--open { opacity: 0; }
+.float__input:checked ~ .float__btn .float__icon--close { opacity: 1; }
+
+.float__label {
+  position: absolute;
+  top: 50%;
+  right: 76px;
+  transform: translateY(-50%);
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--ink);
+  background: var(--white);
+  border-radius: 20px;
+  box-shadow: 0 4px 14px rgba(74, 74, 74, .15);
+  white-space: nowrap;
+}
+.float__input:checked ~ .float__label { display: none; }
+
+.float__links {
+  position: absolute;
+  right: 0;
+  bottom: 76px;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 10px;
+  align-items: flex-end;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height .2s ease, opacity .2s ease;
+}
+.float__input:checked ~ .float__links {
+  max-height: 200px;
+  opacity: 1;
+}
+.float__link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px; height: 50px;
+  border-radius: 50%;
+  background: var(--white);
+  box-shadow: 0 4px 14px rgba(74, 74, 74, .15);
+}
+.float__link svg { display: block; width: 28px; height: 28px; }
+
 /* --- Политика конфиденциальности ----------------------------------------- */
 .legal { padding-top: calc(var(--header-h) + 60px); }
 .legal .section__title { text-align: left; font-size: 40px; }
@@ -956,6 +1031,11 @@ ul { margin: 0; padding: 0; list-style: none; }
   .footer { padding: 48px 0 64px; }
   .footer__title { font-size: 20px; }
   .footer__nav { margin-top: 24px; }
+
+  .float { right: 16px; bottom: 16px; }
+  .float__btn { width: 56px; height: 56px; }
+  .float__label { display: none; }
+  .float__input:checked ~ .float__label { display: none; }
 }
 
 /* Кегли и отступы первого экрана на телефоне — из спеки, брейкпоинт 479. */
