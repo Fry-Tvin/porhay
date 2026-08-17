@@ -686,6 +686,47 @@ ul { margin: 0; padding: 0; list-style: none; }
   color: var(--ink);
 }
 
+/* --- Контакты --------------------------------------------------------- */
+.section--contact { padding: 165px 0 105px; }
+
+.contact {
+  display: flex;
+  gap: 40px;
+  max-width: 1160px;
+  margin: 0 auto;
+}
+.contact__info { width: 460px; flex: 0 0 auto; }
+.contact__title {
+  font-size: 38px;
+  line-height: 1.17;
+  font-weight: 700;
+  color: var(--ink);
+}
+.contact__text {
+  margin-top: 20px;
+  font-size: 20px;
+  line-height: 31px;
+  font-weight: 400;
+  color: var(--ink);
+}
+.contact__text a:hover { text-decoration: underline; }
+.contact__socials {
+  display: flex;
+  gap: 14px;
+  margin-top: 24px;
+}
+.contact__social { display: block; width: 30px; height: 30px; }
+.contact__social svg { display: block; width: 100%; height: 100%; }
+.contact__social:hover { opacity: .7; }
+
+.contact__map {
+  flex: 1 1 auto;
+  min-height: 400px;
+  border-radius: 20px;
+  overflow: hidden;
+}
+.contact__map iframe { display: block; width: 100%; height: 400px; border: 0; }
+
 /* --- Поп-апы программ ----------------------------------------------------- */
 /* Своя оболочка модалки — в оригинале это стандартный поп-ап Тильды без
    привязки к дизайн-системе, поэтому оформлена в общем стиле сайта
@@ -850,6 +891,14 @@ ul { margin: 0; padding: 0; list-style: none; }
   .faq { margin-top: 32px; }
   .faq__q { padding: 18px 20px; font-size: 17px; gap: 12px; }
   .faq__a { padding: 0 20px 22px; font-size: 15px; }
+
+  .section--contact { padding: 64px 0; }
+  .contact { flex-direction: column; gap: 32px; }
+  .contact__info { width: 100%; text-align: center; }
+  .contact__title { font-size: 30px; }
+  .contact__text { font-size: 17px; line-height: 26px; }
+  .contact__socials { justify-content: center; }
+  .contact__map, .contact__map iframe { min-height: 280px; height: 280px; }
 }
 
 /* Кегли и отступы первого экрана на телефоне — из спеки, брейкпоинт 479. */
