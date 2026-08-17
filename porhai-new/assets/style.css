@@ -996,6 +996,27 @@ ul { margin: 0; padding: 0; list-style: none; }
 .form__submit { align-self: flex-start; }
 .form__thanks { margin-top: 28px; font-size: 18px; font-weight: 700; color: var(--teal); text-align: center; }
 
+/* --- Баннер согласия на cookie -------------------------------------------- */
+/* Карточка внизу слева, а не во всю ширину — чтобы не перекрывать плавающую
+   кнопку связи в правом нижнем углу (.float). Группа B аудита, в оригинале
+   такого баннера не было вообще. */
+.cookie {
+  position: fixed;
+  left: 24px;
+  bottom: 24px;
+  z-index: 970;
+  max-width: 420px;
+}
+.cookie__box {
+  padding: 24px 28px;
+  background: var(--ink);
+  border-radius: 20px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, .25);
+}
+.cookie__text { font-size: 14px; line-height: 1.5; color: #d9d9d9; }
+.cookie__text a { color: var(--mint-deep); }
+.cookie__accept { margin-top: 16px; min-width: 0; height: 44px; padding: 0 28px; font-size: 14px; }
+
 /* --- Анимации ----------------------------------------------------------- */
 /* Появление при прокрутке. Стили и длительности взяты из оригинала:
    fadeinright и fadeinup со сдвигом 100px, zoomin с масштабом 0,6. */
@@ -1120,6 +1141,10 @@ ul { margin: 0; padding: 0; list-style: none; }
   .float__btn { width: 56px; height: 56px; }
   .float__label { display: none; }
   .float__input:checked ~ .float__label { display: none; }
+
+  .cookie { left: 12px; right: 12px; bottom: 88px; max-width: none; }
+  .cookie__box { padding: 20px; }
+  .cookie__accept { width: 100%; }
 }
 
 /* Кегли и отступы первого экрана на телефоне — из спеки, брейкпоинт 479. */

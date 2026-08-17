@@ -488,6 +488,22 @@ def render_form_popup(popup_id):
         % popup_id)
 
 
+def render_cookie_banner():
+    """Баннер согласия на cookie (группа B аудита) — в оригинале его не было
+    вообще, добавлен в фирменном стиле подвала (тёмный фон --ink). Показ/
+    скрытие и запоминание согласия — на чистом JS, без библиотек cookie-consent."""
+    return (
+        '<div class="cookie" id="cookie-banner" hidden>'
+        '<div class="cookie__box">'
+        '<p class="cookie__text">Мы используем файлы cookie, чтобы сайт работал корректно. '
+        'Продолжая пользоваться сайтом, вы соглашаетесь с '
+        '<a href="/privacy.html">политикой конфиденциальности</a>.</p>'
+        '<button class="btn btn--yellow cookie__accept" type="button" id="cookie-accept">Хорошо</button>'
+        '</div>'
+        '</div>'
+    )
+
+
 def render_mobile_menu():
     items = []
     for label, href, sub in MOBILE_MENU:
@@ -634,6 +650,8 @@ def build():
 </head>
 <body>
 <script>document.documentElement.className+=' js'</script>
+
+{render_cookie_banner()}
 
 <header class="header" id="header">
   <div class="stage header__inner">
@@ -952,6 +970,14 @@ def build():
     a.addEventListener('click', closeMenu);
   }});
   addEventListener('keydown', function (e) {{ if (e.key === 'Escape') closeMenu(); }});
+
+  // 7. Баннер согласия на cookie: показываем, если согласия ещё не было.
+  var cookieBanner = document.getElementById('cookie-banner');
+  if (!localStorage.getItem('cookie-consent')) cookieBanner.hidden = false;
+  document.getElementById('cookie-accept').addEventListener('click', function () {{
+    localStorage.setItem('cookie-consent', '1');
+    cookieBanner.hidden = true;
+  }});
 }})();
 </script>
 </body>
@@ -1026,6 +1052,8 @@ def build_privacy():
 </head>
 <body>
 <script>document.documentElement.className+=' js'</script>
+
+{render_cookie_banner()}
 
 <header class="header" id="header">
   <div class="stage header__inner">
@@ -1122,6 +1150,13 @@ menu.querySelectorAll('.mobile-menu__link, .mobile-menu__sublink').forEach(funct
   a.addEventListener('click', closeMenu);
 }});
 addEventListener('keydown', function (e) {{ if (e.key === 'Escape') closeMenu(); }});
+
+var cookieBanner = document.getElementById('cookie-banner');
+if (!localStorage.getItem('cookie-consent')) cookieBanner.hidden = false;
+document.getElementById('cookie-accept').addEventListener('click', function () {{
+  localStorage.setItem('cookie-consent', '1');
+  cookieBanner.hidden = true;
+}});
 </script>
 </body>
 </html>

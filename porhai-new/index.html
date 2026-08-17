@@ -10,6 +10,8 @@
 <body>
 <script>document.documentElement.className+=' js'</script>
 
+<div class="cookie" id="cookie-banner" hidden><div class="cookie__box"><p class="cookie__text">Мы используем файлы cookie, чтобы сайт работал корректно. Продолжая пользоваться сайтом, вы соглашаетесь с <a href="/privacy.html">политикой конфиденциальности</a>.</p><button class="btn btn--yellow cookie__accept" type="button" id="cookie-accept">Хорошо</button></div></div>
+
 <header class="header" id="header">
   <div class="stage header__inner">
     <a class="header__logo" href="/" aria-label="Порхай — на главную">
@@ -327,6 +329,14 @@
     a.addEventListener('click', closeMenu);
   });
   addEventListener('keydown', function (e) { if (e.key === 'Escape') closeMenu(); });
+
+  // 7. Баннер согласия на cookie: показываем, если согласия ещё не было.
+  var cookieBanner = document.getElementById('cookie-banner');
+  if (!localStorage.getItem('cookie-consent')) cookieBanner.hidden = false;
+  document.getElementById('cookie-accept').addEventListener('click', function () {
+    localStorage.setItem('cookie-consent', '1');
+    cookieBanner.hidden = true;
+  });
 })();
 </script>
 </body>
