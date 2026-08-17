@@ -21,6 +21,11 @@ OUT = os.path.join(HERE, 'spec')
 
 BREAKPOINTS = ['base', '1919', '1199', '959', '639', '479']
 
+# Ловушка Тильды: медиазапросы в CSS названы по max-width (1919, 1199, …),
+# а координаты в разметке — по ширине сетки макета (res-1200, res-960, …).
+# Это одни и те же брейкпоинты под разными именами.
+GRID_OF = {'1919': '1200', '1199': '960', '959': '640', '639': '480', '479': '320'}
+
 # читаемые названия типов блоков Тильды, которые реально встречаются
 RECORD_KIND = {
     '396': 'зеро-блок (свободное позиционирование)',
@@ -134,12 +139,12 @@ def parse_page(path):
             el['type'] = etype
             # координаты по брейкпоинтам: left/top/width/height (+ res-NNN варианты)
             geo = OrderedDict()
-            for key in ('top', 'left', 'width', 'height'):
+            for key in ('top', 'left', 'width', 'height', 'fontsize'):
                 base = fields.get(key)
                 if base not in (None, ''):
                     geo.setdefault('base', {})[key] = base
                 for bp in BREAKPOINTS[1:]:
-                    v = fields.get('%s-res-%s' % (key, bp))
+                    v = fields.get('%s-res-%s' % (key, GRID_OF[bp]))
                     if v not in (None, ''):
                         geo.setdefault(bp, {})[key] = v
             if geo:
@@ -148,6 +153,26 @@ def parse_page(path):
                 el['anchor'] = (fields.get('axisx', ''), fields.get('axisy', ''))
             if fields.get('filewidth'):
                 el['source_size'] = [fields.get('filewidth'), fields.get('fileheight')]
+
+            # анимации: appear — появление при прокрутке,
+            # sbs — раскадровка, привязанная к прокрутке (mx/my сдвиг,
+            # ro поворот, op прозрачность, sx/sy масштаб, di прогресс в %)
+            anim = OrderedDict()
+            appear = {k: fields_anim for k, fields_anim in (
+                ('style', re.search(r'data-animate-style="([^"]*)"', attrs)),
+                ('duration', re.search(r'data-animate-duration="([^"]*)"', attrs)),
+                ('delay', re.search(r'data-animate-delay="([^"]*)"', attrs)),
+                ('distance', re.search(r'data-animate-distance="([^"]*)"', attrs)),
+            ) if fields_anim}
+            if appear:
+                anim['appear'] = {k: m.group(1) for k, m in appear.items()}
+            sbs = re.search(r"data-animate-sbs-opts=\"([^\"]*)\"", attrs)
+            if sbs:
+                ev = re.search(r'data-animate-sbs-event="([^"]*)"', attrs)
+                anim['scroll'] = {'event': ev.group(1) if ev else 'scroll',
+                                  'keyframes': sbs.group(1).replace("'", '"')}
+            if anim:
+                el['animation'] = anim
 
             # стили элемента и его содержимого
             styles = OrderedDict()
