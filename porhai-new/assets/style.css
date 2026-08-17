@@ -972,6 +972,30 @@ ul { margin: 0; padding: 0; list-style: none; }
   border-radius: 16px;
 }
 
+/* --- Формы заявки --------------------------------------------------------- */
+.popup--form { max-width: 460px; }
+.form { display: flex; flex-direction: column; gap: 18px; margin-top: 28px; }
+.form__field { display: flex; flex-direction: column; gap: 8px; }
+.form__label { font-size: 14px; color: var(--ink); opacity: .7; }
+.form__input {
+  height: 52px;
+  padding: 0 20px;
+  font-family: var(--font);
+  font-size: 16px;
+  color: var(--ink);
+  background: var(--mint);
+  border: 1px solid transparent;
+  border-radius: 20px;
+  outline: none;
+  transition: border-color .15s ease;
+}
+.form__input:focus { border-color: var(--teal); }
+.form__consent { display: flex; align-items: center; gap: 10px; min-height: 40px; font-size: 13px; line-height: 1.4; color: var(--ink); }
+.form__consent input { width: 20px; height: 20px; flex: 0 0 20px; accent-color: var(--teal); margin-top: 1px; }
+.form__consent a { color: var(--teal); }
+.form__submit { align-self: flex-start; }
+.form__thanks { margin-top: 28px; font-size: 18px; font-weight: 700; color: var(--teal); text-align: center; }
+
 /* --- Анимации ----------------------------------------------------------- */
 /* Появление при прокрутке. Стили и длительности взяты из оригинала:
    fadeinright и fadeinup со сдвигом 100px, zoomin с масштабом 0,6. */

@@ -459,6 +459,35 @@ def render_popups(popups):
     return ''.join(out)
 
 
+def render_form_popup(popup_id):
+    """Форма заявки (rec591053045 — шапка, rec591047986 — первый экран).
+    В оригинале только Имя + Телефон; чекбокс согласия на обработку
+    персональных данных в форме добавлен по группе B аудита — его
+    в экспорте не было, но без него нельзя принимать заявки законно.
+    Отправки без сервера нет: форма показывает подтверждение на месте,
+    реальный приём заявок (почта/CRM) подключается отдельно — решает
+    заказчик, куда слать."""
+    return (
+        '<dialog class="popup popup--form" id="popup-%s" aria-label="Оставьте свои контакты">'
+        '<div class="popup__box">'
+        '<button class="popup__close" type="button" data-popup-close>Назад</button>'
+        '<h3 class="popup__title">Оставьте свои контакты</h3>'
+        '<div class="popup__subtitle"><p>И мы свяжемся с Вами в ближайшее время!</p></div>'
+        '<form class="form" data-form>'
+        '<label class="form__field"><span class="form__label">Ваше имя</span>'
+        '<input class="form__input" type="text" name="name" autocomplete="name" required></label>'
+        '<label class="form__field"><span class="form__label">Номер телефона</span>'
+        '<input class="form__input" type="tel" name="phone" autocomplete="tel" required></label>'
+        '<label class="form__consent"><input type="checkbox" name="consent" required>'
+        '<span>Согласен(-на) на <a href="/privacy.html" target="_blank">обработку персональных данных</a></span></label>'
+        '<button class="btn btn--yellow form__submit" type="submit">Отправить</button>'
+        '</form>'
+        '<p class="form__thanks" data-form-thanks hidden>Спасибо! Мы свяжемся с вами в ближайшее время.</p>'
+        '</div>'
+        '</dialog>'
+        % popup_id)
+
+
 def render_mobile_menu():
     items = []
     for label, href, sub in MOBILE_MENU:
@@ -528,7 +557,7 @@ def build():
         % (popup, n * 0.1, IMG, img, title, IMG)
         for n, (img, popup, title) in enumerate(GROUPS))
 
-    popups = render_popups(POPUPS)
+    popups = render_popups(POPUPS) + render_form_popup('header') + render_form_popup('main')
 
     reviews = ''.join(
         '<img src="%s%s" alt="" loading="lazy" width="260">' % (IMG, img)
@@ -614,7 +643,7 @@ def build():
     <nav class="nav" aria-label="Основная навигация">
       <ul class="nav__list">{nav}</ul>
     </nav>
-    <a class="btn btn--teal header__cta" href="#zayavka">Забронировать зал</a>
+    <a class="btn btn--teal header__cta" href="#popup:header">Забронировать зал</a>
     <button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mobile-menu">
       <span></span><span></span><span></span>
     </button>
@@ -639,7 +668,7 @@ def build():
         <img class="hero__flag" src="{IMG}tild3236-6461-4137-a165-663934353632__b8bca4c5-59d4-4e8a-a.svg" alt="" width="154" height="113" data-anim="zoomin" data-anim-dur="1" data-anim-delay=".6">
         <h1 class="hero__title" data-anim="fadeinright" data-anim-dur="1.7">Развлекательный центр для всей семьи</h1>
         <p class="hero__text" data-anim="fadeinright" data-anim-dur="1.7" data-anim-delay=".2">Проведение мероприятий <b>во&nbsp;Владивостоке</b>: от&nbsp;дней рождений и&nbsp;выпускных до&nbsp;взрослых корпоративов и&nbsp;романтических свиданий</p>
-        <a class="btn btn--yellow hero__cta" href="#zayavka" data-anim="zoomin" data-anim-dur="2.4" data-anim-delay=".4">Записаться</a>
+        <a class="btn btn--yellow hero__cta" href="#popup:main" data-anim="zoomin" data-anim-dur="2.4" data-anim-delay=".4">Записаться</a>
       </div>
       <div class="hero__art">
         <img src="{IMG}tild6638-3864-4939-b336-646563633937__svg.svg" alt="" width="511" height="511" data-drift="20,0">
@@ -882,6 +911,14 @@ def build():
   document.querySelectorAll('.popup').forEach(function (dlg) {{
     dlg.querySelector('[data-popup-close]').addEventListener('click', function () {{ dlg.close(); }});
     dlg.addEventListener('click', function (e) {{ if (e.target === dlg) dlg.close(); }});
+    var form = dlg.querySelector('[data-form]');
+    if (form) {{
+      form.addEventListener('submit', function (e) {{
+        e.preventDefault();
+        form.hidden = true;
+        dlg.querySelector('[data-form-thanks]').hidden = false;
+      }});
+    }}
   }});
 
   // 5. Лента отзывов: стрелки листают на ширину видимой области.
@@ -998,7 +1035,7 @@ def build_privacy():
     <nav class="nav" aria-label="Основная навигация">
       <ul class="nav__list">{nav}</ul>
     </nav>
-    <a class="btn btn--teal header__cta" href="/#zayavka">Забронировать зал</a>
+    <a class="btn btn--teal header__cta" href="#popup:header">Забронировать зал</a>
     <button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mobile-menu">
       <span></span><span></span><span></span>
     </button>
@@ -1038,8 +1075,30 @@ def build_privacy():
   </div>
 </footer>
 
+{render_form_popup('header')}
+
 <script>
 document.getElementById('header').classList.toggle('is-stuck', scrollY > 40);
+
+document.querySelectorAll('a[href^="#popup:"]').forEach(function (a) {{
+  a.addEventListener('click', function (e) {{
+    e.preventDefault();
+    var dlg = document.getElementById('popup-' + a.getAttribute('href').split(':')[1]);
+    if (dlg) dlg.showModal();
+  }});
+}});
+document.querySelectorAll('.popup').forEach(function (dlg) {{
+  dlg.querySelector('[data-popup-close]').addEventListener('click', function () {{ dlg.close(); }});
+  dlg.addEventListener('click', function (e) {{ if (e.target === dlg) dlg.close(); }});
+  var form = dlg.querySelector('[data-form]');
+  if (form) {{
+    form.addEventListener('submit', function (e) {{
+      e.preventDefault();
+      form.hidden = true;
+      dlg.querySelector('[data-form-thanks]').hidden = false;
+    }});
+  }}
+}});
 addEventListener('scroll', function () {{
   document.getElementById('header').classList.toggle('is-stuck', scrollY > 40);
 }}, {{ passive: true }});

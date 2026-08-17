@@ -18,7 +18,7 @@
     <nav class="nav" aria-label="Основная навигация">
       <ul class="nav__list"><li><a class="nav__link" href="/razovoe">Разовое посещение</a></li><li><a class="nav__link" href="#zaly">Аренда залов</a></li><li><a class="nav__link" href="#pod-kluch">Праздник под ключ</a></li><li><a class="nav__link" href="#dlyagrupp">Для групп</a></li><li><a class="nav__link" href="#otziv">Отзывы</a></li><li><a class="nav__link" href="/partner">Скидки от партнёров</a></li><li><a class="nav__link" href="#kontakt">Контакты</a></li></ul>
     </nav>
-    <a class="btn btn--teal header__cta" href="/#zayavka">Забронировать зал</a>
+    <a class="btn btn--teal header__cta" href="#popup:header">Забронировать зал</a>
     <button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mobile-menu">
       <span></span><span></span><span></span>
     </button>
@@ -58,8 +58,30 @@
   </div>
 </footer>
 
+<dialog class="popup popup--form" id="popup-header" aria-label="Оставьте свои контакты"><div class="popup__box"><button class="popup__close" type="button" data-popup-close>Назад</button><h3 class="popup__title">Оставьте свои контакты</h3><div class="popup__subtitle"><p>И мы свяжемся с Вами в ближайшее время!</p></div><form class="form" data-form><label class="form__field"><span class="form__label">Ваше имя</span><input class="form__input" type="text" name="name" autocomplete="name" required></label><label class="form__field"><span class="form__label">Номер телефона</span><input class="form__input" type="tel" name="phone" autocomplete="tel" required></label><label class="form__consent"><input type="checkbox" name="consent" required><span>Согласен(-на) на <a href="/privacy.html" target="_blank">обработку персональных данных</a></span></label><button class="btn btn--yellow form__submit" type="submit">Отправить</button></form><p class="form__thanks" data-form-thanks hidden>Спасибо! Мы свяжемся с вами в ближайшее время.</p></div></dialog>
+
 <script>
 document.getElementById('header').classList.toggle('is-stuck', scrollY > 40);
+
+document.querySelectorAll('a[href^="#popup:"]').forEach(function (a) {
+  a.addEventListener('click', function (e) {
+    e.preventDefault();
+    var dlg = document.getElementById('popup-' + a.getAttribute('href').split(':')[1]);
+    if (dlg) dlg.showModal();
+  });
+});
+document.querySelectorAll('.popup').forEach(function (dlg) {
+  dlg.querySelector('[data-popup-close]').addEventListener('click', function () { dlg.close(); });
+  dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+  var form = dlg.querySelector('[data-form]');
+  if (form) {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      form.hidden = true;
+      dlg.querySelector('[data-form-thanks]').hidden = false;
+    });
+  }
+});
 addEventListener('scroll', function () {
   document.getElementById('header').classList.toggle('is-stuck', scrollY > 40);
 }, { passive: true });
