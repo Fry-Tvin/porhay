@@ -7,7 +7,12 @@
 ссылка на CDN (на опубликованной странице она будет заблокирована,
 и текст отрисуется системным шрифтом).
 
-Запуск:  python make_artifact.py
+Каждая страница публикуется отдельным артефактом — ссылки между
+страницами (шапка/подвал/меню) внутри артефакта не работают, это
+ограничение площадки (нет роутинга для нескольких файлов в одной
+публикации), не баг вёрстки.
+
+Запуск:  python make_artifact.py [имя.html]   (по умолчанию index.html)
 """
 import os, re, base64, sys
 
@@ -19,6 +24,22 @@ MIME = {'.svg': 'image/svg+xml', '.webp': 'image/webp', '.png': 'image/png',
 
 FONTS = ['Evolventa-Regular.woff', 'Evolventa-Bold.woff']
 
+# Короткие имена для заголовка артефакта (title в <head> у самих страниц —
+# длинные SEO-формулировки, для галереи артефактов нужны короткие).
+SHORT_TITLE = {
+    'index': 'Порхай',
+    'privacy': 'Порхай: политика конфиденциальности',
+    'razovoe': 'Порхай: разовое посещение',
+    'whiteroom': 'Порхай: White Room',
+    'loftbox': 'Порхай: Loft Box',
+    'combo': 'Порхай: Комбо+',
+    'denrozhdeniya': 'Порхай: день рождения',
+    'vypusknye': 'Порхай: выпускной',
+    'korporativ': 'Порхай: корпоратив',
+    'partner': 'Порхай: партнёры',
+    '404': 'Порхай: страница 404',
+}
+
 
 def datauri(path):
     ext = os.path.splitext(path)[1].lower()
@@ -28,7 +49,8 @@ def datauri(path):
 
 
 def main():
-    html = open(os.path.join(HERE, 'index.html'), encoding='utf-8').read()
+    page = sys.argv[1] if len(sys.argv) > 1 else 'index.html'
+    html = open(os.path.join(HERE, page), encoding='utf-8').read()
     css = open(os.path.join(HERE, 'assets', 'style.css'), encoding='utf-8').read()
 
     # --- шрифт ---
@@ -49,8 +71,8 @@ def main():
             html = html.replace(rel, datauri(p))
 
     # --- снимаем обёртку документа ---
-    title = re.search(r'<title>(.*?)</title>', html, re.S)
-    title = title.group(1) if title else 'Порхай'
+    stem = os.path.splitext(page)[0]
+    title = SHORT_TITLE.get(stem, 'Порхай')
     body = re.search(r'<body[^>]*>(.*)</body>', html, re.S).group(1)
 
     # charset должен попасть в первый килобайт файла, иначе кириллица
@@ -58,7 +80,8 @@ def main():
     out = ('<meta charset="utf-8">\n<title>%s</title>\n<style>\n%s\n</style>\n%s\n'
            % (title, css, body))
 
-    path = os.path.join(HERE, 'porhai-artifact.html')
+    out_name = 'porhai-artifact.html' if stem == 'index' else 'porhai-artifact-%s.html' % stem
+    path = os.path.join(HERE, out_name)
     with open(path, 'w', encoding='utf-8') as f:
         f.write(out)
     print('готово:', os.path.basename(path), '—', round(len(out.encode()) / 1024), 'КБ')
