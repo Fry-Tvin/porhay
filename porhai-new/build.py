@@ -425,8 +425,8 @@ def render_tariff_cards(cards):
         price = '<p class="tariff__price">%s</p>' % t['price'] if t['price'] else ''
         out.append(
             '<article class="tariff" style="background:%s" data-anim="zoomin" data-anim-dur="1" data-anim-delay="%.1f">'
-            '<span class="tariff__frame tariff__frame--teal" data-drift="-10,0"><img src="%stild3031-6236-4236-a561-356461643236__e19497dc-0442-4f7b-b.svg" alt=""></span>'
-            '<span class="tariff__frame tariff__frame--yellow" data-drift="10,0"><img src="%stild3934-3735-4063-b837-356461626263__04c0fbd0-c82b-48fb-a.svg" alt=""></span>'
+            '<span class="tariff__frame tariff__frame--teal"><img src="%stild3031-6236-4236-a561-356461643236__e19497dc-0442-4f7b-b.svg" alt=""></span>'
+            '<span class="tariff__frame tariff__frame--yellow"><img src="%stild3934-3735-4063-b837-356461626263__04c0fbd0-c82b-48fb-a.svg" alt=""></span>'
             '<span class="tariff__photo tariff__photo--big"><img src="%s%s" alt="" width="196" height="196"></span>'
             '<span class="tariff__photo tariff__photo--small"><img src="%s%s" alt="" width="162" height="162"></span>'
             '<h3 class="tariff__title">%s</h3>'
@@ -847,9 +847,9 @@ def build():
 
     cards = ''.join(
         '<figure class="card" data-anim="zoomin" data-anim-dur="1.3" data-anim-delay="%.2f">' % (n * 0.15) +
-        '<span class="card__frame card__frame--teal" data-drift="-10,0">'
+        '<span class="card__frame card__frame--teal">'
         '<img src="%stild3665-3464-4535-b763-386533363061__svg4.svg" alt=""></span>'
-        '<span class="card__frame card__frame--yellow" data-drift="10,0">'
+        '<span class="card__frame card__frame--yellow">'
         '<img src="%stild6338-3565-4263-b539-323163613235__svg3.svg" alt=""></span>'
         '<span class="card__photo" style="background-image:url(%s%s)" role="img" '
         'aria-label="%s"></span>'
