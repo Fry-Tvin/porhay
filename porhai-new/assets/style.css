@@ -434,17 +434,24 @@ ul { margin: 0; padding: 0; list-style: none; }
    Внутри SVG — обычный прямоугольник со скруглением и обводкой 2px,
    повёрнутый матрицей; углы (+1° / −1,105°) и радиус (35px) вычислены
    из этой матрицы, поэтому CSS-версия совпадает с оригиналом, но тянется
-   под любую высоту карточки. */
+   под любую высоту карточки.
+   Отступ −5px подобран как самый плотный, при котором рамка нигде не
+   заезжает на карточку: поворот на 1° уводит верхний и нижний углы по
+   горизонтали на H/2·sin(1°) ≈ 4,7px, поэтому при 5px рамка в одном углу
+   касается края карточки, а в противоположном отходит на ~10px — та самая
+   «нарисованная от руки» посадка, без белой полосы по периметру.
+   Поворот задан отдельным свойством `rotate`, а не `transform`, чтобы
+   скрипт мог анимировать `translate` независимо и не затирать поворот. */
 .tariff__frame {
   position: absolute;
-  inset: -10px;
+  inset: -5px;
   z-index: 1;
   pointer-events: none;
   border: 2px solid;
   border-radius: 35px;
 }
-.tariff__frame--teal   { border-color: #38a2a5; transform: rotate(1deg); }
-.tariff__frame--yellow { border-color: #f5cf37; transform: rotate(-1.105deg); }
+.tariff__frame--teal   { border-color: #38a2a5; rotate: 1deg; }
+.tariff__frame--yellow { border-color: #f5cf37; rotate: -1.105deg; }
 .tariff__photo {
   position: absolute;
   z-index: 2;

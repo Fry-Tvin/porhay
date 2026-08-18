@@ -37,12 +37,26 @@ BIT = {
     '9cae1dcb': 'tild6463-3538-4461-a236-353162633838__9cae1dcb-d946-42c5-9.svg',
 }
 
+# Лента-разделитель бывает двух видов, и это ДВЕ РАЗНЫЕ раскладки, а не одна
+# отражённая. Раньше вариант Б получался из А формулой (y -> -y+6,
+# rot -> rot+180) — это оказалось неверно: в оригинале у перевёрнутой ленты
+# и свои координаты шариков, и свои углы чёрточек (90°, −135°, −90°, 81°…),
+# а не «те же плюс 180». Из-за формулы часть чёрточек висела криво, отрывалась
+# от шариков и налезала друг на друга. Обе раскладки сняты замером с оригинала
+# при ширине 1265px: вариант А — rec572351759, вариант Б — rec572370702.
+
 # Белые круги ленты: (левый край в % ширины макета, смещение вверх в px)
 BUBBLES = [
     (-2.75, -29), (3.25, -54), (9.58, -29), (15.00, -62), (21.75, -38),
     (28.33, -20), (35.08, -50), (42.74, -29), (50.32, -46), (57.57, -18),
     (63.99, -46), (69.90, -29), (76.57, -27), (82.65, -53), (88.90, -27),
     (94.23, -60),
+]
+BUBBLES_FLIP = [
+    (-7.25, -29), (-0.75, -57), (6.08, -29), (11.91, -64), (19.41, -41),
+    (26.58, -21), (33.74, -51), (42.16, -29), (50.32, -47), (58.16, -18),
+    (64.91, -45), (71.49, -29), (78.82, -28), (85.32, -55), (92.23, -28),
+    (98.07, -62),
 ]
 
 # Мелкие цветные чёрточки на шариках:
@@ -59,6 +73,20 @@ CONFETTI = [
     (86.49, -39, 16, 'd4abbe9e', -32, 25, 100), (90.49, -7, 16, '24e3675d', 0, 21, 35),
     (95.90, -37, 16, 'ceeef3f3', -20, 45, 60),
 ]
+# Вариант Б. Углы и координаты — замер оригинала. Дрейф в экспорте у этой
+# ленты свой, но на глаз неотличим от варианта А (та же амплитуда 21–45px),
+# поэтому переиспользуем значения А по порядку — это чисто декоративный
+# эффект прокрутки, на статичную раскладку он не влияет.
+CONFETTI_FLIP = [
+    (-4.83, 55, 18, '9cae1dcb', -135, 21, 35), (1.17, 23, 18, 'd4abbe9e', 180, 24, 25),
+    (8.08, 43, 18, '24e3675d', -90, 45, 85), (13.66, 13, 18, 'ceeef3f3', -90, 25, 100),
+    (20.33, 26, 18, 'ba8b36e1', -90, 24, -15), (33.24, 43, 18, '13fdaa4f', 81, 21, 35),
+    (34.99, 21, 18, 'a5847e0b', -90, 45, 85), (44.16, 47, 18, 'c5a30fb3', -102, 25, 40),
+    (55.26, 36, 18, 'fe3676d5', 135, 24, 25), (60.16, 57, 18, '4bfa8c73', -90, 21, 35),
+    (70.99, 23, 18, 'ce4b55ff', 90, 45, 85), (73.40, 54, 18, '8c2a0952', -135, 24, 25),
+    (81.32, 56, 18, '9cae1dcb', -135, 25, 100), (89.48, 33, 18, 'd4abbe9e', 135, 21, 35),
+    (93.98, 46, 18, '24e3675d', -90, 45, 60), (101.15, 25, 18, 'ceeef3f3', -135, 21, 35),
+]
 
 # Шарики тоже дрейфуют — слабее, чем чёрточки.
 BUBBLE_DRIFT = (24, 25)
@@ -67,24 +95,27 @@ BUBBLE_DRIFT = (24, 25)
 def band(flip=False):
     """Лента-разделитель: шарики и чёрточки на них.
 
-    flip=True — чёрточки свисают вниз (вариант Б).
+    flip=True — вариант Б (чёрточки свисают вниз, переход белый→мятный).
+    У каждого варианта своя раскладка, снятая с оригинала, — см. коммент
+    к BUBBLES/CONFETTI выше.
     data-drift="mx,ro" — дрейф по прокрутке, читается скриптом внизу страницы.
     """
+    bubbles = BUBBLES_FLIP if flip else BUBBLES
+    bits = CONFETTI_FLIP if flip else CONFETTI
+
     out = ['<div class="band" aria-hidden="true"><div class="band__inner">']
     bmx, bro = BUBBLE_DRIFT
-    for i, (x, y) in enumerate(BUBBLES):
+    for i, (x, y) in enumerate(bubbles):
         out.append('<span class="band__bubble" style="left:%s%%;top:%dpx" '
                    'data-drift="%d,%d"></span>'
                    % (x, y, bmx if i % 2 else -bmx, bro if i % 2 else -bro))
-    for x, y, w, key, rot, mx, ro in CONFETTI:
-        yy = -y + 6 if flip else y
-        rr = rot + 180 if flip else rot
+    for x, y, w, key, rot, mx, ro in bits:
         # Статичный поворот — на картинке, дрейф — на обёртке,
         # чтобы скрипт не затирал поворот и наоборот.
         out.append('<span class="band__bit" style="left:%s%%;top:%dpx;width:%dpx" '
                    'data-drift="%d,%d"><img src="%s%s" alt="" '
                    'style="transform:rotate(%ddeg)"></span>'
-                   % (x, yy, w, mx, ro, IMG, BIT[key], rr))
+                   % (x, y, w, mx, ro, IMG, BIT[key], rot))
     out.append('</div></div>')
     return ''.join(out)
 
@@ -425,8 +456,8 @@ def render_tariff_cards(cards):
         price = '<p class="tariff__price">%s</p>' % t['price'] if t['price'] else ''
         out.append(
             '<article class="tariff" style="background:%s" data-anim="zoomin" data-anim-dur="1" data-anim-delay="%.1f">'
-            '<span class="tariff__frame tariff__frame--teal"></span>'
-            '<span class="tariff__frame tariff__frame--yellow"></span>'
+            '<span class="tariff__frame tariff__frame--teal" data-swing="-10"></span>'
+            '<span class="tariff__frame tariff__frame--yellow" data-swing="10"></span>'
             '<span class="tariff__photo tariff__photo--big"><img src="%s%s" alt="" width="196" height="196"></span>'
             '<span class="tariff__photo tariff__photo--small"><img src="%s%s" alt="" width="162" height="162"></span>'
             '<h3 class="tariff__title">%s</h3>'
@@ -718,6 +749,33 @@ PAGE_SCRIPT = """<script>
         { opacity: 1, transform: 'rotate(0deg)' }
       ], { duration: +el.dataset.twinkle * 2, iterations: Infinity, easing: 'ease-in-out' });
     });
+  }
+
+  // 2b. Рамки тарифных карточек: одно покачивание при появлении в кадре.
+  //     В оригинале это НЕ бесконечный дрейф по прокрутке, а разовая
+  //     анимация из keyframes (di: 200/200/170мс, mx: 0 -> ±10 -> 0):
+  //     появилась -> качнулась -> вернулась и застыла. Поэтому здесь
+  //     IntersectionObserver + Web Animations API, а не data-drift:
+  //     непрерывный дрейф держал бы рамку на максимальном смещении всё
+  //     время, пока карточка в середине экрана, и фон вылезал бы за рамку.
+  //     Анимируем `translate` — поворот живёт в отдельном свойстве
+  //     `rotate`, поэтому они не затирают друг друга.
+  var swing = [].slice.call(document.querySelectorAll('[data-swing]'));
+  if (swing.length && !reduce && document.body.animate && window.IntersectionObserver) {
+    var swingObs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        swingObs.unobserve(en.target);
+        var mx = +en.target.dataset.swing;
+        en.target.animate([
+          { translate: '0 0' },
+          { translate: mx + 'px 0', offset: .35 },
+          { translate: '0 5px', offset: .70 },
+          { translate: '0 0' }
+        ], { duration: 570, easing: 'ease-in-out' });
+      });
+    }, { threshold: .2 });
+    swing.forEach(function (el) { swingObs.observe(el); });
   }
 
   // 3. Дрейф по прокрутке: шарики и чёрточки уезжают вправо и проворачиваются,

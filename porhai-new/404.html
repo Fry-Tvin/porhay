@@ -79,6 +79,33 @@
     });
   }
 
+  // 2b. Рамки тарифных карточек: одно покачивание при появлении в кадре.
+  //     В оригинале это НЕ бесконечный дрейф по прокрутке, а разовая
+  //     анимация из keyframes (di: 200/200/170мс, mx: 0 -> ±10 -> 0):
+  //     появилась -> качнулась -> вернулась и застыла. Поэтому здесь
+  //     IntersectionObserver + Web Animations API, а не data-drift:
+  //     непрерывный дрейф держал бы рамку на максимальном смещении всё
+  //     время, пока карточка в середине экрана, и фон вылезал бы за рамку.
+  //     Анимируем `translate` — поворот живёт в отдельном свойстве
+  //     `rotate`, поэтому они не затирают друг друга.
+  var swing = [].slice.call(document.querySelectorAll('[data-swing]'));
+  if (swing.length && !reduce && document.body.animate && window.IntersectionObserver) {
+    var swingObs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        swingObs.unobserve(en.target);
+        var mx = +en.target.dataset.swing;
+        en.target.animate([
+          { translate: '0 0' },
+          { translate: mx + 'px 0', offset: .35 },
+          { translate: '0 5px', offset: .70 },
+          { translate: '0 0' }
+        ], { duration: 570, easing: 'ease-in-out' });
+      });
+    }, { threshold: .2 });
+    swing.forEach(function (el) { swingObs.observe(el); });
+  }
+
   // 3. Дрейф по прокрутке: шарики и чёрточки уезжают вправо и проворачиваются,
   //    пока проходят через экран, затем возвращаются.
   var drift = [].slice.call(document.querySelectorAll('[data-drift]'));
