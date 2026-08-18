@@ -425,8 +425,8 @@ def render_tariff_cards(cards):
         price = '<p class="tariff__price">%s</p>' % t['price'] if t['price'] else ''
         out.append(
             '<article class="tariff" style="background:%s" data-anim="zoomin" data-anim-dur="1" data-anim-delay="%.1f">'
-            '<span class="tariff__frame tariff__frame--teal"><img src="%stild3031-6236-4236-a561-356461643236__e19497dc-0442-4f7b-b.svg" alt=""></span>'
-            '<span class="tariff__frame tariff__frame--yellow"><img src="%stild3934-3735-4063-b837-356461626263__04c0fbd0-c82b-48fb-a.svg" alt=""></span>'
+            '<span class="tariff__frame tariff__frame--teal"></span>'
+            '<span class="tariff__frame tariff__frame--yellow"></span>'
             '<span class="tariff__photo tariff__photo--big"><img src="%s%s" alt="" width="196" height="196"></span>'
             '<span class="tariff__photo tariff__photo--small"><img src="%s%s" alt="" width="162" height="162"></span>'
             '<h3 class="tariff__title">%s</h3>'
@@ -435,7 +435,7 @@ def render_tariff_cards(cards):
             '<a class="tariff__more" href="%s">Подробнее'
             '<img src="%stild6461-6262-4664-a333-343239356263__arrow_7.svg" alt="" width="20" height="11"></a>'
             '</article>'
-            % (t['color'], n * 0.1, IMG, IMG, IMG, t['big'], IMG, t['small'], t['title'], t['desc'],
+            % (t['color'], n * 0.1, IMG, t['big'], IMG, t['small'], t['title'], t['desc'],
                note, price, t['href'], IMG))
     return ''.join(out)
 

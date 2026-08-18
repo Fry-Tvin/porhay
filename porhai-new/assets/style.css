@@ -424,15 +424,27 @@ ul { margin: 0; padding: 0; list-style: none; }
   border-radius: 35px;
 }
 /* Та же рамочная пара, что и у карточек «Мы делаем ваш праздник ярче»,
-   но крупнее и с другим поворотом — снято отдельным замером с этого блока. */
+   но крупнее и с другим поворотом.
+   Рисуем рамку CSS-бордером, а не картинкой из экспорта. В экспорте это
+   SVG с зашитыми пропорциями (1496×2161), и высота рамки считалась от её
+   собственного соотношения сторон, а не от высоты карточки: на десктопе рамка
+   выходила чуть выше карточки и всё выглядело правильно, а на мобильной
+   карточка из-за переносов текста становилась выше рамки (543px против
+   511px) — и розовый фон карточки торчал из-под рамки снизу.
+   Внутри SVG — обычный прямоугольник со скруглением и обводкой 2px,
+   повёрнутый матрицей; углы (+1° / −1,105°) и радиус (35px) вычислены
+   из этой матрицы, поэтому CSS-версия совпадает с оригиналом, но тянется
+   под любую высоту карточки. */
 .tariff__frame {
   position: absolute;
+  inset: -10px;
   z-index: 1;
   pointer-events: none;
+  border: 2px solid;
+  border-radius: 35px;
 }
-.tariff__frame--teal   { top: -9px;  left: -13px; width: 105.6%; }
-.tariff__frame--yellow { top: -11px; left: -11px; width: 105.6%; }
-.tariff__frame img { display: block; width: 100%; height: auto; }
+.tariff__frame--teal   { border-color: #38a2a5; transform: rotate(1deg); }
+.tariff__frame--yellow { border-color: #f5cf37; transform: rotate(-1.105deg); }
 .tariff__photo {
   position: absolute;
   z-index: 2;
