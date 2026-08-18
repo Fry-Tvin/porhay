@@ -176,14 +176,26 @@
   }
 
   // 5b. Лента-слайдер фото (если есть на странице): те же стрелки, тот же приём.
+  //     В оригинале слайдер сам листает фото каждые ~5с (замерено на живой
+  //     странице: 4.97с и 4.84с между переключениями) — воспроизводим тем же
+  //     интервалом. Кольцо останавливается на последнем кадре и едет назад
+  //     в начало, а не наоборот — так делает и оригинал.
   var slider = document.querySelector('.slider__track');
   if (slider) {
+    function sliderNext() {
+      var atEnd = slider.scrollLeft + slider.clientWidth >= slider.scrollWidth - 2;
+      slider.scrollTo({ left: atEnd ? 0 : slider.scrollLeft + slider.clientWidth, behavior: 'smooth' });
+    }
     document.querySelector('.slider__arrow--prev').addEventListener('click', function () {
       slider.scrollBy({ left: -slider.clientWidth, behavior: 'smooth' });
     });
-    document.querySelector('.slider__arrow--next').addEventListener('click', function () {
-      slider.scrollBy({ left: slider.clientWidth, behavior: 'smooth' });
-    });
+    document.querySelector('.slider__arrow--next').addEventListener('click', sliderNext);
+
+    if (!reduce) {
+      var sliderTimer = setInterval(function () {
+        if (!document.hidden) sliderNext();
+      }, 5000);
+    }
   }
 
   // 6. Мобильное меню.

@@ -44,11 +44,16 @@
 
   <section class="quote">
     <div class="stage">
-      <p class="quote__text" data-anim="zoomin" data-anim-dur="1">А ещё мы дарим скидку 50% на второй час! Потому что мы точно знаем&nbsp;— уходить вам не захочется ;)</p>
-      <div class="quote__author">
-        <img src="assets/img/tild3566-3138-4961-a631-363663616362__noroot.webp" alt="" width="80" height="80">
-        <p class="quote__author-name">«Порхай»</p>
-        <p class="quote__author-role">Развлекательный центр</p>
+      <div class="quote__inner">
+        <p class="quote__text" data-anim="zoomin" data-anim-dur="1">А ещё мы дарим скидку 50% на второй час! Потому что мы точно знаем&nbsp;— уходить вам не захочется ;)</p>
+        <svg class="quote__rule" viewBox="0 0 1200 31.7" preserveAspectRatio="none" aria-hidden="true">
+          <polygon points="40,31.7 40,4 0,4 0,0 44,0 44,22.3 67.2,0 1200,0 1200,4 68.8,4"></polygon>
+        </svg>
+        <div class="quote__author">
+          <img src="assets/img/tild3566-3138-4961-a631-363663616362__noroot.webp" alt="" width="80" height="80">
+          <p class="quote__author-name">«Порхай»</p>
+          <p class="quote__author-role">Развлекательный центр</p>
+        </div>
       </div>
     </div>
   </section>
@@ -236,14 +241,26 @@
   }
 
   // 5b. Лента-слайдер фото (если есть на странице): те же стрелки, тот же приём.
+  //     В оригинале слайдер сам листает фото каждые ~5с (замерено на живой
+  //     странице: 4.97с и 4.84с между переключениями) — воспроизводим тем же
+  //     интервалом. Кольцо останавливается на последнем кадре и едет назад
+  //     в начало, а не наоборот — так делает и оригинал.
   var slider = document.querySelector('.slider__track');
   if (slider) {
+    function sliderNext() {
+      var atEnd = slider.scrollLeft + slider.clientWidth >= slider.scrollWidth - 2;
+      slider.scrollTo({ left: atEnd ? 0 : slider.scrollLeft + slider.clientWidth, behavior: 'smooth' });
+    }
     document.querySelector('.slider__arrow--prev').addEventListener('click', function () {
       slider.scrollBy({ left: -slider.clientWidth, behavior: 'smooth' });
     });
-    document.querySelector('.slider__arrow--next').addEventListener('click', function () {
-      slider.scrollBy({ left: slider.clientWidth, behavior: 'smooth' });
-    });
+    document.querySelector('.slider__arrow--next').addEventListener('click', sliderNext);
+
+    if (!reduce) {
+      var sliderTimer = setInterval(function () {
+        if (!document.hidden) sliderNext();
+      }, 5000);
+    }
   }
 
   // 6. Мобильное меню.
