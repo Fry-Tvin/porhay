@@ -1280,9 +1280,13 @@ ul { margin: 0; padding: 0; list-style: none; }
   padding-top: 90px;
 }
 .features__item { text-align: center; }
-/* 180px — крупнее оригинальных 140px, по прямой просьбе заказчика
-   (не по замеру: в оригинале ровно 140px и там, и там). */
-.features__item img { width: 180px; height: auto; margin: 0 auto 25px; }
+/* Было увеличено до 180px по просьбе заказчика, но вернули обратно: исходники
+   этих фото в экспорте Тильды — нативно всего 147×143px (это фото, не иконки),
+   других версий нигде в экспорте нет. При 180px + retina экрана телефона
+   получается апскейл в 3+ раза от реального разрешения — отсюда «пережато».
+   140px — тот размер, при котором мыло меньше всего заметно; крупнее без
+   новых фото от заказчика не сделать, см. заметку в content/prices.md. */
+.features__item img { width: 140px; height: auto; margin: 0 auto 25px; }
 .features__item h3 { margin: 12px 0 25px; font-size: 30px; line-height: 1.17; font-weight: 700; color: var(--ink); }
 .features__item p { font-size: 18px; line-height: 1.55; font-weight: 400; color: var(--ink); }
 
@@ -1365,7 +1369,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   .features { padding: 56px 0 40px; }
   .features__title { font-size: 28px; }
   .features__grid { grid-template-columns: 1fr; gap: 32px; padding-top: 24px; }
-  .features__item img { width: 140px; }
+  .features__item img { width: 110px; }
   .features__item h3 { font-size: 24px; }
 
   .quote { padding: 64px 0 56px; }
@@ -1445,8 +1449,12 @@ ul { margin: 0; padding: 0; list-style: none; }
 .pricelist__row { display: flex; justify-content: space-between; font-size: 18px; font-weight: 700; color: var(--ink); text-transform: uppercase; }
 .pricelist__line { margin-top: 10px; border-top: 1px solid var(--teal); opacity: .3; }
 
-.teasers { padding: 45px 0 105px; background: var(--mint); }
-.teasers__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; max-width: 1160px; margin: 0 auto; }
+/* В оригинале это два разных Тильда-блока (заголовок T030 pt:135, карточки
+   T692 pt:45) — их отступы нельзя схлопывать в общий padding секции, иначе
+   не хватает места под ленту-разделитель сверху и её шарики наезжают на
+   заголовок. */
+.teasers { padding: 135px 0 105px; background: var(--mint); }
+.teasers__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; max-width: 1160px; margin: 45px auto 0; }
 .teasers__item { text-align: center; }
 .teasers__item img { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 16px; }
 .teasers__item h3 { margin-top: 16px; font-size: 24px; font-weight: 700; }
@@ -1469,8 +1477,8 @@ ul { margin: 0; padding: 0; list-style: none; }
   .pricelist__descr { font-size: 18px; }
   .pricelist__grid { margin-top: 36px; gap: 32px; }
 
-  .teasers { padding: 40px 0 56px; }
-  .teasers__grid { grid-template-columns: 1fr; gap: 32px; max-width: 340px; }
+  .teasers { padding: 105px 0 45px; }
+  .teasers__grid { grid-template-columns: 1fr; gap: 32px; max-width: 340px; margin-top: 45px; }
 }
 
 /* --- Пакеты "под ключ": День рождения / Выпускной / Корпоратив (rec567316477 и др.) */
