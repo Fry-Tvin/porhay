@@ -117,7 +117,14 @@
       var el = drift[i], r = el.getBoundingClientRect();
       if (r.bottom < -240 || r.top > vh + 240) continue;
       var p = 1 - (r.top + r.height / 2) / (vh + r.height);
-      var wave = Math.sin(Math.max(0, Math.min(1, p)) * Math.PI);
+      // В оригинале это Тильдовская scroll-анимация с двумя кейфреймами
+      // (di:0 -> mx:0,ro:0 и di:100 -> mx,ro), т.е. линейная интерполяция
+      // по проценту прохождения элемента через экран, а не волна с пиком
+      // посередине. Раньше тут стоял sin(p*PI) — из-за него дрейф достигал
+      // 100% ровно тогда, когда элемент по центру экрана (самый частый
+      // момент, когда его и разглядывают), хотя в оригинале там только
+      // около половины хода. Сверено с данными в spec (animation.scroll.keyframes).
+      var wave = Math.max(0, Math.min(1, p));
       var d = el.dataset.drift.split(',');
       el.style.transform = 'translateX(' + (d[0] * wave).toFixed(2) + 'px)'
                          + ' rotate(' + (d[1] * wave).toFixed(2) + 'deg)';
