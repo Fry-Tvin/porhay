@@ -106,6 +106,37 @@
     swing.forEach(function (el) { swingObs.observe(el); });
   }
 
+  // 2c. Чёрточки на ленте-разделителе, вариант Б (flip=True): тоже разовый
+  //     scroll-in свинг, а не бесконечный дрейф — но по трём осям (X, Y и
+  //     поворот), в отличие от рамок карточек выше. Раньше эти чёрточки
+  //     жили на data-drift и paint() ниже — то есть непрерывно дрейфовали
+  //     вслед за прокруткой, из-за чего при остановке в любой промежуточной
+  //     точке они «зависали» на случайной доле пути и выглядели оторванными
+  //     от своего шарика. В spec (animation.scroll.keyframes) у них честные
+  //     3 кейфрейма (0 -> 200 -> 210мс) — появилась, качнулась, застыла,
+  //     как и у рамок, только качели идут по translate X/Y и по rotate
+  //     одновременно (rotate — CSS-свойство, отдельное от translate, чтобы
+  //     не конфликтовать со статичным поворотом картинки).
+  var swing3 = [].slice.call(document.querySelectorAll('[data-swing3]'));
+  if (swing3.length && !reduce && document.body.animate && window.IntersectionObserver) {
+    var swing3Obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        swing3Obs.unobserve(en.target);
+        var d = en.target.dataset.swing3.split(',');
+        var mx = +d[0], my = +d[1], ro = +d[2];
+        var baseRotate = getComputedStyle(en.target).rotate;
+        var base = baseRotate && baseRotate !== 'none' ? parseFloat(baseRotate) : 0;
+        en.target.animate([
+          { translate: '0px 0px', rotate: base + 'deg' },
+          { translate: mx + 'px ' + my + 'px', rotate: (base + ro) + 'deg', offset: .95 },
+          { translate: '0px 0px', rotate: base + 'deg' }
+        ], { duration: 210, easing: 'ease-out' });
+      });
+    }, { threshold: .2 });
+    swing3.forEach(function (el) { swing3Obs.observe(el); });
+  }
+
   // 3. Дрейф по прокрутке: шарики и чёрточки уезжают вправо и проворачиваются,
   //    пока проходят через экран, затем возвращаются.
   var drift = [].slice.call(document.querySelectorAll('[data-drift]'));

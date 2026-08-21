@@ -273,6 +273,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   border-radius: 50%;
   background: var(--white);
 }
+.band__bubble--lg { width: 116px; height: 116px; }
 .band__bit { position: absolute; }
 .band__bit img { display: block; width: 100%; height: auto; }
 
@@ -306,6 +307,22 @@ ul { margin: 0; padding: 0; list-style: none; }
   line-height: 22px;
   font-weight: 400;
   color: var(--ink);
+}
+
+/* Акционный бейдж (группа B/маркетинг — новый элемент, в фирменных цветах,
+   как чекбокс согласия или cookie-баннер: сохраняем стиль, не добавляем
+   новую палитру). Ограничен по времени, добавлен по просьбе заказчика. */
+.promo-badge {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 12px 28px;
+  background: var(--yellow);
+  color: var(--ink);
+  border-radius: 50px;
+  font-size: 16px;
+  line-height: 1.3;
+  font-weight: 700;
+  text-align: center;
 }
 
 .cards {
@@ -1083,6 +1100,8 @@ ul { margin: 0; padding: 0; list-style: none; }
   .nav, .header__cta { display: none; }
   .burger { display: block; margin-left: auto; }
 
+  .promo-badge { font-size: 14px; padding: 10px 20px; }
+
   /* Шапка на мобильной прозрачная и лежит поверх первого экрана,
      как в оригинале: логотип заходит на картинку. В отличие от десктопа,
      на мобильной оригинал НЕ получает мятный фон после прокрутки —
@@ -1231,7 +1250,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .page-hero__title { margin-top: 24px; font-size: 48px; line-height: 1.23; font-weight: 700; color: var(--ink); }
 .page-hero__descr { margin-top: 21px; font-size: 18px; line-height: 1.55; font-weight: 400; color: var(--ink); }
 
-.slider { position: relative; max-width: 1160px; margin: 0 auto; }
+.slider { position: relative; max-width: 1160px; margin: 60px auto 0; }
 .slider__track {
   display: flex;
   overflow-x: auto;
@@ -1447,6 +1466,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .pricelist__group-items { display: flex; justify-content: center; gap: 60px; flex-wrap: wrap; width: 100%; }
 .pricelist__item { flex: 1 1 260px; max-width: 300px; }
 .pricelist__row { display: flex; justify-content: space-between; font-size: 18px; font-weight: 700; color: var(--ink); text-transform: uppercase; }
+.pricelist__item-note { margin-top: 6px; font-size: 13px; line-height: 1.4; font-weight: 400; color: var(--ink); opacity: .6; text-align: left; text-transform: none; }
 .pricelist__line { margin-top: 10px; border-top: 1px solid var(--teal); opacity: .3; }
 
 /* В оригинале это два разных Тильда-блока (заголовок T030 pt:135, карточки
@@ -1468,7 +1488,11 @@ ul { margin: 0; padding: 0; list-style: none; }
   .cover-hero__title { font-size: 24px; }
 
   .amenities { padding: 24px 0 48px; }
-  .amenities__grid { grid-template-columns: repeat(2, 1fr); column-gap: 24px; row-gap: 48px; }
+  /* В оригинале это t-col_3 (4 в ряд на десктопе), а на мобильной Тильда
+     схлопывает такую сетку в один столбец — было 2, из-за чего текст
+     («Самый глубокий — Белый, средний — Пляж…») переносился некрасиво
+     и первый пункт визуально «съезжал». */
+  .amenities__grid { grid-template-columns: 1fr; max-width: 320px; margin: 0 auto; row-gap: 32px; }
   .amenities__item img { width: 48px; height: 48px; }
   .amenities__item h3 { font-size: 19px; margin-top: 10px; }
 
@@ -1484,10 +1508,18 @@ ul { margin: 0; padding: 0; list-style: none; }
 /* --- Пакеты "под ключ": День рождения / Выпускной / Корпоратив (rec567316477 и др.) */
 .split-hero { padding: 75px 0 90px; }
 .split-hero .stage { display: flex; align-items: center; gap: 60px; }
-.split-hero__photo { flex: 1 1 50%; height: 560px; border-radius: 24px; background-size: cover; background-position: center; }
+/* Исходник — квадратное фото 1680×1680 с уже вписанным кольцом-рамкой
+   (не CSS-эффект, так пришло из экспорта). aspect-ratio:1/1 вместо
+   фиксированной высоты — иначе на мобильной ширина/высота контейнера сильно
+   расходятся с квадратом источника, background-size:cover обрезает кольцо
+   сверху и снизу, и вместо круга получается «срезанный сфероид». */
+.split-hero__photo { flex: 1 1 50%; aspect-ratio: 1 / 1; border-radius: 24px; background-size: cover; background-position: center; }
 .split-hero__text { flex: 1 1 50%; text-align: center; }
 .split-hero__title { font-size: 42px; line-height: 1.23; font-weight: 700; color: var(--ink); text-transform: uppercase; }
-.split-hero__line { width: 100px; height: 3px; margin: 20px auto; background: var(--yellow); }
+/* display:block обязателен — это <span>, без него width/height не
+   применяются к строчному элементу (схлопывается в 0×0), из-за чего линия
+   не рисовалась и вертикальный отступ между заголовком и текстом пропадал. */
+.split-hero__line { display: block; width: 100px; height: 3px; margin: 20px auto; background: var(--yellow); }
 .split-hero__descr { font-size: 20px; line-height: 1.55; font-weight: 400; color: var(--ink); }
 .split-hero__subtitle { max-width: 400px; margin: 16px auto 0; font-size: 16px; line-height: 1.55; font-weight: 400; color: var(--ink); }
 
@@ -1513,7 +1545,21 @@ ul { margin: 0; padding: 0; list-style: none; }
   background: var(--mint);
   text-align: center;
 }
-.plan--highlight { background: var(--yellow); }
+.plan--mint { background: var(--mint); }
+.plan--yellow { background: var(--yellow); }
+.plan--peach { background: var(--peach); }
+.plan--cream { background: var(--cream); }
+.plan__badge {
+  align-self: center;
+  margin-bottom: 12px;
+  padding: 4px 14px;
+  border-radius: 20px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
 .plan__title { font-size: 24px; font-weight: 700; color: var(--ink); }
 .plan__price { margin-top: 12px; font-size: 28px; font-weight: 700; color: var(--ink); }
 .plan__meta { margin-top: 4px; font-size: 14px; font-weight: 400; color: var(--ink); opacity: .7; }
@@ -1535,7 +1581,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 @media (max-width: 1000px) {
   .split-hero { padding: 48px 0; }
   .split-hero .stage { flex-direction: column; gap: 32px; }
-  .split-hero__photo { flex: none; width: 100%; height: 280px; }
+  .split-hero__photo { flex: none; width: 100%; height: auto; }
   .split-hero__title { font-size: 26px; }
   .split-hero__descr { font-size: 16px; }
 

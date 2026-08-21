@@ -20,6 +20,9 @@ SRC = os.path.join(os.path.dirname(HERE), 'porhai-eds', 'images')
 # porhai-eds не трогаем, это эталон, копии с правками лежат здесь под теми
 # же именами и имеют приоритет над экспортом.
 REDACTED = os.path.join(HERE, 'content', 'redacted')
+# Новые фото от заказчика, которых никогда не было в экспорте Тильды
+# (новые опции, замены дырок в галереях) — лежат прямо в content/.
+NEW = os.path.join(HERE, 'content')
 
 # файл -> ширина отображения в вёрстке (умножаем на 2 под плотные экраны)
 DISPLAY_WIDTH = {
@@ -285,6 +288,13 @@ DISPLAY_WIDTH = {
     'tild6265-3732-4639-a233-663565633139__photo_2023-03-09_15-.jpg': 1160,
     'tild6264-3264-4766-b830-323362613331__photo_2023-03-09_15-.jpg': 1160,
     'tild3565-3464-4362-a463-303965336639__photo_2021-06-30_10-.jpg': 1160,
+    # Новые фото от заказчика (не из экспорта Тильды) — content/, см. NEW выше.
+    'IMG_2453.jpg': 1160,   # неоновое ленточное шоу — галерея White Room
+    'IMG_2454.jpg': 1160,
+    'IMG_2460.jpg': 1160,
+    'IMG_2527.png': 1160,
+    'IMG_2528.png': 1160,
+    'photo_2_2026-08-21_17-28-51.jpg': 625,  # бассейн «Пляж» — галерея главной
 }
 RETINA = 3
 QUALITY = 82
@@ -305,7 +315,7 @@ def find_source(name):
     в content/redacted, если есть, важнее оригинала из экспорта."""
     stem = os.path.splitext(name)[0]
     exts = ('.svg',) if name.lower().endswith('.svg') else ('.png', '.jpg', '.jpeg')
-    for base in (REDACTED, SRC):
+    for base in (REDACTED, SRC, NEW):
         for ext in exts:
             p = os.path.join(base, stem + ext)
             if os.path.exists(p):
