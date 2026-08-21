@@ -2,9 +2,11 @@
 __pycache__/
 *.py[cod]
 
-# Сборки в один файл — пересобираются из index.html за одну команду,
-# а в истории дают мегабайты base64 на каждое изменение.
+# Сборки в один файл — пересобираются из *.html за одну команду
+# (python make_artifact.py [страница.html]), а в истории дают мегабайты
+# base64 на каждое изменение.
 porhai-new/porhai-artifact.html
+porhai-new/porhai-artifact-*.html
 porhai-new/porhai-glavnaya-demo.html
 
 # Локальные настройки Claude Code (launch.json нужен всем, он остаётся)
