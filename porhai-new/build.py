@@ -2650,6 +2650,166 @@ def build_partner():
     print('partner.html собран:', len(html), 'байт')
 
 
+# --- Подарочная страница (/podarok) -----------------------------------
+# Скрытая: не в NAV, не в мобильном меню, не в подвале, noindex+nofollow.
+# Раздаётся прямой ссылкой (реклама, рассылка, визитки).
+#
+# Перенос присланного заказчиком промо-раздела (23.08.2026) в стилистику
+# сайта. Текст обновлён по его же указанию: раньше дарили просто бесплатное
+# посещение, теперь — сертификат на бесплатное посещение детского центра
+# (детский билет); добавлен блок про сертификат 1000 ₽ в телеграм-боте.
+#
+# Фото: в присланном коде было шесть картинок, вшитых base64. Три из них
+# с водяным знаком стороннего сайта (Farpost) — их не берём, вместо них
+# в ленте идут наши собственные кадры из галереи главной.
+PODAROK_STRIP = [
+    ('podarok_1.webp', 'Зеркальная комната с фонариками'),
+    ('podarok_2.webp', 'Фотозона в «Порхай»'),
+    ('tild6337-3862-4436-b139-346435333238__ce4a0538.webp', 'Белый бассейн'),
+    ('tild3964-6461-4031-b762-383135653235__iii_5366.webp', 'Праздник в «Порхай»'),
+    ('tild3734-3361-4664-a338-376264373263__iii_8850_2.webp', 'Фотозоны центра'),
+]
+
+PODAROK_TILES = [
+    ('⚪', 'Белый бассейн', 'Тысячи белых шариков'),
+    ('✨', 'Фотозоны', 'Зеркальная комната и другие'),
+    ('🎂', 'Праздники', 'Дни рождения под ключ'),
+    ('🎓', 'Выпускные', 'Для садиков и школ'),
+]
+
+PODAROK_STEPS = [
+    'Нажмите кнопку ниже и напишите нам в удобный мессенджер',
+    'Согласуйте дату и время с администратором',
+    'Приходите и покажите это сообщение на входе',
+]
+
+# Текст приветствия в мессенджер — один и тот же во всех трёх кнопках.
+PODAROK_HELLO = quote('Здравствуйте! Хочу получить бесплатное посещение')
+
+WA_ICON = ('<path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15'
+           '-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475'
+           '-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52'
+           '.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207'
+           '-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297'
+           '-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487'
+           '.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413'
+           '.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 '
+           '0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001'
+           '-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994'
+           'c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 '
+           '5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 '
+           '005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>')
+
+TG_ICON = ('<path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0'
+           'a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093'
+           '.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225'
+           '-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 '
+           '3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 '
+           '1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349'
+           '-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332'
+           '-1.386 4.025-1.627 4.476-1.635z"/>')
+
+MAX_ICON = ('<path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm1.5 '
+            '6.5h-3L8 13h2.5l-3 5.5h.5l6-7.5H11.5z"/>')
+
+PODAROK_ACTIONS = [
+    ('wa', 'WhatsApp', 'https://wa.me/79510000499?text=' + PODAROK_HELLO, WA_ICON),
+    ('tg', 'Telegram', 'https://t.me/porhay_vl?text=' + PODAROK_HELLO, TG_ICON),
+    ('max', 'MAX', 'https://max.ru/u/f9LHodD0cOL6F8QuPF9MaZd2lroYGD_fAKXxQYrk7wWq41OMHaUEkWxCwoc', MAX_ICON),
+]
+
+
+def build_podarok():
+    strip = ''.join(
+        '<img src="%s%s" alt="%s" loading="lazy" width="180" height="180">' % (IMG, img, alt)
+        for img, alt in PODAROK_STRIP)
+
+    tiles = ''.join(
+        '<div class="gift__tile"><div class="gift__tile-icon" aria-hidden="true">%s</div>'
+        '<h3>%s</h3><p>%s</p></div>' % (icon, title, descr)
+        for icon, title, descr in PODAROK_TILES)
+
+    steps = ''.join(
+        '<div class="gift__step"><div class="gift__step-num">%d</div><p>%s</p></div>' % (n, text)
+        for n, text in enumerate(PODAROK_STEPS, 1))
+
+    actions = ''.join(
+        '<a class="gift__action gift__action--%s" href="%s" target="_blank" rel="nofollow noopener noreferrer">'
+        '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">%s</svg>%s</a>'
+        % (mod, href, icon, label)
+        for mod, label, href, icon in PODAROK_ACTIONS)
+
+    html = f"""<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Подарок — бесплатное посещение «Порхай»</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<script>document.documentElement.className+=' js'</script>
+
+<main class="gift">
+  <a class="gift__logo" href="/" aria-label="Порхай — на главную">
+    <img src="{IMG}tild3166-3639-4666-b462-333535343563__photo.svg" alt="Порхай" width="150" height="46">
+  </a>
+
+  <div class="gift__hero">
+    <img src="{IMG}podarok_hero.webp" alt="Дети в белом бассейне с шариками" width="800" height="533">
+    <div class="gift__hero-text">
+      <p class="gift__eyebrow">Подарок для вас</p>
+      <h1 class="gift__title">Бесплатное<br>посещение</h1>
+    </div>
+  </div>
+
+  <div class="gift__body">
+    <div class="gift__card gift__card--offer">
+      <p>Дарим <strong>сертификат на бесплатное посещение детского центра (детский билет)</strong>.
+      Если вы у&nbsp;нас уже были&nbsp;— для вас действует скидка на&nbsp;посещение 50%.</p>
+      <div class="gift__chips">
+        <span class="gift__chip">Державина 23</span>
+        <span class="gift__chip">10:00 — 21:00</span>
+      </div>
+    </div>
+
+    <div class="gift__card gift__card--bot">
+      <div class="gift__bot-icon" aria-hidden="true">🎁</div>
+      <p>Хотите сертификат <strong>на&nbsp;1000&nbsp;₽</strong>? Получите его в&nbsp;нашем
+      телеграм-боте <a href="https://t.me/porhay_gift_bot" target="_blank" rel="nofollow noopener noreferrer">@porhay_gift_bot</a></p>
+    </div>
+
+    <section style="margin-bottom:20px">
+      <h2 class="gift__label">Что вас ждёт</h2>
+      <div class="gift__tiles">{tiles}</div>
+    </section>
+
+    <section style="margin-bottom:20px">
+      <h2 class="gift__label">Как у нас</h2>
+      <div class="gift__strip">{strip}</div>
+    </section>
+
+    <div class="gift__card gift__card--steps">
+      <h2 class="gift__label">Как получить</h2>
+      <div class="gift__steps">{steps}</div>
+    </div>
+
+    <div class="gift__actions">{actions}</div>
+
+    <p class="gift__note">Предложение действует только для новых клиентов.</p>
+  </div>
+</main>
+
+</body>
+</html>
+"""
+    path = os.path.join(HERE, 'podarok.html')
+    with open(path, 'w', encoding='utf-8') as f:
+        f.write(html)
+    print('podarok.html собран:', len(html), 'байт')
+
+
 # --- Страница 404 (page35430778) --------------------------------------
 NOT_FOUND_COVER = 'tild3035-3035-4238-a562-306235333438__photo_2021-06-30_10-.webp'
 NOT_FOUND_LOGO = 'tild6331-3966-4337-b038-376262386463___.svg'
@@ -2712,4 +2872,5 @@ if __name__ == '__main__':
     build_vypusknye()
     build_korporativ()
     build_partner()
+    build_podarok()
     build_not_found()
