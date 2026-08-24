@@ -187,7 +187,7 @@ MOBILE_MENU = [
     ('Разовое посещение', '/razovoe', None),
     ('Аренда залов', None, [
         ('WhiteBox', '/whiteroom'), ('LoftBox', '/loftbox'), ('Комбо+', '/combo')]),
-    ('Праздник под ключ', '/pakety', None),
+    ('Праздник <span class="mobile-menu__accent">под ключ</span>', '/denrozhdeniya', None),
     ('Для групп', '#dlyagrupp', None),
     ('Отзывы', '#otziv', None),
     ('Скидки от партнёров', '/partner', None),
@@ -339,7 +339,8 @@ POPUPS = {
 # персональных данных, поэтому её убираем сразу, без согласования.
 REVIEWS = [
     'tild3036-3364-4462-b836-333063396135__photo_2023-02-19_16-.webp',
-    'tild3139-6336-4961-b439-303832396662__photo_2023-02-19_16-.webp',
+    # tild3139-6336-4961-b439-303832396662 (2-й скриншот) убран 24.08.2026 —
+    # заказчик заметил, что он выглядит непропорционально сжатым в ленте.
     'tild3163-6263-4363-a433-383636653234__photo_2023-02-19_16-.webp',
     'tild3361-3033-4665-b330-393038343138__photo_2023-03-04_15-.webp',
     'tild3430-3334-4834-b366-336632383438__photo_2023-02-19_16-.webp',
@@ -374,6 +375,7 @@ SLIDER_ARROW = ('<svg viewBox="0 0 15.3 29" xmlns="http://www.w3.org/2000/svg">'
 # оформлением больше нет, фото на замену ждём от заказчика.
 GALLERY = [
     ('photo_2_2026-08-21_17-28-51.webp', 'wide'),  # бассейн «Пляж», прислано 21.08.2026 — закрывает дыру от старого фото жёлтого бассейна
+    ('IMG_2453.webp', 'tall'),  # неоновое ленточное шоу — новая опция, фото от заказчика 21.08.2026
     ('tild6337-3862-4436-b139-346435333238__ce4a0538.webp', 'wide'),
     ('tild6166-3964-4535-b531-646432353565__f70a9379-1.webp', 'tall'),
     ('tild3964-6461-4031-b762-383135653235__iii_5366.webp', 'wide'),
@@ -442,12 +444,8 @@ ADDRESS = 'ул. Державина, 23, Владивосток'
 SOCIALS = [
     ('instagram', 'https://instagram.com/porhay_vladivostok',
      '<path fill-rule="evenodd" clip-rule="evenodd" d="M50 100C77.6142 100 100 77.6142 100 50C100 22.3858 77.6142 0 50 0C22.3858 0 0 22.3858 0 50C0 77.6142 22.3858 100 50 100ZM25 39.3918C25 31.4558 31.4566 25 39.3918 25H60.6082C68.5442 25 75 31.4566 75 39.3918V60.8028C75 68.738 68.5442 75.1946 60.6082 75.1946H39.3918C31.4558 75.1946 25 68.738 25 60.8028V39.3918ZM36.9883 50.0054C36.9883 42.8847 42.8438 37.0922 50.0397 37.0922C57.2356 37.0922 63.0911 42.8847 63.0911 50.0054C63.0911 57.1252 57.2356 62.9177 50.0397 62.9177C42.843 62.9177 36.9883 57.1252 36.9883 50.0054ZM41.7422 50.0054C41.7422 54.5033 45.4641 58.1638 50.0397 58.1638C54.6153 58.1638 58.3372 54.5041 58.3372 50.0054C58.3372 45.5066 54.6145 41.8469 50.0397 41.8469C45.4641 41.8469 41.7422 45.5066 41.7422 50.0054ZM63.3248 39.6355C65.0208 39.6355 66.3956 38.2606 66.3956 36.5646C66.3956 34.8687 65.0208 33.4938 63.3248 33.4938C61.6288 33.4938 60.2539 34.8687 60.2539 36.5646C60.2539 38.2606 61.6288 39.6355 63.3248 39.6355Z" fill="#38a2a5"/>'),
-    ('ok', 'https://ok.ru/profile/584271671190',
-     '<path fill-rule="evenodd" clip-rule="evenodd" d="M50 100c27.614 0 50-22.386 50-50S77.614 0 50 0 0 22.386 0 50s22.386 50 50 50Zm13.463-63.08c0 7.688-6.233 13.92-13.92 13.92-7.688 0-13.92-6.232-13.92-13.92S41.855 23 49.543 23s13.92 6.232 13.92 13.92Zm-7.072 0a6.848 6.848 0 1 0-13.696 0 6.848 6.848 0 0 0 13.696 0Zm3.341 15.006c2.894-2.28 5.07-.967 5.856.612 1.37 2.753-.178 4.084-3.671 6.326-2.96 1.9-7.016 2.619-9.665 2.892l2.217 2.216 8.203 8.203a3.192 3.192 0 0 1 0 4.514l-.376.376a3.192 3.192 0 0 1-4.514 0l-8.203-8.203-8.203 8.203a3.192 3.192 0 0 1-4.514 0l-.376-.376a3.192 3.192 0 0 1 0-4.514l8.203-8.203 2.21-2.21c-2.648-.268-6.748-.983-9.732-2.898-3.494-2.243-5.041-3.573-3.671-6.326.786-1.579 2.963-2.892 5.855-.612 3.91 3.08 10.19 3.08 10.19 3.08s6.282 0 10.191-3.08Z" fill="#38a2a5"/>'),
     ('telegram', 'https://t.me/porhay_vladivostok',
      '<path fill-rule="evenodd" clip-rule="evenodd" d="M50 100c27.614 0 50-22.386 50-50S77.614 0 50 0 0 22.386 0 50s22.386 50 50 50Zm21.977-68.056c.386-4.38-4.24-2.576-4.24-2.576-3.415 1.414-6.937 2.85-10.497 4.302-11.04 4.503-22.444 9.155-32.159 13.734-5.268 1.932-2.184 3.864-2.184 3.864l8.351 2.577c3.855 1.16 5.91-.129 5.91-.129l17.988-12.238c6.424-4.38 4.882-.773 3.34.773l-13.49 12.882c-2.056 1.804-1.028 3.35-.129 4.123 2.55 2.249 8.82 6.364 11.557 8.16.712.467 1.185.778 1.292.858.642.515 4.111 2.834 6.424 2.319 2.313-.516 2.57-3.479 2.57-3.479l3.083-20.226c.462-3.511.993-6.886 1.417-9.582.4-2.546.705-4.485.767-5.362Z" fill="#38a2a5" />'),
-    ('vk', 'https://vk.com/public211114670',
-     '<path fill-rule="evenodd" clip-rule="evenodd" d="M50 100c27.614 0 50-22.386 50-50S77.614 0 50 0 0 22.386 0 50s22.386 50 50 50ZM25 34c.406 19.488 10.15 31.2 27.233 31.2h.968V54.05c6.278.625 11.024 5.216 12.93 11.15H75c-2.436-8.87-8.838-13.773-12.836-15.647C66.162 47.242 71.783 41.62 73.126 34h-8.058c-1.749 6.184-6.932 11.805-11.867 12.336V34h-8.057v21.611C40.147 54.362 33.838 48.304 33.556 34H25Z" fill="#38a2a5" />'),
     ('whatsapp', 'https://wa.me/79510000499',
      '<path fill-rule="evenodd" clip-rule="evenodd" d="M50 100C77.6142 100 100 77.6142 100 50C100 22.3858 77.6142 0 50 0C22.3858 0 0 22.3858 0 50C0 77.6142 22.3858 100 50 100ZM69.7626 28.9928C64.6172 23.841 57.7739 21.0027 50.4832 21C35.4616 21 23.2346 33.2252 23.2292 48.2522C23.2274 53.0557 24.4823 57.7446 26.8668 61.8769L23 76L37.4477 72.2105C41.4282 74.3822 45.9107 75.5262 50.4714 75.528H50.4823C65.5029 75.528 77.7299 63.301 77.7363 48.2749C77.7408 40.9915 74.9089 34.1446 69.7626 28.9928ZM62.9086 53.9588C62.2274 53.6178 58.8799 51.9708 58.2551 51.7435C57.6313 51.5161 57.1766 51.4024 56.7228 52.0845C56.269 52.7666 54.964 54.2998 54.5666 54.7545C54.1692 55.2092 53.7718 55.2656 53.0915 54.9246C52.9802 54.8688 52.8283 54.803 52.6409 54.7217C51.6819 54.3057 49.7905 53.4855 47.6151 51.5443C45.5907 49.7382 44.2239 47.5084 43.8265 46.8272C43.4291 46.1452 43.7837 45.7769 44.1248 45.4376C44.3292 45.2338 44.564 44.9478 44.7987 44.662C44.9157 44.5194 45.0328 44.3768 45.146 44.2445C45.4345 43.9075 45.56 43.6516 45.7302 43.3049C45.7607 43.2427 45.7926 43.1776 45.8272 43.1087C46.0545 42.654 45.9409 42.2565 45.7708 41.9155C45.6572 41.6877 45.0118 40.1167 44.4265 38.6923C44.1355 37.984 43.8594 37.3119 43.671 36.8592C43.1828 35.687 42.6883 35.69 42.2913 35.6924C42.2386 35.6928 42.1876 35.6931 42.1386 35.6906C41.7421 35.6706 41.2874 35.667 40.8336 35.667C40.3798 35.667 39.6423 35.837 39.0175 36.5191C38.9773 36.5631 38.9323 36.6111 38.8834 36.6633C38.1738 37.4209 36.634 39.0648 36.634 42.2002C36.634 45.544 39.062 48.7748 39.4124 49.2411L39.415 49.2444C39.4371 49.274 39.4767 49.3309 39.5333 49.4121C40.3462 50.5782 44.6615 56.7691 51.0481 59.5271C52.6732 60.2291 53.9409 60.6475 54.9303 60.9612C56.5618 61.4796 58.046 61.4068 59.22 61.2313C60.5286 61.0358 63.2487 59.5844 63.8161 57.9938C64.3836 56.4033 64.3836 55.0392 64.2136 54.7554C64.0764 54.5258 63.7545 54.3701 63.2776 54.1395C63.1633 54.0843 63.0401 54.0247 62.9086 53.9588Z" fill="#38a2a5" />'),
 ]
@@ -1136,16 +1134,6 @@ def build():
 
   {band()}
 
-  <section class="section section--tariffs" id="zaly">
-    <div class="stage">
-      <div class="section__head">
-        <h2 class="section__title" data-anim="fadeinup" data-anim-dur="1">Варианты аренды залов</h2>
-        <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">Без организации мероприятия и&nbsp;шоу-программы</p>
-      </div>
-      <div class="tariffs">{tariffs}</div>
-    </div>
-  </section>
-
   <section class="section section--tariffs section--keys" id="pod-kluch">
     <div class="stage">
       <div class="section__head">
@@ -1154,7 +1142,17 @@ def build():
         {PROMO_NEON}
       </div>
       {render_packages_carousel()}
-      <div class="cta-band cta-band--tight"><a class="btn btn--yellow" href="/pakety">Все пакеты</a></div>
+      <div class="cta-band cta-band--tight"><a class="btn btn--yellow" href="/denrozhdeniya">Все пакеты</a></div>
+    </div>
+  </section>
+
+  <section class="section section--tariffs" id="zaly">
+    <div class="stage">
+      <div class="section__head">
+        <h2 class="section__title" data-anim="fadeinup" data-anim-dur="1">Наши залы</h2>
+        <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">Без организации мероприятия и&nbsp;шоу-программы</p>
+      </div>
+      <div class="tariffs">{tariffs}</div>
     </div>
   </section>
 
@@ -1516,7 +1514,7 @@ RAZOVOE_GALLERY = [
 
 # Что включено (rec561501064) — 6 карточек, дословно из экспорта.
 RAZOVOE_FEATURES = [
-    ('tild3965-3138-4164-b031-643434613061___3.webp', 'Сеанс 55&nbsp;минут', None),
+    ('tild3965-3138-4164-b031-643434613061___3.webp', 'Сеанс 60&nbsp;минут', None),
     ('tild6137-6231-4338-a238-616561373330___6_1.webp', 'Посещение 3&nbsp;бассейнов',
      'Самый глубокий Белый бассейн, «Пляж» и&nbsp;«Арбуз»'),
     ('tild3234-3666-4132-a432-363833343336___5_1.webp', 'Все фотозоны', None),
@@ -1617,7 +1615,7 @@ def build_razovoe():
 
   <div class="stage">{slider}</div>
 
-  <p class="price-line">Стоимость от&nbsp;500&nbsp;₽/55&nbsp;минут</p>
+  <p class="price-line">Стоимость от&nbsp;500&nbsp;₽/60&nbsp;минут</p>
 
   <div class="cta-band"><a class="btn btn--yellow" href="#popup:razovoe" data-anim="zoomin" data-anim-dur="1">Записаться</a></div>
 
@@ -1653,7 +1651,7 @@ def build_razovoe():
   <section class="price-table">
     <div class="stage">
       <div class="price-table__uptitle">«Порхай»</div>
-      <h2 class="price-table__title">Стоимость сеанса<br>(55 минут)</h2>
+      <h2 class="price-table__title">Стоимость сеанса<br>(60 минут)</h2>
       <table class="price-table__grid">
         <thead><tr><th></th><th>Будни</th><th>Выходные и праздники</th></tr></thead>
         <tbody>{price_rows}</tbody>
@@ -1777,7 +1775,8 @@ RENTAL_PAGES = {
     'loftbox': dict(
         meta_title='Аренда зала «LOFT BOX» развлекательного центра «Порхай»',
         meta_descr='Отдельный банкетный зал + средний и маленький бассейны + все фотозоны музея.',
-        cover='tild3761-3964-4665-b035-346534373433__ce4a0718.webp',
+        # Было старое фото бассейна «Попкорн» — заменено на «Пляж» 24.08.2026.
+        cover='photo_1_2026-08-21_17-28-51.webp',
         avatar='tild3161-3162-4730-a239-353134636136__frame_15.svg',
         title='Аренда зала «Loft Box»',
         descr='Идеальный зал для компании, аренда включает в себя доступ ко всем фотозонам музея, а значит вашим гостям точно не&nbsp;будет&nbsp;скучно!',
@@ -1825,7 +1824,8 @@ RENTAL_PAGES = {
     'combo': dict(
         meta_title='Аренда зала «КОМБО +» развлекательного центра «Порхай»',
         meta_descr='Для больших компаний свыше 25 человек — АБСОЛЮТНО ВЕСЬ ЦЕНТР (335 м²).',
-        cover='tild3262-6636-4733-a238-656564323236__iii_9551_3.webp',
+        # Было старое фото бассейна «Попкорн» — заменено на «Пляж» 24.08.2026.
+        cover='photo_3_2026-08-21_17-28-51.webp',
         avatar='tild3161-3162-4730-a239-353134636136__frame_15.svg',
         title='Аренда залов «Комбо+»',
         descr='Для больших компаний свыше 25 человек, мы предлагаем к&nbsp;аренде АБСОЛЮТНО ВЕСЬ ЦЕНТР (335 кв.м.)',
@@ -2059,7 +2059,9 @@ def render_rental_page(slug):
 # (обложка, слайдер, «Почему стоит провести праздник», партнёры, отзывы,
 # FAQ, контакты) перенесены как в оригинале.
 
-DR_COVER = 'tild3835-3132-4262-a361-313163356435__1.webp'
+# Было старое фото бассейна «Попкорн» (tild3835-...__1.webp) — заказчик
+# 24.08.2026 попросил заменить на «Пляж» везде, где он ещё остался.
+DR_COVER = 'photo_5_2026-08-21_17-28-52.webp'
 DR_BG = '#f5d4ec'
 
 DR_GALLERY = [
@@ -2108,21 +2110,27 @@ DR_MINI_FEATURES = [
 
 # По просьбе заказчика (21.08.2026) каждый пакет пишем полным списком, без
 # «всё из ...» — раньше карточки ссылались друг на друга, теперь независимы.
+# price_rows: (подпись, будни, выходные) — «утро/день» через слэш там, где
+# делится, у Супер Вип цена одна на весь день, поэтому без слэша.
+# Источник — content/prices.md, таблица «Пакеты «Праздник под ключ»».
 DR_PLANS = [
     dict(title='Мини', price='от 16 500 ₽', meta='15 гостей · 3 часа',
-         color='mint', features=DR_MINI_FEATURES),
+         color='mint', features=DR_MINI_FEATURES, slug='mini',
+         price_rows=[('Будний день', '16 500 ₽/19 500 ₽'), ('Выходной день', '—/25 500 ₽')]),
     dict(title='Под ключ', price='от 24 500 ₽', meta='20 гостей · 3 часа',
-         color='yellow', badge='Популярный выбор',
-         features=DR_MINI_FEATURES + ['Серебряное шоу', 'Блеск-тату']),
+         color='yellow', badge='Популярный выбор', slug='pod-kluch',
+         features=DR_MINI_FEATURES + ['Серебряное шоу', 'Блеск-тату'],
+         price_rows=[('Будний день', '24 500 ₽/27 500 ₽'), ('Выходной день', '31 500 ₽/33 500 ₽')]),
     dict(title='Вип', price='от 41 000 ₽', meta='20 гостей · 3 часа',
-         color='peach',
+         color='peach', slug='vip',
          # Как и в «Под ключ», но без надписи из шаров (в оригинале её нет
          # начиная с этого пакета) и с добавками уровня Вип.
          features=[f for f in DR_MINI_FEATURES if f != 'Надпись из шаров «С днём рождения»']
                    + ['Серебряное шоу', 'Блеск-тату', 'Торт с дизайном на выбор, 2 кг',
-                      'Фонтан из 6 шаров и цифра', 'Фотограф 1 час', 'Пиньята с наполнением']),
+                      'Фонтан из 6 шаров и цифра', 'Фотограф 1 час', 'Пиньята с наполнением'],
+         price_rows=[('Будний день', '41 000 ₽/44 000 ₽'), ('Выходной день', '46 000 ₽/50 000 ₽')]),
     dict(title='Супер Вип', price='от 81 500 ₽', meta='50 гостей · 4 часа, вся площадка',
-         color='cream',
+         color='cream', slug='super-vip',
          features=['Аренда зала 4 часа, вся площадка', 'Аниматор 1,5 часа + шоу',
                     'Сервировка стола до 50 гостей', 'Скатерти, свечи',
                     'Электронные пригласительные', 'Воздушный шар каждому ребёнку',
@@ -2131,7 +2139,8 @@ DR_PLANS = [
                     'Серебряное шоу', 'Блеск-тату', 'Торт с дизайном на выбор, 2 кг',
                     'Фонтан из 6 шаров и цифра', 'Фотограф 1,5 часа',
                     'Пиньята с наполнением', 'Персональный администратор',
-                    '14 программ на выбор']),
+                    '14 программ на выбор'],
+         price_rows=[('Будний день', '81 500 ₽'), ('Выходной день', '96 000 ₽')]),
 ]
 
 # Заказчик 21.08.2026 попросил убрать со страницы сравнительную таблицу
@@ -2180,14 +2189,27 @@ def build_denrozhdeniya():
         '<h3>%s</h3></div>' % (IMG, img, title) for img, title in DR_WHY)
 
     plans = ''.join(
-        '<div class="plan plan--%s">%s<h3 class="plan__title">%s</h3>'
+        '<div class="plan plan--%s" id="plan-%s">%s<h3 class="plan__title">%s</h3>'
         '<p class="plan__price">%s</p><p class="plan__meta">%s</p>'
         '<ul class="plan__list">%s</ul>'
-        '<a class="btn btn--yellow" href="#popup:denrozhdeniya">Записаться</a></div>'
-        % (pl['color'], '<span class="plan__badge">%s</span>' % pl['badge'] if pl.get('badge') else '',
+        '<div class="plan__prices">%s</div>'
+        '<a class="btn btn--yellow" href="#popup:denrozhdeniya">Получить свободные даты</a></div>'
+        % (pl['color'], pl['slug'], '<span class="plan__badge">%s</span>' % pl['badge'] if pl.get('badge') else '',
            pl['title'], pl['price'], pl['meta'],
-           ''.join('<li>%s</li>' % f for f in pl['features']))
+           ''.join('<li>%s</li>' % f for f in pl['features']),
+           ''.join('<p class="plan__price-row"><span>%s</span><span>%s</span></p>' % r for r in pl['price_rows']))
         for pl in DR_PLANS)
+
+    # Выпускной и корпоратив не хранят полный состав пакетов здесь — это
+    # тизеры на их собственные страницы, тот же компонент, что и на
+    # страницах аренды залов (RENTAL_TEASERS), но только эти два пункта.
+    # id на карточке — точка, куда со слайдера пакетов на главной ведёт
+    # якорь (см. all_packages()/render_packages_carousel()).
+    dr_teasers = ''.join(
+        '<div class="teasers__item" id="plan-%s"><img src="%s%s" alt="" loading="lazy" width="360" height="240">'
+        '<h3><a href="%s">%s</a></h3><p>Подробнее</p></div>'
+        % (slug, IMG, img, href, title)
+        for (img, href, title), slug in zip(RENTAL_TEASERS[1:], ('vypusknoy', 'korporativ')))
 
     partners = ''.join(
         '<div class="partners__item">%s</div>' % (
@@ -2232,6 +2254,13 @@ def build_denrozhdeniya():
     <div class="stage">
       <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Пакеты «День рождения»</h2>
       <div class="plans__grid">{plans}</div>
+    </div>
+  </section>
+
+  <section class="teasers">
+    <div class="stage">
+      <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Выпускной и&nbsp;корпоратив</h2>
+      <div class="teasers__grid">{dr_teasers}</div>
     </div>
   </section>
 
@@ -2816,13 +2845,15 @@ PACKAGES_KORPORATIV = dict(
 
 def all_packages():
     """Шесть пакетов одним списком: 4 дня рождения + выпускной + корпоратив.
-    У пакетов дня рождения своей страницы нет — все четыре живут на
-    /denrozhdeniya, поэтому href у них общий."""
+    Заказчик 24.08.2026: клик по любому пакету на главной должен вести на
+    /denrozhdeniya, сразу пролистанную к этому пакету — там теперь общая
+    точка входа для всех шести (у выпускного/корпоратива на ней тизеры
+    с якорями, полный контент — на их собственных страницах)."""
     out = []
     for pl in DR_PLANS:
-        out.append(dict(pl, href='/denrozhdeniya', group='День рождения'))
-    out.append(dict(PACKAGES_VYPUSKNYE, group='Выпускной'))
-    out.append(dict(PACKAGES_KORPORATIV, group='Корпоратив'))
+        out.append(dict(pl, href='/denrozhdeniya#plan-%s' % pl['slug'], group='День рождения'))
+    out.append(dict(PACKAGES_VYPUSKNYE, href='/denrozhdeniya#plan-vypusknoy', group='Выпускной'))
+    out.append(dict(PACKAGES_KORPORATIV, href='/denrozhdeniya#plan-korporativ', group='Корпоратив'))
     return out
 
 
@@ -2863,91 +2894,6 @@ def render_packages_carousel():
         '<div class="packages__track">%s</div>'
         '<button class="packages__arrow packages__arrow--next" type="button" aria-label="Следующий пакет">%s</button>'
         '</div>' % (SLIDER_ARROW, cards, SLIDER_ARROW))
-
-
-def build_pakety():
-    packs = all_packages()
-    dr_cards = ''.join(render_package_card(p) for p in packs if p['group'] == 'День рождения')
-    other_cards = ''.join(render_package_card(p) for p in packs if p['group'] != 'День рождения')
-
-    popups = render_form_popup('header') + render_form_popup('pakety')
-    faq_ld = faq_jsonld()
-
-    html = f"""<!DOCTYPE html>
-<html lang="ru">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Праздники «под ключ» — все пакеты «Порхай»</title>
-<meta name="description" content="Все пакеты праздников под ключ в «Порхай»: день рождения (Мини, Под ключ, Вип, Супер Вип), выпускной и корпоратив. Аниматор, фотограф и сервировка включены в стоимость.">
-<link rel="stylesheet" href="assets/style.css">
-</head>
-<body>
-<script>document.documentElement.className+=' js'</script>
-
-{render_top_chrome()}
-
-<main>
-  <section class="page-hero">
-    <div class="stage">
-      <h1 class="page-hero__title">Праздники «под&nbsp;ключ»</h1>
-      <p class="page-hero__descr">Аниматор или шоу-программа и&nbsp;фотограф включены в&nbsp;стоимость. Вам остаётся только прийти&nbsp;— всё остальное мы&nbsp;берём на&nbsp;себя.</p>
-      {PROMO_NEON}
-    </div>
-  </section>
-
-  {band()}
-
-  <section class="plans section--mint">
-    <div class="stage">
-      <div class="section__head">
-        <h2 class="section__title" data-anim="fadeinup" data-anim-dur="1">День рождения</h2>
-        <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">Четыре пакета&nbsp;— от&nbsp;самого простого до&nbsp;праздника на&nbsp;всю площадку</p>
-      </div>
-      <div class="plans__grid">{dr_cards}</div>
-    </div>
-  </section>
-
-  {band(flip=True)}
-
-  <section class="plans">
-    <div class="stage">
-      <div class="section__head">
-        <h2 class="section__title" data-anim="fadeinup" data-anim-dur="1">Выпускной и&nbsp;корпоратив</h2>
-        <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">Для садиков, школ и&nbsp;взрослых компаний</p>
-      </div>
-      <div class="plans__grid plans__grid--two">{other_cards}</div>
-    </div>
-  </section>
-
-  <div class="cta-band"><a class="btn btn--yellow" href="#popup:pakety" data-anim="zoomin" data-anim-dur="1">Записаться</a></div>
-
-  {band()}
-
-  {render_faq_section()}
-
-  {band(flip=True)}
-
-  {render_contact_section()}
-</main>
-
-{render_footer()}
-
-{render_float_button()}
-
-<script type="application/ld+json">{faq_ld}</script>
-<script type="application/ld+json">{BUSINESS_LD}</script>
-
-{popups}
-
-{PAGE_SCRIPT}
-</body>
-</html>
-"""
-    path = os.path.join(HERE, 'pakety.html')
-    with open(path, 'w', encoding='utf-8') as f:
-        f.write(html)
-    print('pakety.html собран:', len(html), 'байт')
 
 
 # --- Подарочная страница (/podarok) -----------------------------------
@@ -3173,6 +3119,5 @@ if __name__ == '__main__':
     build_vypusknye()
     build_korporativ()
     build_partner()
-    build_pakety()
     build_podarok()
     build_not_found()

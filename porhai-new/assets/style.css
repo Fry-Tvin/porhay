@@ -818,6 +818,8 @@ ul { margin: 0; padding: 0; list-style: none; }
   color: var(--ink);
   border-bottom: 1px solid rgba(74, 74, 74, .12);
 }
+.mobile-menu__accent { font-size: 1.15em; text-transform: uppercase; color: var(--teal); }
+
 .mobile-menu__group {
   border-bottom: 1px solid rgba(74, 74, 74, .12);
 }
@@ -1599,6 +1601,15 @@ ul { margin: 0; padding: 0; list-style: none; }
 .plan__list li { position: relative; padding-left: 20px; margin-top: 8px; font-size: 14px; line-height: 1.4; color: var(--ink); }
 .plan__list li::before { content: '✓'; position: absolute; left: 0; color: var(--teal); font-weight: 700; }
 .plan .btn { margin-top: 24px; align-self: center; }
+/* На жёлтой карточке жёлтая кнопка сливалась с фоном — на этой карточке
+   кнопка тёмная (тот же --ink, что и у .plan__badge, тоже с этой карточки). */
+.plan--yellow .btn--yellow { background: var(--ink); color: var(--white); }
+.plan--yellow .btn--yellow:hover { box-shadow: 0 6px 18px rgba(74, 74, 74, .35); }
+.plan__prices { margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(74, 74, 74, .15); }
+.plan__price-row { display: flex; justify-content: space-between; font-size: 13px; color: var(--ink); }
+.plan__price-row + .plan__price-row { margin-top: 6px; }
+.plan__price-row span:first-child { opacity: .65; }
+.plan__price-row span:last-child { font-weight: 700; }
 .plan__group { font-size: 13px; font-weight: 400; color: var(--ink); opacity: .6; margin-bottom: 4px; }
 .plan__more { opacity: .6; font-style: italic; }
 .plan__more::before { content: '' !important; }
