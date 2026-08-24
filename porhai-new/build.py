@@ -461,7 +461,7 @@ FOOTER_LINKS = [
     ('Комбо+', '/combo'),
     ('День рождения', '/denrozhdeniya'),
     ('Выпускной', '/vypusknye'),
-    ('Корпоратив', '/korporativ'),
+    ('Корпоративные мероприятия для семей сотрудников', '/korporativ'),
     ('FAQs', '#faq'),
     ('Для групп', '#dlyagrupp'),
     ('Отзывы', '#otziv'),
@@ -1709,7 +1709,7 @@ def build_razovoe():
 RENTAL_TEASERS = [
     ('tild3232-3239-4564-b565-326437363265__slide_4_3_-_2_2.webp', '/denrozhdeniya', 'День рождения'),
     ('tild6534-3264-4138-a130-346466323833__slide_4_3_-_3_2.webp', '/vypusknye', 'Выпускной'),
-    ('tild3635-3137-4365-b436-383461646637__slide_4_3_-_4_2.webp', '/korporativ', 'Корпоратив'),
+    ('tild3635-3137-4365-b436-383461646637__slide_4_3_-_4_2.webp', '/korporativ', 'Корпоративные мероприятия для семей сотрудников'),
 ]
 
 RENTAL_PAGES = {
@@ -2554,10 +2554,29 @@ KP_CHECK_SVG = (
     '</svg>'
 )
 
-KP_PROBLEMS = [
-    'Стрессы на работе',
-    'Дедлайны и семейные дела',
-    'Порой просто необходимо отключиться и выплеснуть эмоции',
+KP_DATES = [
+    'Новый год — ёлка для детей сотрудников',
+    '23 Февраля — семейный праздник',
+    '8 Марта — праздник для мам и детей',
+    'Хэллоуин — тематическая вечеринка',
+    '1 сентября / 30 мая — начало и конец года',
+]
+
+KP_FORMATS = [
+    'Тимбилдинг — сплочение команды через игры',
+    'Стратсессии в неформальной обстановке',
+    'Мозговые штурмы — креативная атмосфера',
+    'Неформальные бизнес-встречи',
+    'День компании — праздник для коллектива',
+]
+
+KP_VALUES = [
+    ('Имидж компании', 'Показывает, что компания заботится о сотрудниках и их семьях'),
+    ('Лояльность', 'Дети счастливы — родители благодарны. Компания, которая думает о семье'),
+    ('Сплочение команды', 'Неформальная обстановка снимает барьеры и укрепляет связи'),
+    ('Под ваш бюджет', 'Разработаем индивидуальное предложение — от камерного до масштабного'),
+    ('Всё включено', 'Аниматоры, декор, программа, угощение — вам не нужно ничего организовывать'),
+    ('Площадка до 50 чел', 'Бассейны, фотозоны и зеркальная комната на ул. Державина 23'),
 ]
 
 KP_GALLERY = [
@@ -2594,9 +2613,13 @@ KP_WHY = [
 def build_korporativ():
     problems = ''.join(
         '<li class="problems__item">%s<span>%s</span></li>' % (KP_CHECK_SVG, text)
-        for text in KP_PROBLEMS)
+        for text in KP_DATES + KP_FORMATS)
 
-    gallery = render_slider(KP_GALLERY, 'Корпоратив «под ключ» в «Порхай»')
+    values = ''.join(
+        '<li class="problems__item">%s<span><strong>%s</strong> — %s</span></li>' % (KP_CHECK_SVG, title, desc)
+        for title, desc in KP_VALUES)
+
+    gallery = render_slider(KP_GALLERY, 'Корпоративные мероприятия для семей сотрудников в «Порхай»')
 
     why = ''.join(
         '<div class="features__item"><img src="%s%s" alt="" width="140" height="140">'
@@ -2620,8 +2643,8 @@ def build_korporativ():
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Корпоратив «ПОД КЛЮЧ» в развлекательном центре «Порхай»</title>
-<meta name="description" content="Пишите, чтобы организовать свой идеальный корпоратив — с игрой в мафию или играми на сплочение, различными мастер-классами, с ведущими и диджеем, или любым другим наполнением по вашему желанию.">
+<title>Корпоративные мероприятия для семей сотрудников в развлекательном центре «Порхай»</title>
+<meta name="description" content="Организуем корпоративные мероприятия для ваших сотрудников и их детей — от идеи до исполнения: праздничные даты, тимбилдинги, стратсессии и неформальные встречи на площадке до 50 человек.">
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
@@ -2634,9 +2657,9 @@ def build_korporativ():
     <div class="stage">
       <div class="split-hero__photo" style="background-image:url({IMG}{KP_COVER})"></div>
       <div class="split-hero__text">
-        <h1 class="split-hero__title">Корпоратив в&nbsp;«Порхай!»</h1>
+        <h1 class="split-hero__title">Корпоративные мероприятия<br>для&nbsp;семей сотрудников</h1>
         <span class="split-hero__line"></span>
-        <p class="split-hero__descr">Проведите время с&nbsp;удовольствием в&nbsp;кругу коллег в&nbsp;неформальной обстановке, это не&nbsp;только объединяет коллектив и&nbsp;улучшает психологическую обстановку, но&nbsp;и&nbsp;повышает мотивацию и&nbsp;результаты</p>
+        <p class="split-hero__descr">Порхай — детский развлекательный центр, где праздники становятся незабываемыми. Возьмём на&nbsp;себя организацию корпоративного мероприятия для&nbsp;ваших сотрудников и&nbsp;их&nbsp;детей — от&nbsp;идеи до&nbsp;исполнения</p>
       </div>
     </div>
   </section>
@@ -2644,8 +2667,8 @@ def build_korporativ():
   <section class="problems">
     <div class="stage">
       <div class="section__head">
-        <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Качественный отдых для&nbsp;вашего коллектива</h2>
-        <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">Взрослые нуждаются в&nbsp;отдыхе ничуть не&nbsp;меньше детей</p>
+        <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Какие мероприятия проводим</h2>
+        <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">Праздничные даты и&nbsp;деловые форматы — выбирайте, что подходит вашей компании</p>
       </div>
       <ul class="problems__list">{problems}</ul>
     </div>
@@ -2662,7 +2685,7 @@ def build_korporativ():
         <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">Попрыгать в&nbsp;бассейн с&nbsp;шарами, сделать крутые фото и&nbsp;просто испытать незабываемые эмоции!</p>
       </div>
       {gallery}
-      <p class="price-line">Корпоративы просчитываются индивидуально под количество человек, программу и&nbsp;наполнение</p>
+      <p class="price-line">Корпоративные мероприятия для семей сотрудников просчитываются индивидуально под количество человек, программу и&nbsp;наполнение</p>
     </div>
   </section>
 
@@ -2670,8 +2693,17 @@ def build_korporativ():
 
   <section class="features">
     <div class="stage">
-      <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Пишите, чтобы организовать свой идеальный корпоратив</h2>
+      <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Пишите, чтобы организовать свой идеальный праздник</h2>
       <div class="features__grid">{why}</div>
+    </div>
+  </section>
+
+  <section class="problems">
+    <div class="stage">
+      <div class="section__head">
+        <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Почему это работает</h2>
+      </div>
+      <ul class="problems__list">{values}</ul>
     </div>
   </section>
 
@@ -2836,7 +2868,7 @@ PACKAGES_VYPUSKNYE = dict(
     features=[t for _, t in VP_CHECKLIST])
 
 PACKAGES_KORPORATIV = dict(
-    title='Корпоратив', price='По запросу', meta='считаем индивидуально',
+    title='Корпоративные мероприятия для семей сотрудников', price='По запросу', meta='считаем индивидуально',
     color='peach', href='/korporativ',
     features=['Игра в мафию или игры на сплочение', 'Мастер-классы, ведущие и диджей',
               'Любое другое наполнение по вашему желанию',
