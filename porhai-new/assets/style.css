@@ -921,6 +921,38 @@ ul { margin: 0; padding: 0; list-style: none; }
 .legal__section { max-width: 800px; margin-top: 40px; }
 .legal__section h2 { font-size: 22px; font-weight: 700; color: var(--ink); }
 .legal__section p { margin-top: 12px; font-size: 16px; line-height: 1.6; color: var(--ink); }
+.legal__section ol { margin-top: 12px; padding-left: 24px; counter-reset: legal-ol; }
+.legal__section ol li {
+  position: relative;
+  margin-top: 10px;
+  padding-left: 4px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--ink);
+  list-style: none;
+  counter-increment: legal-ol;
+}
+.legal__section ol li::before {
+  content: counter(legal-ol) '.';
+  position: absolute;
+  left: -24px;
+  font-weight: 700;
+  color: var(--teal);
+}
+.legal__section ul { margin-top: 12px; padding-left: 20px; }
+.legal__section ul li {
+  position: relative;
+  margin-top: 10px;
+  padding-left: 4px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--ink);
+  list-style: none;
+}
+.legal__section ul li::before { content: '—'; position: absolute; left: -18px; color: var(--teal); }
+.legal__note { margin-top: 40px; padding: 24px; background: var(--mint); border-radius: 20px; }
+.legal__note p { font-size: 15px; line-height: 1.6; color: var(--ink); }
+.legal__note p + p { margin-top: 10px; }
 
 /* --- Подвал ------------------------------------------------------------- */
 .footer {
