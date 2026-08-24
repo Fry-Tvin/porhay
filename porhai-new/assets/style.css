@@ -226,7 +226,15 @@ ul { margin: 0; padding: 0; list-style: none; }
   color: var(--ink);
 }
 .hero__text b { font-weight: 700; }
-.hero__cta { margin-top: 36px; }
+.hero__buttons { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; margin-top: 36px; }
+.hero__buttons .btn--yellow {
+  height: auto;
+  min-height: 59px;
+  padding: 14px 30px;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.2;
+}
 
 /* иллюстрация справа */
 .hero__art {
@@ -331,6 +339,18 @@ ul { margin: 0; padding: 0; list-style: none; }
   gap: 67px;
   margin: 59px auto 0;
   max-width: 1118px;
+}
+
+/* Блок с кнопками после карточек (по просьбе заказчика 24.08.2026) —
+   быстрый переход на разовое посещение или дни рождения, не дожидаясь
+   пока пользователь долистает до соответствующих секций ниже. */
+.cards__buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 48px auto 0;
 }
 
 /* Карточка: фото со скруглением 35px и две SVG-рамки со смещением,
@@ -1276,7 +1296,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   .hero__flag { width: 104px; margin: 0 auto -4px; }
   .hero__title { font-size: 25px; line-height: 30px; }
   .hero__text { font-size: 15px; line-height: 20px; margin: 18px auto 0; }
-  .hero__cta { margin-top: 23px; }
+  .hero__buttons { margin-top: 23px; justify-content: center; }
   .btn--yellow { min-width: 193px; height: 59px; font-size: 15px; }
   /* По просьбе заказчика (не по замеру оригинала) — крупнее и жирнее
      ради читаемости на фото на мобильной. */

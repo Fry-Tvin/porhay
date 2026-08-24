@@ -589,7 +589,7 @@ def render_popups(popups):
     return ''.join(out)
 
 
-def render_form_popup(popup_id):
+def render_form_popup(popup_id, title='Оставьте свои контакты', subtitle='И мы свяжемся с Вами в ближайшее время!'):
     """Форма заявки (rec591053045 — шапка, rec591047986 — первый экран).
     В оригинале только Имя + Телефон; чекбокс согласия на обработку
     персональных данных в форме добавлен по группе B аудита — его
@@ -597,13 +597,15 @@ def render_form_popup(popup_id):
     Отправки без сервера нет: форма показывает подтверждение на месте.
     Заказчик решил (17.08.2026): заявки идут в CRM на два аккаунта-
     администратора Telegram-бота; интеграцию заказчик готовит на стороне
-    бота и пришлёт вебхук/API отдельно — подключим, когда будут детали."""
+    бота и пришлёт вебхук/API отдельно — подключим, когда будут детали.
+    title/subtitle — необязательные переопределения текста (например,
+    для попапа «бонус» на первом экране, добавлен 24.08.2026)."""
     return (
-        '<dialog class="popup popup--form" id="popup-%s" aria-label="Оставьте свои контакты">'
+        '<dialog class="popup popup--form" id="popup-%s" aria-label="%s">'
         '<div class="popup__box">'
         '<button class="popup__close" type="button" data-popup-close>Назад</button>'
-        '<h3 class="popup__title">Оставьте свои контакты</h3>'
-        '<div class="popup__subtitle"><p>И мы свяжемся с Вами в ближайшее время!</p></div>'
+        '<h3 class="popup__title">%s</h3>'
+        '<div class="popup__subtitle"><p>%s</p></div>'
         '<form class="form" data-form>'
         '<label class="form__field"><span class="form__label">Ваше имя</span>'
         '<input class="form__input" type="text" name="name" autocomplete="name" required></label>'
@@ -616,7 +618,7 @@ def render_form_popup(popup_id):
         '<p class="form__thanks" data-form-thanks hidden>Спасибо! Мы свяжемся с вами в ближайшее время.</p>'
         '</div>'
         '</dialog>'
-        % popup_id)
+        % (popup_id, title, title, subtitle))
 
 
 def render_cookie_banner():
@@ -1088,7 +1090,9 @@ def build():
     zaly = render_zaly_carousel()
     keys = render_tariff_cards(KEYS)
 
-    popups = render_form_popup('header') + render_form_popup('main')
+    popups = (render_form_popup('header') + render_form_popup('main')
+              + render_form_popup('bonus', title='Бесплатное посещение + 3 пиццы',
+                                   subtitle='Оставьте контакты — расскажем об условиях акции и подберём дату'))
 
     reviews = ''.join(
         '<img src="%s%s" alt="" loading="lazy" width="260">' % (IMG, img)
@@ -1128,7 +1132,10 @@ def build():
         <img class="hero__flag" src="{IMG}tild3236-6461-4137-a165-663934353632__b8bca4c5-59d4-4e8a-a.svg" alt="" width="154" height="113" data-anim="zoomin" data-anim-dur="1" data-anim-delay=".6">
         <h1 class="hero__title" data-anim="fadeinright" data-anim-dur="1.7">Развлекательный центр для всей семьи</h1>
         <p class="hero__text" data-anim="fadeinright" data-anim-dur="1.7" data-anim-delay=".2">Проведение мероприятий <b>во&nbsp;Владивостоке</b>: от&nbsp;дней рождений и&nbsp;выпускных до&nbsp;взрослых корпоративов и&nbsp;романтических свиданий</p>
-        <a class="btn btn--yellow hero__cta" href="#popup:main" data-anim="zoomin" data-anim-dur="2.4" data-anim-delay=".4">Записаться</a>
+        <div class="hero__buttons" data-anim="zoomin" data-anim-dur="2.4" data-anim-delay=".4">
+          <a class="btn btn--yellow" href="#popup:bonus">Получи бесплатное посещение и 3 пиццы</a>
+          <a class="btn btn--teal" href="/denrozhdeniya">Праздник</a>
+        </div>
       </div>
       <div class="hero__art">
         <img src="{IMG}tild6638-3864-4939-b336-646563633937__svg.svg" alt="" width="511" height="511" data-drift="20,0">
@@ -1148,6 +1155,10 @@ def build():
         <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">В «Порхай» есть всё необходимое, чтобы вам осталось только наслаждаться идеальным праздником без нервов и&nbsp;траты времени на&nbsp;организационные моменты</p>
       </div>
       <div class="cards">{cards}</div>
+      <div class="cards__buttons">
+        <a class="btn btn--yellow" href="/razovoe">Разовое посещение</a>
+        <a class="btn btn--teal" href="/denrozhdeniya">Дни рождения</a>
+      </div>
     </div>
   </section>
 
@@ -1175,6 +1186,8 @@ def build():
       <div class="cta-band cta-band--tight"><a class="btn btn--yellow" href="/denrozhdeniya">Все пакеты</a></div>
     </div>
   </section>
+
+  <div class="cta-band"><a class="btn btn--yellow" href="#popup:main">Оставить заявку</a></div>
 
   <section class="section section--tariffs" id="zaly">
     <div class="stage">
@@ -1233,6 +1246,8 @@ def build():
       <div class="partners">{partners}</div>
     </div>
   </section>
+
+  <div class="cta-band"><a class="btn btn--yellow" href="#popup:main">Записаться</a></div>
 
   {band()}
 
