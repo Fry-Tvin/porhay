@@ -136,6 +136,43 @@
     swing3.forEach(function (el) { swing3Obs.observe(el); });
   }
 
+  // 2d. «Подёргивание»-подсказка на горизонтальных лентах (отзывы, слайдеры
+  //     фото, карусели пакетов/залов) — многие не понимают, что карточки
+  //     можно листать вбок, пока не заметят стрелки. При появлении ленты
+  //     в кадре она один раз сама сдвигается на полкарточки вперёд и
+  //     возвращается — тот же приём「подёргивания」, что часто используют
+  //     в мобильных интерфейсах для обозначения скролла. Не трогает ленты,
+  //     которым скроллить некуда (contentWidth <= clientWidth).
+  var peek = [].slice.call(document.querySelectorAll('[data-peek]'));
+  if (peek.length && !reduce && window.IntersectionObserver) {
+    var peekObs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        var el = en.target;
+        if (!en.isIntersecting) return;
+        peekObs.unobserve(el);
+        if (el.scrollWidth <= el.clientWidth + 4) return;
+        var start = el.scrollLeft;
+        var nudge = Math.min(70, el.scrollWidth - el.clientWidth);
+        // scroll-snap-type: x mandatory (у всех этих лент) не даёт scrollTo
+        // остановиться в произвольной точке — браузер молча возвращает
+        // scrollLeft на ближайшую точку снапа в тот же кадр, и подёргивания
+        // не видно вообще. Снап на время анимации отключается инлайн-стилем
+        // и возвращается сразу после, лента снапится к исходной позиции как ни
+        // в чём не бывало.
+        setTimeout(function () {
+          var prevSnap = el.style.scrollSnapType;
+          el.style.scrollSnapType = 'none';
+          el.scrollTo({ left: start + nudge, behavior: 'smooth' });
+          setTimeout(function () {
+            el.scrollTo({ left: start, behavior: 'smooth' });
+            setTimeout(function () { el.style.scrollSnapType = prevSnap; }, 500);
+          }, 500);
+        }, 400);
+      });
+    }, { threshold: .4 });
+    peek.forEach(function (el) { peekObs.observe(el); });
+  }
+
   // 3. Дрейф по прокрутке: шарики и чёрточки уезжают вправо и проворачиваются,
   //    пока проходят через экран, затем возвращаются.
   var drift = [].slice.call(document.querySelectorAll('[data-drift]'));

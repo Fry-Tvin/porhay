@@ -899,6 +899,43 @@ PAGE_SCRIPT = """<script>
     swing3.forEach(function (el) { swing3Obs.observe(el); });
   }
 
+  // 2d. «Подёргивание»-подсказка на горизонтальных лентах (отзывы, слайдеры
+  //     фото, карусели пакетов/залов) — многие не понимают, что карточки
+  //     можно листать вбок, пока не заметят стрелки. При появлении ленты
+  //     в кадре она один раз сама сдвигается на полкарточки вперёд и
+  //     возвращается — тот же приём「подёргивания」, что часто используют
+  //     в мобильных интерфейсах для обозначения скролла. Не трогает ленты,
+  //     которым скроллить некуда (contentWidth <= clientWidth).
+  var peek = [].slice.call(document.querySelectorAll('[data-peek]'));
+  if (peek.length && !reduce && window.IntersectionObserver) {
+    var peekObs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        var el = en.target;
+        if (!en.isIntersecting) return;
+        peekObs.unobserve(el);
+        if (el.scrollWidth <= el.clientWidth + 4) return;
+        var start = el.scrollLeft;
+        var nudge = Math.min(70, el.scrollWidth - el.clientWidth);
+        // scroll-snap-type: x mandatory (у всех этих лент) не даёт scrollTo
+        // остановиться в произвольной точке — браузер молча возвращает
+        // scrollLeft на ближайшую точку снапа в тот же кадр, и подёргивания
+        // не видно вообще. Снап на время анимации отключается инлайн-стилем
+        // и возвращается сразу после, лента снапится к исходной позиции как ни
+        // в чём не бывало.
+        setTimeout(function () {
+          var prevSnap = el.style.scrollSnapType;
+          el.style.scrollSnapType = 'none';
+          el.scrollTo({ left: start + nudge, behavior: 'smooth' });
+          setTimeout(function () {
+            el.scrollTo({ left: start, behavior: 'smooth' });
+            setTimeout(function () { el.style.scrollSnapType = prevSnap; }, 500);
+          }, 500);
+        }, 400);
+      });
+    }, { threshold: .4 });
+    peek.forEach(function (el) { peekObs.observe(el); });
+  }
+
   // 3. Дрейф по прокрутке: шарики и чёрточки уезжают вправо и проворачиваются,
   //    пока проходят через экран, затем возвращаются.
   var drift = [].slice.call(document.querySelectorAll('[data-drift]'));
@@ -1222,7 +1259,7 @@ def build():
       <h2 class="section__title" data-anim="fadeinup" data-anim-dur="1">Отзывы ❤️</h2>
       <div class="reviews">
         <button class="reviews__arrow reviews__arrow--prev" type="button" aria-label="Предыдущий отзыв">{SLIDER_ARROW}</button>
-        <div class="reviews__track">{reviews}</div>
+        <div class="reviews__track" data-peek>{reviews}</div>
         <button class="reviews__arrow reviews__arrow--next" type="button" aria-label="Следующий отзыв">{SLIDER_ARROW}</button>
       </div>
     </div>
@@ -1621,7 +1658,7 @@ def render_slider(images, alt=''):
     return (
         '<div class="slider">'
         '<button class="slider__arrow slider__arrow--prev" type="button" aria-label="Предыдущее фото">%s</button>'
-        '<div class="slider__track">%s</div>'
+        '<div class="slider__track" data-peek>%s</div>'
         '<button class="slider__arrow slider__arrow--next" type="button" aria-label="Следующее фото">%s</button>'
         '</div>' % (SLIDER_ARROW, slides, SLIDER_ARROW)
     )
@@ -2088,7 +2125,7 @@ def render_rental_page(slug):
       <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Отзывы ❤️</h2>
       <div class="reviews">
         <button class="reviews__arrow reviews__arrow--prev" type="button" aria-label="Предыдущий отзыв">{SLIDER_ARROW}</button>
-        <div class="reviews__track">{reviews}</div>
+        <div class="reviews__track" data-peek>{reviews}</div>
         <button class="reviews__arrow reviews__arrow--next" type="button" aria-label="Следующий отзыв">{SLIDER_ARROW}</button>
       </div>
     </div>
@@ -2374,7 +2411,7 @@ def build_denrozhdeniya():
       <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Отзывы ❤️</h2>
       <div class="reviews">
         <button class="reviews__arrow reviews__arrow--prev" type="button" aria-label="Предыдущий отзыв">{SLIDER_ARROW}</button>
-        <div class="reviews__track">{reviews}</div>
+        <div class="reviews__track" data-peek>{reviews}</div>
         <button class="reviews__arrow reviews__arrow--next" type="button" aria-label="Следующий отзыв">{SLIDER_ARROW}</button>
       </div>
     </div>
@@ -2573,7 +2610,7 @@ def build_vypusknye():
       <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Отзывы ❤️</h2>
       <div class="reviews">
         <button class="reviews__arrow reviews__arrow--prev" type="button" aria-label="Предыдущий отзыв">{SLIDER_ARROW}</button>
-        <div class="reviews__track">{reviews}</div>
+        <div class="reviews__track" data-peek>{reviews}</div>
         <button class="reviews__arrow reviews__arrow--next" type="button" aria-label="Следующий отзыв">{SLIDER_ARROW}</button>
       </div>
     </div>
@@ -2797,7 +2834,7 @@ def build_korporativ():
       <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Отзывы ❤️</h2>
       <div class="reviews">
         <button class="reviews__arrow reviews__arrow--prev" type="button" aria-label="Предыдущий отзыв">{SLIDER_ARROW}</button>
-        <div class="reviews__track">{reviews}</div>
+        <div class="reviews__track" data-peek>{reviews}</div>
         <button class="reviews__arrow reviews__arrow--next" type="button" aria-label="Следующий отзыв">{SLIDER_ARROW}</button>
       </div>
     </div>
@@ -3059,7 +3096,7 @@ def build_dlyagrupp():
       <h2 class="section__title" data-anim="fadeinup" data-anim-dur="1">Отзывы ❤️</h2>
       <div class="reviews">
         <button class="reviews__arrow reviews__arrow--prev" type="button" aria-label="Предыдущий отзыв">{SLIDER_ARROW}</button>
-        <div class="reviews__track">{reviews}</div>
+        <div class="reviews__track" data-peek>{reviews}</div>
         <button class="reviews__arrow reviews__arrow--next" type="button" aria-label="Следующий отзыв">{SLIDER_ARROW}</button>
       </div>
     </div>
@@ -3225,7 +3262,7 @@ def render_packages_carousel():
     return (
         '<div class="packages">'
         '<button class="packages__arrow packages__arrow--prev" type="button" aria-label="Предыдущий пакет">%s</button>'
-        '<div class="packages__track">%s</div>'
+        '<div class="packages__track" data-peek>%s</div>'
         '<button class="packages__arrow packages__arrow--next" type="button" aria-label="Следующий пакет">%s</button>'
         '</div>' % (SLIDER_ARROW, cards, SLIDER_ARROW))
 
@@ -3239,7 +3276,7 @@ def render_zaly_carousel():
     return (
         '<div class="packages">'
         '<button class="packages__arrow packages__arrow--prev" type="button" aria-label="Предыдущий зал">%s</button>'
-        '<div class="packages__track">%s</div>'
+        '<div class="packages__track" data-peek>%s</div>'
         '<button class="packages__arrow packages__arrow--next" type="button" aria-label="Следующий зал">%s</button>'
         '</div>' % (SLIDER_ARROW, cards, SLIDER_ARROW))
 
@@ -3381,7 +3418,7 @@ def build_podarok():
 
     <section style="margin-bottom:20px">
       <h2 class="gift__label">Как у нас</h2>
-      <div class="gift__strip">{strip}</div>
+      <div class="gift__strip" data-peek>{strip}</div>
     </section>
 
     <div class="gift__card gift__card--steps">
