@@ -210,25 +210,28 @@
     });
   }
 
-  // 5a. Лента пакетов «под ключ» на главной — тот же приём, что и у отзывов:
-  //     шаг равен реальной ширине карточки + gap, иначе снап расходится.
-  var packTrack = document.querySelector('.packages__track');
-  if (packTrack) {
+  // 5a. Ленты-карусели «.packages» (пакеты «под ключ», «Наши залы») —
+  //     тот же приём, что и у отзывов, но страница может нести несколько
+  //     таких лент разом, поэтому перебираем все и связываем стрелки со
+  //     своим собственным треком, а не с первым найденным на странице.
+  document.querySelectorAll('.packages').forEach(function (box) {
+    var packTrack = box.querySelector('.packages__track');
+    if (!packTrack) return;
     var packStep = function () {
-      var card = packTrack.querySelector('.plan');
+      var card = packTrack.children[0];
       if (!card) return packTrack.clientWidth;
       var gap = parseFloat(getComputedStyle(packTrack).columnGap) || 0;
       return card.getBoundingClientRect().width + gap;
     };
-    var packPrev = document.querySelector('.packages__arrow--prev');
-    var packNext = document.querySelector('.packages__arrow--next');
+    var packPrev = box.querySelector('.packages__arrow--prev');
+    var packNext = box.querySelector('.packages__arrow--next');
     if (packPrev) packPrev.addEventListener('click', function () {
       packTrack.scrollBy({ left: -packStep(), behavior: 'smooth' });
     });
     if (packNext) packNext.addEventListener('click', function () {
       packTrack.scrollBy({ left: packStep(), behavior: 'smooth' });
     });
-  }
+  });
 
   // 5b. Лента-слайдер фото (если есть на странице): те же стрелки, тот же приём.
   //     В оригинале слайдер сам листает фото каждые ~5с (замерено на живой

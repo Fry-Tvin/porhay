@@ -973,25 +973,28 @@ PAGE_SCRIPT = """<script>
     });
   }
 
-  // 5a. Лента пакетов «под ключ» на главной — тот же приём, что и у отзывов:
-  //     шаг равен реальной ширине карточки + gap, иначе снап расходится.
-  var packTrack = document.querySelector('.packages__track');
-  if (packTrack) {
+  // 5a. Ленты-карусели «.packages» (пакеты «под ключ», «Наши залы») —
+  //     тот же приём, что и у отзывов, но страница может нести несколько
+  //     таких лент разом, поэтому перебираем все и связываем стрелки со
+  //     своим собственным треком, а не с первым найденным на странице.
+  document.querySelectorAll('.packages').forEach(function (box) {
+    var packTrack = box.querySelector('.packages__track');
+    if (!packTrack) return;
     var packStep = function () {
-      var card = packTrack.querySelector('.plan');
+      var card = packTrack.children[0];
       if (!card) return packTrack.clientWidth;
       var gap = parseFloat(getComputedStyle(packTrack).columnGap) || 0;
       return card.getBoundingClientRect().width + gap;
     };
-    var packPrev = document.querySelector('.packages__arrow--prev');
-    var packNext = document.querySelector('.packages__arrow--next');
+    var packPrev = box.querySelector('.packages__arrow--prev');
+    var packNext = box.querySelector('.packages__arrow--next');
     if (packPrev) packPrev.addEventListener('click', function () {
       packTrack.scrollBy({ left: -packStep(), behavior: 'smooth' });
     });
     if (packNext) packNext.addEventListener('click', function () {
       packTrack.scrollBy({ left: packStep(), behavior: 'smooth' });
     });
-  }
+  });
 
   // 5b. Лента-слайдер фото (если есть на странице): те же стрелки, тот же приём.
   //     В оригинале слайдер сам листает фото каждые ~5с (замерено на живой
@@ -1082,7 +1085,7 @@ def build():
         % (n * 0.15, STEP_ARROW if n else '', IMG, icon, title)
         for n, (icon, title) in enumerate(STEPS))
 
-    tariffs = render_tariff_cards(TARIFFS)
+    zaly = render_zaly_carousel()
     keys = render_tariff_cards(KEYS)
 
     popups = render_form_popup('header') + render_form_popup('main')
@@ -1179,7 +1182,7 @@ def build():
         <h2 class="section__title" data-anim="fadeinup" data-anim-dur="1">Наши залы</h2>
         <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">Без организации мероприятия и&nbsp;шоу-программы</p>
       </div>
-      <div class="tariffs">{tariffs}</div>
+      {zaly}
     </div>
   </section>
 
@@ -3209,6 +3212,20 @@ def render_packages_carousel():
         '<button class="packages__arrow packages__arrow--prev" type="button" aria-label="Предыдущий пакет">%s</button>'
         '<div class="packages__track">%s</div>'
         '<button class="packages__arrow packages__arrow--next" type="button" aria-label="Следующий пакет">%s</button>'
+        '</div>' % (SLIDER_ARROW, cards, SLIDER_ARROW))
+
+
+def render_zaly_carousel():
+    """«Наши залы» — те же карточки (render_tariff_cards), но в ленте
+    с листанием вбок вместо статичной сетки на 3 колонки, тем же приёмом
+    (.packages), что и у карусели пакетов «под ключ» — заказчик попросил
+    24.08.2026 привести секцию к тому же интерактиву."""
+    cards = render_tariff_cards(TARIFFS)
+    return (
+        '<div class="packages">'
+        '<button class="packages__arrow packages__arrow--prev" type="button" aria-label="Предыдущий зал">%s</button>'
+        '<div class="packages__track">%s</div>'
+        '<button class="packages__arrow packages__arrow--next" type="button" aria-label="Следующий зал">%s</button>'
         '</div>' % (SLIDER_ARROW, cards, SLIDER_ARROW))
 
 
