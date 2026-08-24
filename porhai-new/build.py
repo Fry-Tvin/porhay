@@ -1775,6 +1775,15 @@ RENTAL_PAGES = {
         gallery=[
             'tild3235-3130-4761-b631-396335373639__iii_4774.webp',
             'tild6362-3161-4138-b138-626164663464__iii_4586.webp',
+            # Неоновое ленточное шоу — новая опция, фото от заказчика 21.08.2026.
+            # Заказчик 24.08.2026 попросил переставить с самого конца ленты
+            # (были на позициях 21–25 из 25) сюда, на позиции 3–7 — иначе
+            # почти никто не долистывал до них.
+            'IMG_2453.webp',
+            'IMG_2454.webp',
+            'IMG_2460.webp',
+            'IMG_2527.webp',
+            'IMG_2528.webp',
             'tild3130-3665-4365-b165-636638646261__photo_2021-06-30_10-.webp',
             'tild6166-3937-4534-b434-646434633034__photo_2021-07-20_18-.webp',
             'tild3765-3035-4265-b466-356434313563__ce4a6738.webp',
@@ -1793,12 +1802,6 @@ RENTAL_PAGES = {
             'tild3930-3031-4763-b038-366661353962__photo_2021-06-30_10-.webp',
             'tild3562-6133-4236-b738-353861613763__photo_2022-03-08_12-.webp',
             'tild3435-3938-4866-b831-623939303835__photo_2023-03-11_16-.webp',
-            # Неоновое ленточное шоу — новая опция, фото от заказчика 21.08.2026.
-            'IMG_2453.webp',
-            'IMG_2454.webp',
-            'IMG_2460.webp',
-            'IMG_2527.webp',
-            'IMG_2528.webp',
         ],
         price_title='Стоимость за&nbsp;1 час аренды',
         price_descr='От&nbsp;3‑х часов, каждый последующий час со&nbsp;скидкой 50%',
@@ -1827,6 +1830,7 @@ RENTAL_PAGES = {
         ],
         note='✖ НЕТ ДОСТУПА К&nbsp;БЕЛОМУ БАССЕЙНУ',
         note_plum=True,
+        note_extra='Если Белый бассейн свободен, доступ к&nbsp;нему можно докупить — 300&nbsp;₽/час.',
         gallery_title='«Loft Box»',
         gallery_descr='При аренде Loft Box в&nbsp;банкетной зоне арендаторы находятся одни, но&nbsp;в&nbsp;музее и&nbsp;бассейнах возможно нахождение людей, которые пришли на&nbsp;часовое посещение.',
         gallery=[
@@ -1953,9 +1957,9 @@ def render_rental_page(slug):
     price_groups = render_price_groups(p['price_groups'])
 
     teasers = ''.join(
-        '<div class="teasers__item"><img src="%s%s" alt="" loading="lazy" width="360" height="240">'
+        '<div class="teasers__item"><a href="%s"><img src="%s%s" alt="" loading="lazy" width="360" height="240"></a>'
         '<h3><a href="%s">%s</a></h3><p>Подробнее</p></div>'
-        % (IMG, img, href, title) for img, href, title in RENTAL_TEASERS)
+        % (href, IMG, img, href, title) for img, href, title in RENTAL_TEASERS)
 
     reviews = ''.join(
         '<img src="%s%s" alt="" loading="lazy" width="260">' % (IMG, img)
@@ -1965,6 +1969,18 @@ def render_rental_page(slug):
     faq_ld = faq_jsonld()
     note_class = 'finetext finetext--note' if p.get('note_plum') else 'finetext'
     promo = PROMO_NEON if slug == 'whiteroom' else ''
+    # White Room: строка цены над неоновой плашкой убрана 24.08.2026 — вместе
+    # с промо-плашкой они наезжали на кнопку «Записаться» ниже (слишком
+    # тесно друг к другу).
+    # Loft Box: та же строка убрана отдельно — заказчик назвал её
+    # дублирующей: та же цифра «от 5 000 ₽/час» повторяется чуть ниже в
+    # таблице «Стоимость за 1 час аренды» с разбивкой будни/выходные.
+    # У Комбо+ строку оставили — там сверху сумма за «счастливые часы»,
+    # а полная таблица показывает это же плюс отдельную цену за 12:00–21:00,
+    # так что верхняя строка не дублирует, а анонсирует таблицу.
+    price_line_html = ('' if slug in ('whiteroom', 'loftbox')
+                        else '<p class="price-line">%s</p>' % p['price_line'])
+    note_extra_html = '<p class="finetext">%s</p>' % p['note_extra'] if p.get('note_extra') else ''
 
     html = f"""<!DOCTYPE html>
 <html lang="ru">
@@ -1994,8 +2010,9 @@ def render_rental_page(slug):
   </section>
 
   <p class="{note_class}"><span class="finetext__rule"></span>{p['note']}</p>
+  {note_extra_html}
 
-  <p class="price-line">{p['price_line']}</p>
+  {price_line_html}
 
   {promo}
 
@@ -2010,16 +2027,6 @@ def render_rental_page(slug):
         <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">{p['gallery_descr']}</p>
       </div>
       {gallery}
-    </div>
-  </section>
-
-  <section class="section section--partners section--mint">
-    <div class="stage">
-      <div class="section__head">
-        <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Скидки от наших партнёров</h2>
-        <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">При заказе аренды зала</p>
-      </div>
-      <div class="partners">{partners}</div>
     </div>
   </section>
 
@@ -2038,6 +2045,16 @@ def render_rental_page(slug):
   <div class="cta-band"><a class="btn btn--yellow" href="#popup:{slug}">Записаться</a></div>
 
   {band(flip=True)}
+
+  <section class="section section--partners section--mint">
+    <div class="stage">
+      <div class="section__head">
+        <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Скидки от наших партнёров</h2>
+        <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">При заказе аренды зала</p>
+      </div>
+      <div class="partners">{partners}</div>
+    </div>
+  </section>
 
   <section class="teasers">
     <div class="stage">
