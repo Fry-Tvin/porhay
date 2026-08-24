@@ -580,6 +580,15 @@ ul { margin: 0; padding: 0; list-style: none; }
   border-radius: 50%;
   object-fit: cover;
 }
+/* Пункт без фото (ждём от заказчика) — закрашенный кружок вместо img,
+   те же кольца остаются. Тот же приём, что у партнёров без лого. */
+.group__icon--empty {
+  position: relative;
+  z-index: 1;
+  width: 134px; height: 134px;
+  border-radius: 50%;
+  background: var(--peach);
+}
 .group__title {
   font-size: 24px;
   line-height: 1.2;
@@ -1509,6 +1518,7 @@ ul { margin: 0; padding: 0; list-style: none; }
    заголовок. */
 .teasers { padding: 135px 0 105px; background: var(--mint); }
 .teasers__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; max-width: 1160px; margin: 45px auto 0; }
+.teasers__grid--one { grid-template-columns: 1fr; max-width: 360px; }
 .teasers__item { text-align: center; }
 .teasers__item img { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 16px; }
 .teasers__item h3 { margin-top: 16px; font-size: 24px; font-weight: 700; }
