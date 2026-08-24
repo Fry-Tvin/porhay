@@ -1567,6 +1567,58 @@ ul { margin: 0; padding: 0; list-style: none; }
 .plan__list li { position: relative; padding-left: 20px; margin-top: 8px; font-size: 14px; line-height: 1.4; color: var(--ink); }
 .plan__list li::before { content: '✓'; position: absolute; left: 0; color: var(--teal); font-weight: 700; }
 .plan .btn { margin-top: 24px; align-self: center; }
+.plan__group { font-size: 13px; font-weight: 400; color: var(--ink); opacity: .6; margin-bottom: 4px; }
+.plan__more { opacity: .6; font-style: italic; }
+.plan__more::before { content: '' !important; }
+
+/* Сетка на две карточки (выпускной + корпоратив) — те же размеры, что и
+   у сетки на четыре, поэтому карточки не разъезжаются на всю ширину. */
+.plans__grid--two { grid-template-columns: repeat(2, 1fr); max-width: 760px; }
+
+/* --- Лента пакетов на главной ------------------------------------------- */
+/* Заказчик просил, чтобы пакеты листались вбок, как фотографии, и каждый
+   кликался. Тот же приём, что у .reviews: горизонтальный скролл со снапом,
+   стрелки в PAGE_SCRIPT шагают ровно на ширину карточки + gap. */
+.packages { position: relative; display: flex; align-items: center; gap: 16px; margin-top: 60px; }
+.packages__track {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  padding: 4px;
+}
+.packages__track::-webkit-scrollbar { display: none; }
+.packages__track .plan {
+  flex: 0 0 280px;
+  scroll-snap-align: start;
+  padding: 28px 22px;
+}
+.plan--link { text-decoration: none; transition: transform .2s ease, box-shadow .2s ease; }
+.plan--link:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(74,74,74,.14); }
+.plan__cta { margin-top: 20px; font-size: 15px; font-weight: 700; color: var(--ink); }
+
+.packages__arrow {
+  flex-shrink: 0;
+  width: 44px; height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  border: 0; border-radius: 50%;
+  background: var(--mint-deep);
+  cursor: pointer;
+}
+.packages__arrow svg { width: 11px; height: 21px; fill: none; stroke: var(--ink); stroke-width: 2; }
+.packages__arrow--prev { rotate: 180deg; }
+
+.cta-band--tight { padding-top: 40px; }
+
+@media (max-width: 1000px) {
+  .packages { gap: 8px; margin-top: 36px; }
+  .packages__track { gap: 16px; }
+  .packages__track .plan { flex: 0 0 250px; padding: 24px 18px; }
+  .packages__arrow { width: 40px; height: 40px; }
+  .plans__grid--two { grid-template-columns: 1fr; max-width: 340px; }
+}
 
 .table-scroll { max-width: 1000px; margin: 40px auto 0; overflow-x: auto; }
 .data-table { width: 100%; min-width: 640px; margin: 0 auto; border-collapse: collapse; }

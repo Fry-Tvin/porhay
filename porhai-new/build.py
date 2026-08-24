@@ -172,7 +172,7 @@ def band(flip=False):
 NAV = [
     ('Разовое посещение', '/razovoe'),
     ('Аренда залов', '#zaly'),
-    ('Праздник под ключ', '#pod-kluch'),
+    ('Праздник под ключ', '/pakety'),
     ('Для групп', '#dlyagrupp'),
     ('Отзывы', '#otziv'),
     ('Скидки от партнёров', '/partner'),
@@ -187,8 +187,7 @@ MOBILE_MENU = [
     ('Разовое посещение', '/razovoe', None),
     ('Аренда залов', None, [
         ('WhiteBox', '/whiteroom'), ('LoftBox', '/loftbox'), ('Комбо+', '/combo')]),
-    ('Праздник под ключ', None, [
-        ('День рождения', '/denrozhdeniya'), ('Выпускной', '/vypusknye'), ('Корпоратив', '/korporativ')]),
+    ('Праздник под ключ', '/pakety', None),
     ('Для групп', '#dlyagrupp', None),
     ('Отзывы', '#otziv', None),
     ('Скидки от партнёров', '/partner', None),
@@ -934,6 +933,26 @@ PAGE_SCRIPT = """<script>
     });
   }
 
+  // 5a. Лента пакетов «под ключ» на главной — тот же приём, что и у отзывов:
+  //     шаг равен реальной ширине карточки + gap, иначе снап расходится.
+  var packTrack = document.querySelector('.packages__track');
+  if (packTrack) {
+    var packStep = function () {
+      var card = packTrack.querySelector('.plan');
+      if (!card) return packTrack.clientWidth;
+      var gap = parseFloat(getComputedStyle(packTrack).columnGap) || 0;
+      return card.getBoundingClientRect().width + gap;
+    };
+    var packPrev = document.querySelector('.packages__arrow--prev');
+    var packNext = document.querySelector('.packages__arrow--next');
+    if (packPrev) packPrev.addEventListener('click', function () {
+      packTrack.scrollBy({ left: -packStep(), behavior: 'smooth' });
+    });
+    if (packNext) packNext.addEventListener('click', function () {
+      packTrack.scrollBy({ left: packStep(), behavior: 'smooth' });
+    });
+  }
+
   // 5b. Лента-слайдер фото (если есть на странице): те же стрелки, тот же приём.
   //     В оригинале слайдер сам листает фото каждые ~5с (замерено на живой
   //     странице: 4.97с и 4.84с между переключениями) — воспроизводим тем же
@@ -1129,7 +1148,8 @@ def build():
         <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">Аниматор/шоу-программа и&nbsp;фотограф включены в&nbsp;стоимость</p>
         {PROMO_NEON}
       </div>
-      <div class="tariffs">{keys}</div>
+      {render_packages_carousel()}
+      <div class="cta-band cta-band--tight"><a class="btn btn--yellow" href="/pakety">Все пакеты</a></div>
     </div>
   </section>
 
@@ -2650,6 +2670,169 @@ def build_partner():
     print('partner.html собран:', len(html), 'байт')
 
 
+# --- Все пакеты «под ключ» (/pakety) ----------------------------------
+# Заказчик 23.08.2026: пакеты «под ключ» были видны только внутри
+# /denrozhdeniya — чтобы до них добраться, надо было сначала догадаться
+# зайти в «День рождения». Просил отдельный заметный вход наверху и чтобы
+# пакеты листались вбок карточками, как фотографии, и каждая кликалась.
+#
+# Отсюда две вещи: страница /pakety со всеми шестью пакетами и лента с
+# листанием на главной вместо трёх статичных карточек-типов праздника.
+# Пункт меню «Праздник под ключ» теперь ведёт на страницу, а не на якорь.
+#
+# Данные не выдумываем: четыре пакета дня рождения — те же DR_PLANS
+# (content/prices.md, подтверждены 17.08.2026), выпускной — VP_CHECKLIST
+# и минимальная цена со своей страницы, корпоратив — без фиксированной
+# цены, как и в оригинале (считается индивидуально).
+PACKAGES_VYPUSKNYE = dict(
+    title='Выпускной', price='от 1090 ₽', meta='за человека · 50 гостей · 4 часа',
+    color='mint', href='/vypusknye',
+    features=[t for _, t in VP_CHECKLIST])
+
+PACKAGES_KORPORATIV = dict(
+    title='Корпоратив', price='По запросу', meta='считаем индивидуально',
+    color='peach', href='/korporativ',
+    features=['Игра в мафию или игры на сплочение', 'Мастер-классы, ведущие и диджей',
+              'Любое другое наполнение по вашему желанию',
+              'Аренда всего центра до 50 человек'])
+
+
+def all_packages():
+    """Шесть пакетов одним списком: 4 дня рождения + выпускной + корпоратив.
+    У пакетов дня рождения своей страницы нет — все четыре живут на
+    /denrozhdeniya, поэтому href у них общий."""
+    out = []
+    for pl in DR_PLANS:
+        out.append(dict(pl, href='/denrozhdeniya', group='День рождения'))
+    out.append(dict(PACKAGES_VYPUSKNYE, group='Выпускной'))
+    out.append(dict(PACKAGES_KORPORATIV, group='Корпоратив'))
+    return out
+
+
+def render_package_card(pl, limit=None, as_link=False):
+    """Карточка пакета. limit — сколько пунктов состава показывать
+    (в ленте на главной место ограничено, на /pakety показываем всё).
+    as_link=True — вся карточка кликабельна (лента на главной)."""
+    feats = pl['features'] if limit is None else pl['features'][:limit]
+    rest = 0 if limit is None else max(0, len(pl['features']) - limit)
+    items = ''.join('<li>%s</li>' % f for f in feats)
+    if rest:
+        items += '<li class="plan__more">и ещё %d пункт%s</li>' % (
+            rest, '' if rest % 10 == 1 and rest % 100 != 11 else
+            'а' if rest % 10 in (2, 3, 4) and rest % 100 not in (12, 13, 14) else 'ов')
+    badge = '<span class="plan__badge">%s</span>' % pl['badge'] if pl.get('badge') else ''
+    group = '<p class="plan__group">%s</p>' % pl['group'] if pl.get('group') else ''
+    inner = (
+        '%s%s<h3 class="plan__title">%s</h3>'
+        '<p class="plan__price">%s</p><p class="plan__meta">%s</p>'
+        '<ul class="plan__list">%s</ul>'
+        % (badge, group, pl['title'], pl['price'], pl['meta'], items))
+    if as_link:
+        return ('<a class="plan plan--%s plan--link" href="%s">%s'
+                '<span class="plan__cta">Подробнее →</span></a>'
+                % (pl['color'], pl['href'], inner))
+    return ('<div class="plan plan--%s">%s'
+            '<a class="btn btn--yellow" href="%s">Подробнее</a></div>'
+            % (pl['color'], inner, pl['href']))
+
+
+def render_packages_carousel():
+    """Лента пакетов на главной: листается вбок, каждая карточка — ссылка."""
+    cards = ''.join(render_package_card(pl, limit=5, as_link=True)
+                    for pl in all_packages())
+    return (
+        '<div class="packages">'
+        '<button class="packages__arrow packages__arrow--prev" type="button" aria-label="Предыдущий пакет">%s</button>'
+        '<div class="packages__track">%s</div>'
+        '<button class="packages__arrow packages__arrow--next" type="button" aria-label="Следующий пакет">%s</button>'
+        '</div>' % (SLIDER_ARROW, cards, SLIDER_ARROW))
+
+
+def build_pakety():
+    packs = all_packages()
+    dr_cards = ''.join(render_package_card(p) for p in packs if p['group'] == 'День рождения')
+    other_cards = ''.join(render_package_card(p) for p in packs if p['group'] != 'День рождения')
+
+    popups = render_form_popup('header') + render_form_popup('pakety')
+    faq_ld = faq_jsonld()
+
+    html = f"""<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Праздники «под ключ» — все пакеты «Порхай»</title>
+<meta name="description" content="Все пакеты праздников под ключ в «Порхай»: день рождения (Мини, Под ключ, Вип, Супер Вип), выпускной и корпоратив. Аниматор, фотограф и сервировка включены в стоимость.">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<script>document.documentElement.className+=' js'</script>
+
+{render_top_chrome()}
+
+<main>
+  <section class="page-hero">
+    <div class="stage">
+      <h1 class="page-hero__title">Праздники «под&nbsp;ключ»</h1>
+      <p class="page-hero__descr">Аниматор или шоу-программа и&nbsp;фотограф включены в&nbsp;стоимость. Вам остаётся только прийти&nbsp;— всё остальное мы&nbsp;берём на&nbsp;себя.</p>
+      {PROMO_NEON}
+    </div>
+  </section>
+
+  {band()}
+
+  <section class="plans section--mint">
+    <div class="stage">
+      <div class="section__head">
+        <h2 class="section__title" data-anim="fadeinup" data-anim-dur="1">День рождения</h2>
+        <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">Четыре пакета&nbsp;— от&nbsp;самого простого до&nbsp;праздника на&nbsp;всю площадку</p>
+      </div>
+      <div class="plans__grid">{dr_cards}</div>
+    </div>
+  </section>
+
+  {band(flip=True)}
+
+  <section class="plans">
+    <div class="stage">
+      <div class="section__head">
+        <h2 class="section__title" data-anim="fadeinup" data-anim-dur="1">Выпускной и&nbsp;корпоратив</h2>
+        <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">Для садиков, школ и&nbsp;взрослых компаний</p>
+      </div>
+      <div class="plans__grid plans__grid--two">{other_cards}</div>
+    </div>
+  </section>
+
+  <div class="cta-band"><a class="btn btn--yellow" href="#popup:pakety" data-anim="zoomin" data-anim-dur="1">Записаться</a></div>
+
+  {band()}
+
+  {render_faq_section()}
+
+  {band(flip=True)}
+
+  {render_contact_section()}
+</main>
+
+{render_footer()}
+
+{render_float_button()}
+
+<script type="application/ld+json">{faq_ld}</script>
+<script type="application/ld+json">{BUSINESS_LD}</script>
+
+{popups}
+
+{PAGE_SCRIPT}
+</body>
+</html>
+"""
+    path = os.path.join(HERE, 'pakety.html')
+    with open(path, 'w', encoding='utf-8') as f:
+        f.write(html)
+    print('pakety.html собран:', len(html), 'байт')
+
+
 # --- Подарочная страница (/podarok) -----------------------------------
 # Скрытая: не в NAV, не в мобильном меню, не в подвале, noindex+nofollow.
 # Раздаётся прямой ссылкой (реклама, рассылка, визитки).
@@ -2872,5 +3055,6 @@ if __name__ == '__main__':
     build_vypusknye()
     build_korporativ()
     build_partner()
+    build_pakety()
     build_podarok()
     build_not_found()
