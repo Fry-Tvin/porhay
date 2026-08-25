@@ -205,12 +205,43 @@ CARDS = [
      'Наша волшебная комната с&nbsp;фонариками'),
 ]
 
-# Плитка «4 шага»: (файл иконки, текст)
+# Пятая иконка-шарики. В экспорте иконок шагов ровно четыре, и цифра внутри
+# каждой заверстана как контур (не текст), перенумеровать готовый файл нельзя:
+# в frame_14, например, цветом цифры #6FABA9 закрашены ещё пять элементов
+# украшения, так что вырезать цифру разбором файла — ненадёжно. Поэтому пятая
+# рисуется инлайном: цифра здесь настоящий <text>, он берёт Evolventa прямо со
+# страницы (в <img> шрифт страницы не подтягивается, поэтому именно инлайн).
+# Круг и цифра повторяют геометрию оригиналов: circle 74/89.683/68 #BAFFFD,
+# цифра по базовой линии 108.683 с центром 74, цвет #6FABA9.
+STEP_BALLOONS = (
+    '<svg viewBox="0 0 158 158" xmlns="http://www.w3.org/2000/svg" fill="none" '
+    'width="120" height="120" role="presentation">'
+    '<circle cx="74" cy="89.683" r="68" fill="#BAFFFD"/>'
+    '<path d="M100 47 C98 59 106 66 102 78" stroke="#998675" stroke-width="1.7" '
+    'stroke-linecap="round" fill="none"/>'
+    '<path d="M126 55 C124 67 132 73 128 85" stroke="#998675" stroke-width="1.7" '
+    'stroke-linecap="round" fill="none"/>'
+    '<ellipse cx="100" cy="31" rx="13.5" ry="16.5" fill="#F5CF37"/>'
+    '<path d="M100 47.5 l-3.4 4.4 h6.8 z" fill="#F5CF37"/>'
+    '<ellipse cx="126" cy="39" rx="11.5" ry="14" fill="#ECBDC7"/>'
+    '<path d="M126 53 l-3 3.9 h6 z" fill="#ECBDC7"/>'
+    '<text x="74" y="108.683" text-anchor="middle" font-family="Evolventa, Arial, sans-serif" '
+    'font-weight="700" font-size="43" fill="#6FABA9">5</text>'
+    '</svg>'
+)
+
+# Плитка шагов: (файл иконки либо None → рисуем инлайном, текст).
+# Заказчик 25.08.2026 попросил добавить пятый шаг — про оформление шарами.
+# Хлопушка (готовая иконка с цифрой 4) досталась шагу про оформление, а шарики
+# (моя, цифра 5) — финальному «приходите»: нумерация так остаётся сплошной,
+# и обе пары «иконка ↔ текст» читаются, хлопушка = украшение праздника,
+# шарики = сам праздник.
 STEPS = [
     ('tild3731-6636-4962-b130-626633363163__frame_11.svg', 'Бронируйте зал на&nbsp;нужную дату'),
     ('tild3463-6661-4338-a662-623335396263__frame_12.svg', 'Выбирайте тематику и&nbsp;программу'),
     ('tild3266-3436-4062-a439-646530363831__frame_13.svg', 'Закажите любимые угощения и&nbsp;сладости'),
-    ('tild3139-3761-4734-b865-326566393261__frame_14.svg', 'Приходите в&nbsp;назначенный день с&nbsp;хорошим настроением'),
+    ('tild3139-3761-4734-b865-326566393261__frame_14.svg', 'Добавьте оформление шарами: фонтан, цифра или&nbsp;надпись'),
+    (None, 'Приходите в&nbsp;назначенный день с&nbsp;хорошим настроением'),
 ]
 
 # Стрелка между шагами — инлайновая SVG из оригинала, обводка бирюзовая.
@@ -1119,9 +1150,11 @@ def build():
 
     steps = ''.join(
         '<div class="step" data-anim="zoomin" data-anim-dur="1" data-anim-delay="%.2f">%s'
-        '<span class="step__icon"><img src="%s%s" alt="" '
-        'width="120" height="120"></span><p class="step__title">%s</p></div>'
-        % (n * 0.15, STEP_ARROW if n else '', IMG, icon, title)
+        '<span class="step__icon">%s</span><p class="step__title">%s</p></div>'
+        % (n * 0.15, STEP_ARROW if n else '',
+           ('<img src="%s%s" alt="" width="120" height="120">' % (IMG, icon)
+            if icon else STEP_BALLOONS),
+           title)
         for n, (icon, title) in enumerate(STEPS))
 
     zaly = render_zaly_carousel()
@@ -1204,7 +1237,7 @@ def build():
   <section class="section section--mint section--steps">
     <div class="stage">
       <div class="section__head">
-        <h2 class="section__title">Организуйте праздник в 4 шага:</h2>
+        <h2 class="section__title">Организуйте праздник в 5 шагов:</h2>
       </div>
       <div class="steps">{steps}</div>
     </div>
@@ -2222,7 +2255,7 @@ DR_MINI_FEATURES = [
 DR_PLANS = [
     dict(title='Мини', price='от 16 500 ₽', meta='15 гостей · 3 часа',
          color='mint', features=DR_MINI_FEATURES, slug='mini',
-         price_rows=[('Будний день', '16 500 ₽/19 500 ₽'), ('Выходной день', '—/25 500 ₽')]),
+         price_rows=[('Будний день', '16 500 ₽/19 500 ₽'), ('Выходной день', '25 500 ₽')]),
     dict(title='Под ключ', price='от 24 500 ₽', meta='20 гостей · 3 часа',
          color='yellow', badge='Популярный выбор', slug='pod-kluch',
          features=DR_MINI_FEATURES + ['Серебряное шоу', 'Блеск-тату'],

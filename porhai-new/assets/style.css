@@ -408,24 +408,28 @@ ul { margin: 0; padding: 0; list-style: none; }
    у секции свои верх и низ, сняты прямым замером оригинала. */
 .section--steps { padding: 140px 0 105px; }
 
+/* Шагов стало пять (был четвёртый — про оформление шарами), поэтому плитка
+   ужата: 5×200 + 4×30 = 1120px и по-прежнему влезает в 1160. При прежних
+   260px и зазоре 40 ряд требовал бы 1460px и разъезжался. */
 .steps {
   display: flex;
   justify-content: center;
-  gap: 40px;
+  gap: 30px;
   max-width: 1160px;
-  margin: 75px auto 0;
+  margin: 60px auto 0;
 }
-.step { position: relative; width: 260px; text-align: center; }
+.step { position: relative; width: 200px; text-align: center; }
 .step__icon {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 120px;
 }
-.step__icon img { display: block; max-width: 120px; }
+/* svg — пятая иконка, она нарисована инлайном (см. STEP_BALLOONS в build.py) */
+.step__icon img, .step__icon svg { display: block; width: 120px; max-width: 120px; height: auto; }
 .step__title {
-  margin: 25px 0 0;
-  font-size: 18px;
+  margin: 22px 0 0;
+  font-size: 17px;
   line-height: 1.35;
   font-weight: 700;
   color: var(--ink);
@@ -433,8 +437,8 @@ ul { margin: 0; padding: 0; list-style: none; }
 .step__arrow {
   position: absolute;
   top: 60px;
-  left: -50px;
-  width: 60px;
+  left: -37px;
+  width: 44px;
   transform: translateY(-50%);
   pointer-events: none;
 }
@@ -1631,10 +1635,13 @@ ul { margin: 0; padding: 0; list-style: none; }
 .plan__list li { position: relative; padding-left: 20px; margin-top: 8px; font-size: 14px; line-height: 1.4; color: var(--ink); }
 .plan__list li::before { content: '✓'; position: absolute; left: 0; color: var(--teal); font-weight: 700; }
 .plan .btn { margin-top: 24px; align-self: center; }
-/* На жёлтой карточке жёлтая кнопка сливалась с фоном — на этой карточке
-   кнопка тёмная (тот же --ink, что и у .plan__badge, тоже с этой карточки). */
-.plan--yellow .btn--yellow { background: var(--ink); color: var(--white); }
-.plan--yellow .btn--yellow:hover { box-shadow: 0 6px 18px rgba(74, 74, 74, .35); }
+/* На жёлтой карточке жёлтая кнопка сливалась с фоном. Тёмная (--ink) читалась
+   мрачно — «праздник или похороны», поэтому берём бирюзовый: это и так
+   основной интерактивный цвет сайта (кнопка «Забронировать зал» в шапке),
+   на жёлтом читается контрастно и празднично. Размер и радиус остаются от
+   .btn--yellow, чтобы все четыре кнопки в ряду карточек были одинаковыми. */
+.plan--yellow .btn--yellow { background: var(--teal); color: var(--white); }
+.plan--yellow .btn--yellow:hover { box-shadow: 0 6px 18px rgba(56, 162, 165, .45); }
 .plan__prices { margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(74, 74, 74, .15); }
 .plan__price-row { display: flex; justify-content: space-between; font-size: 13px; color: var(--ink); }
 .plan__price-row + .plan__price-row { margin-top: 6px; }
