@@ -1622,17 +1622,32 @@ ul { margin: 0; padding: 0; list-style: none; }
   background: var(--mint);
   text-align: center;
 }
+/* Палитра карточек пересобрана 25.08.2026. Было: три светлые пастели плюс
+   насыщенный жёлтый у «Под ключ» — он выпадал из ряда (светлота 59% против
+   86–94% у соседей) и читался не как «рекомендуем», а как карточка из
+   другого набора; вдобавок «Под ключ» и «Супер Вип» оказались одного тона
+   (48° и 46°), стоя через карточку друг от друга, а самый дорогой пакет
+   получал самый бледный фон — иерархия наоборот.
+   Стало: четыре ровные пастели одного веса, тон идёт по кругу без
+   возвратов (мятный 178° → жёлтый 46° → персиковый 5° → розовый 345°),
+   вес растёт к дорогому пакету. «Популярный выбор» выделен обводкой и
+   плашкой, а не насыщенностью. */
 .plan--mint { background: var(--mint); }
-.plan--yellow { background: var(--yellow); }
-.plan--peach { background: var(--peach); }
 .plan--cream { background: var(--cream); }
+.plan--peach { background: var(--peach); }
+.plan--pink { background: var(--pink); }
+/* Обводка, а не box-shadow: .plan--link:hover уже занимает тень под
+   подсветку карточки в ленте, они бы затирали друг друга. */
+.plan--featured { outline: 2px solid var(--teal); outline-offset: -2px; }
 .plan__badge {
   align-self: center;
   margin-bottom: 12px;
   padding: 4px 14px;
   border-radius: 20px;
-  background: var(--ink);
-  color: #fff;
+  /* Была тёмная (--ink) — в паре с обводкой и кнопкой держим один
+     акцентный цвет, иначе на карточке три разных выделения. */
+  background: var(--teal);
+  color: var(--white);
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
@@ -1644,13 +1659,14 @@ ul { margin: 0; padding: 0; list-style: none; }
 .plan__list li { position: relative; padding-left: 20px; margin-top: 8px; font-size: 14px; line-height: 1.4; color: var(--ink); }
 .plan__list li::before { content: '✓'; position: absolute; left: 0; color: var(--teal); font-weight: 700; }
 .plan .btn { margin-top: 24px; align-self: center; }
-/* На жёлтой карточке жёлтая кнопка сливалась с фоном. Тёмная (--ink) читалась
-   мрачно — «праздник или похороны», поэтому берём бирюзовый: это и так
-   основной интерактивный цвет сайта (кнопка «Забронировать зал» в шапке),
-   на жёлтом читается контрастно и празднично. Размер и радиус остаются от
-   .btn--yellow, чтобы все четыре кнопки в ряду карточек были одинаковыми. */
-.plan--yellow .btn--yellow { background: var(--teal); color: var(--white); }
-.plan--yellow .btn--yellow:hover { box-shadow: 0 6px 18px rgba(56, 162, 165, .45); }
+/* Кнопка на карточках одна на все четыре — бирюзовая. Раньше на трёх была
+   жёлтая, а на «Под ключ» своя (жёлтая на жёлтом сливалась) — два цвета
+   призыва в одном ряду добавляли разнобоя. Бирюзовый и так основной
+   интерактивный цвет сайта (кнопка «Забронировать зал» в шапке) и ровно
+   ложится на все четыре пастели. Размер и радиус остаются от .btn--yellow,
+   чтобы кнопки в ряду были одинаковыми. */
+.plan .btn--yellow { background: var(--teal); color: var(--white); }
+.plan .btn--yellow:hover { box-shadow: 0 6px 18px rgba(56, 162, 165, .45); }
 .plan__prices { margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(74, 74, 74, .15); }
 .plan__price-row { display: flex; justify-content: space-between; font-size: 13px; color: var(--ink); }
 .plan__price-row + .plan__price-row { margin-top: 6px; }

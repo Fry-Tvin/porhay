@@ -2224,7 +2224,7 @@ DR_PLANS = [
          color='mint', features=DR_MINI_FEATURES, slug='mini',
          price_rows=[('Будний день', '16 500 ₽/19 500 ₽'), ('Выходной день', '25 500 ₽')]),
     dict(title='Под ключ', price='от 24 500 ₽', meta='20 гостей · 3 часа',
-         color='yellow', badge='Популярный выбор', slug='pod-kluch',
+         color='cream', badge='Популярный выбор', slug='pod-kluch',
          features=DR_MINI_FEATURES + ['Серебряное шоу', 'Блеск-тату'],
          price_rows=[('Будний день', '24 500 ₽/27 500 ₽'), ('Выходной день', '31 500 ₽/33 500 ₽')]),
     dict(title='Вип', price='от 41 000 ₽', meta='20 гостей · 3 часа',
@@ -2236,7 +2236,7 @@ DR_PLANS = [
                       'Фонтан из 6 шаров и цифра', 'Фотограф 1 час', 'Пиньята с наполнением'],
          price_rows=[('Будний день', '41 000 ₽/44 000 ₽'), ('Выходной день', '46 000 ₽/50 000 ₽')]),
     dict(title='Супер Вип', price='от 81 500 ₽', meta='50 гостей · 4 часа, вся площадка',
-         color='cream', slug='super-vip',
+         color='pink', slug='super-vip',
          features=['Аренда зала 4 часа, вся площадка', 'Аниматор 1,5 часа + шоу',
                     'Сервировка стола до 50 гостей', 'Скатерти, свечи',
                     'Электронные пригласительные', 'Воздушный шар каждому ребёнку',
@@ -2295,12 +2295,13 @@ def build_denrozhdeniya():
         '<h3>%s</h3></div>' % (IMG, img, title) for img, title in DR_WHY)
 
     plans = ''.join(
-        '<div class="plan plan--%s" id="plan-%s">%s<h3 class="plan__title">%s</h3>'
+        '<div class="plan plan--%s%s" id="plan-%s">%s<h3 class="plan__title">%s</h3>'
         '<p class="plan__price">%s</p><p class="plan__meta">%s</p>'
         '<ul class="plan__list">%s</ul>'
         '<div class="plan__prices">%s</div>'
         '<a class="btn btn--yellow" href="#popup:denrozhdeniya">Получить свободные даты</a></div>'
-        % (pl['color'], pl['slug'], '<span class="plan__badge">%s</span>' % pl['badge'] if pl.get('badge') else '',
+        % (pl['color'], ' plan--featured' if pl.get('badge') else '', pl['slug'],
+           '<span class="plan__badge">%s</span>' % pl['badge'] if pl.get('badge') else '',
            pl['title'], pl['price'], pl['meta'],
            ''.join('<li>%s</li>' % f for f in pl['features']),
            ''.join('<p class="plan__price-row"><span>%s</span><span>%s</span></p>' % r for r in pl['price_rows']))
@@ -2936,7 +2937,7 @@ GF_FORMATS = [
     dict(title='Праздник под ключ', price='от 11 500 ₽', meta='полная организация', color='peach',
          href='#popup:dlyagrupp',
          features=['Аниматор, декор, мастер-класс, торт, фотограф', 'Вы просто приходите и наслаждаетесь']),
-    dict(title='Партнёрские условия', price='Индивидуально', meta='для регулярных групп', color='yellow',
+    dict(title='Партнёрские условия', price='Индивидуально', meta='для регулярных групп', color='pink',
          href='#popup:dlyagrupp',
          features=['Для лагерей, школ и постоянных клиентов', 'Специальные тарифы, приоритетное бронирование']),
 ]
@@ -3246,13 +3247,14 @@ def render_package_card(pl, limit=None, as_link=False):
         '<p class="plan__price">%s</p><p class="plan__meta">%s</p>'
         '<ul class="plan__list">%s</ul>'
         % (badge, group, pl['title'], pl['price'], pl['meta'], items))
+    feat = ' plan--featured' if pl.get('badge') else ''
     if as_link:
-        return ('<a class="plan plan--%s plan--link" href="%s">%s'
+        return ('<a class="plan plan--%s%s plan--link" href="%s">%s'
                 '<span class="plan__cta">Подробнее →</span></a>'
-                % (pl['color'], pl['href'], inner))
-    return ('<div class="plan plan--%s">%s'
+                % (pl['color'], feat, pl['href'], inner))
+    return ('<div class="plan plan--%s%s">%s'
             '<a class="btn btn--yellow" href="%s">Подробнее</a></div>'
-            % (pl['color'], inner, pl['href']))
+            % (pl['color'], feat, inner, pl['href']))
 
 
 def render_packages_carousel():
