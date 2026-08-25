@@ -406,43 +406,55 @@ ul { margin: 0; padding: 0; list-style: none; }
 /* У общего .section отступы подобраны под секцию с карточками. Здесь другой
    зазор до заголовка (140px, а не 109) и ниже ещё плитка шагов —
    у секции свои верх и низ, сняты прямым замером оригинала. */
-.section--steps { padding: 140px 0 105px; }
+/* Отступ сверху был 140px под ряд широких плиток. Блок стал колонкой и
+   заметно ниже — заказчик просил уместить его в один экран, поэтому
+   воздух сверху/снизу тоже подрезан. */
+.section--steps { padding: 96px 0 84px; }
 
-/* Шагов стало пять (был четвёртый — про оформление шарами), поэтому плитка
-   ужата: 5×200 + 4×30 = 1120px и по-прежнему влезает в 1160. При прежних
-   260px и зазоре 40 ряд требовал бы 1460px и разъезжался. */
+/* Шагов стало пять, и по просьбе заказчика (25.08.2026) блок собран
+   компактно, чтобы влезал в один экран: не ряд из широких плиток с
+   иконками, а колонка «номер сбоку от текста». Пять плиток по 260px в ряд
+   всё равно не помещались (1460px против 1160px контейнера), а иконки из
+   экспорта отпали — в каждой цифра заверстана контуром внутри круга, и
+   пятой там просто нет. Мятный круг с цифрой оставлен, поэтому язык блока
+   не изменился. */
 .steps {
   display: flex;
-  justify-content: center;
-  gap: 30px;
-  max-width: 1160px;
-  margin: 60px auto 0;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 620px;
+  margin: 44px auto 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: none;
 }
-.step { position: relative; width: 200px; text-align: center; }
-.step__icon {
+.step {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  text-align: left;
+}
+.step__num {
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 120px;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: var(--mint-deep);
+  color: var(--ink);
+  font-size: 24px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
-/* svg — пятая иконка, она нарисована инлайном (см. STEP_BALLOONS в build.py) */
-.step__icon img, .step__icon svg { display: block; width: 120px; max-width: 120px; height: auto; }
 .step__title {
-  margin: 22px 0 0;
-  font-size: 17px;
+  margin: 0;
+  font-size: 18px;
   line-height: 1.35;
   font-weight: 700;
   color: var(--ink);
 }
-.step__arrow {
-  position: absolute;
-  top: 60px;
-  left: -37px;
-  width: 44px;
-  transform: translateY(-50%);
-  pointer-events: none;
-}
-.step__arrow svg { display: block; width: 100%; }
 
 /* --- Варианты аренды залов ----------------------------------------------- */
 .section--tariffs { padding: 90px 0 57px; }
@@ -1205,15 +1217,12 @@ ul { margin: 0; padding: 0; list-style: none; }
   .section__title { font-size: 32px; line-height: 1.15; }
   .section-title { font-size: 24px; }
 
-  .steps { flex-direction: column; align-items: center; gap: 0; max-width: 260px; margin-top: 48px; }
-  .step__arrow {
-    display: block;
-    position: static;
-    width: 40px;
-    margin: 30px auto;
-    top: auto; left: auto;
-    transform: rotate(90deg);
-  }
+  /* Колонка «номер + текст» уже и на десктопе, на телефоне только ужимаем
+     кружок и кегль — раскладку менять не нужно. */
+  .steps { gap: 12px; margin-top: 32px; }
+  .step { gap: 14px; }
+  .step__num { width: 44px; height: 44px; font-size: 20px; }
+  .step__title { font-size: 16px; }
   .section__lead { font-size: 16px; line-height: 21px; }
 
   .section--tariffs { padding: 64px 0; }
