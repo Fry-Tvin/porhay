@@ -504,6 +504,8 @@ FOOTER_LINKS = [
     ('Отзывы', '#otziv'),
     ('Контакты', '#kontakt'),
     ('Скидки от партнёров', '/partner'),
+    ('Торты', '/torty'),
+    ('Пиньяты', '/pinyaty'),
     ('Правила посещения', '/pravila'),
     ('Главная', '/'),
 ]
@@ -2428,6 +2430,7 @@ def build_denrozhdeniya():
       <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Пакеты «День рождения»</h2>
       <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">Видно, с какого пакета что появляется</p>
       {render_compare_table(('Мини', 'Под ключ', 'Вип', 'Супер Вип'), DR_COMPARE, DR_COMPARE_REC, DR_COMPARE_COMMON)}
+      <p class="ct__links"><a href="/torty">Все дизайны тортов →</a> <a href="/pinyaty">Все пиньяты →</a></p>
       <div class="plans__grid">{plans}</div>
     </div>
   </section>
@@ -3197,6 +3200,283 @@ def build_dlyagrupp():
     print('dlyagrupp.html собран:', len(html), 'байт')
 
 
+# --- Торты и десерты (/torty) ------------------------------------------
+# Новая страница, не из экспорта Тильды — заказчик прислал фото тортов
+# (12 листов 3×2 с дизайнами) и попросил отдельную страницу (28.08.2026).
+# Отдельные фото нарезаны из листов скриптом на основе поиска фона
+# (розовый лист/подписи отсекаются), два листа отдельно — начинки
+# (content/prices.md пока не трогаем, это независимый список), ещё один
+# лист — «Десерты» (кейк-попсы/капкейки), текст снят с самого листа.
+CAKES = [
+    ('tort-among-as.webp', 'Амонг ас'),
+    ('tort-tachki.webp', 'Тачки'),
+    ('tort-bravl-stars.webp', 'Бравл Старс'),
+    ('tort-lamba.webp', 'Ламба'),
+    ('tort-karate.webp', 'Каратэ'),
+    ('tort-haggi-vaggi.webp', 'Хагги Вагги'),
+    ('tort-kuromi.webp', 'Куроми'),
+    ('tort-figurnoe-katanie.webp', 'Фигурное катание'),
+    ('tort-koteyki.webp', 'Котейки'),
+    ('tort-gimnastika.webp', 'Гимнастика'),
+    ('tort-babochki.webp', 'Бабочки'),
+    ('tort-mishka.webp', 'Мишка'),
+    ('tort-lego.webp', 'Лего'),
+    ('tort-siniy-traktor.webp', 'Синий трактор'),
+    ('tort-okey-hokkey.webp', 'Окей-хоккей'),
+    ('tort-futbol.webp', 'Футбол'),
+    ('tort-sambo.webp', 'Самбо'),
+    ('tort-kosmos.webp', 'Космос'),
+    ('tort-nezhnosti.webp', 'Нежности'),
+    ('tort-milaya-betti.webp', 'Милая Бэтти'),
+    ('tort-barbi.webp', 'Барби'),
+    ('tort-balet-2.webp', 'Балет 2'),
+    ('tort-avokado.webp', 'Авокадо'),
+    ('tort-podruzhki.webp', 'Подружки'),
+    ('tort-animeshka.webp', 'Анимешка'),
+    ('tort-edinorozhka.webp', 'Единорожка'),
+    ('tort-koteyki-2.webp', 'Котейки 2'),
+    ('tort-dolche-tort.webp', 'Дольче Торт'),
+    ('tort-balet.webp', 'Балет'),
+    ('tort-printsessy.webp', 'Принцессы'),
+    ('tort-korgi.webp', 'Корги'),
+    ('tort-kapibara.webp', 'Капибара'),
+    ('tort-anna-i-elza.webp', 'Анна и Эльза'),
+    ('tort-anna-i-olaf.webp', 'Анна и Олаф'),
+    ('tort-golovolomka.webp', 'Головоломка'),
+    ('tort-printsessy-2.webp', 'Принцессы 2'),
+    ('tort-geymzona.webp', 'Геймзона'),
+    ('tort-drayv.webp', 'Драйв'),
+    ('tort-gta.webp', 'ГТА'),
+    ('tort-dino-park.webp', 'Дино-парк'),
+    ('tort-strit-bit.webp', 'Стрит-бит'),
+    ('tort-stendoff.webp', 'Стэндофф'),
+    ('tort-rusalochka.webp', 'Русалочка'),
+    ('tort-shokoladnaya-fabrika.webp', 'Шоколадная фабрика'),
+    ('tort-tsifrovoy-tsirk.webp', 'Цифровой цирк'),
+    ('tort-malenkiy-boss.webp', 'Маленький босс'),
+    ('tort-layki.webp', 'Лайки'),
+    ('tort-uensdey.webp', 'Уэнсдей'),
+    ('tort-alisa.webp', 'Алиса'),
+    ('tort-fan-pati.webp', 'Фан Пати'),
+    ('tort-toka-boka.webp', 'Тока Бока'),
+    ('tort-tik-tort.webp', 'Тик-Торт'),
+    ('tort-rozovyy-robloks.webp', 'Розовый Роблокс'),
+    ('tort-robloks.webp', 'Роблокс'),
+    ('tort-igra-v-kalmara.webp', 'Игра в кальмара'),
+    ('tort-chelovek-pauk.webp', 'Человек-паук'),
+    ('tort-rozovyy-maynkraft.webp', 'Розовый Майнкрафт'),
+    ('tort-maynkraft.webp', 'Майнкрафт'),
+]
+
+FILLINGS = [
+    ('nachinka-fruktovyy.webp', 'Фруктовый', 'Ванильный бисквит, сырно-творожный крем. Вкус на выбор гостя — ананас, персик.'),
+    ('nachinka-shokolad-s-vishney.webp', 'Шоколад с вишней', 'Шоколадный бисквит, сырно-шоколадный крем, сметанный крем с ягодой вишни.'),
+    ('nachinka-molochnyy-lomtik.webp', 'Молочный ломтик', 'Шоколадный бисквит с прослойкой сметанного крема.'),
+    ('nachinka-nezhnaya-malina.webp', 'Нежная малина', 'Молочные коржи с добавлением какао, с прослойкой нежного малинового крема.'),
+    ('nachinka-shokolad-v-shokolade.webp', 'Шоколад в шоколаде', 'Шоколадный бисквит с пропиткой горячего шоколада и прослойкой шоколадного крема.'),
+    ('nachinka-medovik.webp', 'Медовик', 'Медовые коржи с прослойкой сметанного крема. По желанию гостя можно добавить бруснику или карамель.'),
+    ('nachinka-vanilnoe-oblachko.webp', 'Ванильное облачко', 'Ванильные коржи и нежный сметанный крем.'),
+    ('nachinka-molochnaya-devochka.webp', 'Молочная девочка', 'Молочный бисквит, сметанно-творожный крем. Вкус на выбор гостя — манго, клубника, вишня, брусника, карамель, шоколад.'),
+    ('nachinka-legendarnyy-snikers.webp', 'Легендарный сникерс', 'Шоколадный бисквит, сливочно-сырный крем с прослойкой домашней карамели, арахиса и прослойка сырно-шоколадного крема.'),
+    ('nachinka-rafaello.webp', 'Рафаэлло', 'Ванильный бисквит, птичье молоко, сливочный крем с белым шоколадом и кокосом.'),
+    ('nachinka-oreo.webp', 'Орео', 'Шоколадный бисквит с пропиткой горячего шоколада, с прослойкой классического и шоколадного крем-чиз и печеньем орео.'),
+    ('nachinka-karamelnyy-malchik.webp', 'Карамельный мальчик', 'Молочные коржи с добавлением какао, карамельный крем и прослойка арахисовых лепестков.'),
+]
+
+# Текст снят дословно с листа «Десерты» в экспорте фото заказчика.
+DESSERTS = [
+    ('Кейк-попсы', '200 ₽', 'Десерт на палочке, смесь бисквитов со сгущенным молоком. Поливается шоколадом и декорируется по вашему желанию.'),
+    ('Капкейки', '300 ₽', 'Нежный ванильный бисквит с сырной шапочкой в тематическом оформлении. Начинка на выбор гостя: карамель, клубника, вишня.'),
+]
+
+
+def build_torty():
+    cakes = ''.join(
+        '<div class="torty-grid__item"><img src="%s%s" alt="Торт «%s»" loading="lazy" width="180" height="180">'
+        '<span>%s</span></div>' % (IMG, img, name, name)
+        for img, name in CAKES)
+
+    fillings = ''.join(
+        '<div class="fillings__item"><img src="%s%s" alt="" loading="lazy" width="260" height="140">'
+        '<h3>%s</h3><p>%s</p></div>' % (IMG, img, name, descr)
+        for img, name, descr in FILLINGS)
+
+    desserts = ''.join(
+        '<div class="desserts__item"><div class="desserts__head"><h3>%s</h3><span class="desserts__price">%s</span></div>'
+        '<p>%s</p></div>' % (title, price, descr)
+        for title, price, descr in DESSERTS)
+
+    popups = render_form_popup('header') + render_form_popup(
+        'torty', title='Заказать торт',
+        subtitle='Оставьте контакты — подберём дизайн и посчитаем стоимость')
+
+    html = f"""<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Торты на праздник — развлекательный центр «Порхай»</title>
+<meta name="description" content="{len(CAKES)} готовых дизайнов тортов, начинки на выбор и десерты на праздник в «Порхай»: кейк-попсы и капкейки.">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<script>document.documentElement.className+=' js'</script>
+
+{render_top_chrome()}
+
+<main>
+  <section class="page-hero">
+    <div class="stage">
+      <div class="page-hero__uptitle" data-anim="fadeinup" data-anim-dur="1">«Порхай»</div>
+      <h1 class="page-hero__title" data-anim="fadeinup" data-anim-dur="1">Торты и десерты</h1>
+      <p class="page-hero__descr" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".1">Дизайн подбираем под тематику праздника — вот что мы уже готовили нашим гостям</p>
+    </div>
+  </section>
+
+  <div class="cta-band"><a class="btn btn--yellow" href="#popup:torty" data-anim="zoomin" data-anim-dur="1">Заказать торт</a></div>
+
+  {band()}
+
+  <section class="section">
+    <div class="stage">
+      <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">{len(CAKES)} готовых дизайнов</h2>
+      <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">Возьмём готовый или предложим свой — под тему праздника</p>
+      <div class="torty-grid">{cakes}</div>
+    </div>
+  </section>
+
+  {band(flip=True)}
+
+  <section class="section" style="background:var(--mint)">
+    <div class="stage">
+      <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Начинки на выбор</h2>
+      <div class="fillings">{fillings}</div>
+    </div>
+  </section>
+
+  {band()}
+
+  <section class="section">
+    <div class="stage">
+      <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Дополнительно</h2>
+      <div class="desserts">{desserts}</div>
+    </div>
+  </section>
+
+  <div class="cta-band"><a class="btn btn--yellow" href="#popup:torty">Заказать торт</a></div>
+
+  {band(flip=True)}
+
+  {render_contact_section()}
+</main>
+
+{render_footer()}
+
+{render_float_button()}
+
+<script type="application/ld+json">{BUSINESS_LD}</script>
+
+{popups}
+
+{PAGE_SCRIPT}
+</body>
+</html>
+"""
+    path = os.path.join(HERE, 'torty.html')
+    with open(path, 'w', encoding='utf-8') as f:
+        f.write(html)
+    print('torty.html собран:', len(html), 'байт')
+
+
+# --- Пиньяты (/pinyaty) ---------------------------------------------------
+# Тоже новая страница, фото от заказчика (28.08.2026) — 13 готовых фото
+# пиньят, без листов-сеток (уже отдельные кадры, нарезка не нужна).
+PINYATY_GALLERY = [
+    ('pinyata-zvezda.webp', 'Звезда'),
+    ('pinyata-edinorog.webp', 'Единорог'),
+    ('pinyata-edinorog-golova.webp', 'Единорог'),
+    ('pinyata-futbolnyy-myach.webp', 'Футбольный мяч'),
+    ('pinyata-tachki.webp', 'Тачки'),
+    ('pinyata-lol-syurpriz.webp', 'LOL Сюрприз'),
+    ('pinyata-ponchik.webp', 'Пончик'),
+    ('pinyata-arbuz.webp', 'Арбуз'),
+    ('pinyata-nindzya.webp', 'Ниндзя'),
+    ('pinyata-bomba.webp', 'Бомба'),
+    ('pinyata-tsifra-5.webp', 'Цифра'),
+    ('pinyata-maynkraft.webp', 'Майнкрафт'),
+    ('pinyata-smaylik.webp', 'Смайлик'),
+]
+
+
+def build_pinyaty():
+    gallery = ''.join(
+        '<div class="torty-grid__item torty-grid__item--big"><img src="%s%s" alt="Пиньята «%s»" loading="lazy" width="260" height="260">'
+        '<span>%s</span></div>' % (IMG, img, name, name)
+        for img, name in PINYATY_GALLERY)
+
+    popups = render_form_popup('header') + render_form_popup(
+        'pinyaty', title='Заказать пиньяту',
+        subtitle='Оставьте контакты — подберём дизайн и наполнение')
+
+    html = f"""<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Пиньяты на праздник — развлекательный центр «Порхай»</title>
+<meta name="description" content="Пиньяты с наполнением на день рождения в «Порхай»: {len(PINYATY_GALLERY)} готовых дизайнов.">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<script>document.documentElement.className+=' js'</script>
+
+{render_top_chrome()}
+
+<main>
+  <section class="page-hero">
+    <div class="stage">
+      <div class="page-hero__uptitle" data-anim="fadeinup" data-anim-dur="1">«Порхай»</div>
+      <h1 class="page-hero__title" data-anim="fadeinup" data-anim-dur="1">Пиньяты</h1>
+      <p class="page-hero__descr" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".1">С наполнением — на радость гостям праздника</p>
+    </div>
+  </section>
+
+  <div class="cta-band"><a class="btn btn--yellow" href="#popup:pinyaty" data-anim="zoomin" data-anim-dur="1">Заказать пиньяту</a></div>
+
+  {band()}
+
+  <section class="section">
+    <div class="stage">
+      <div class="torty-grid torty-grid--big">{gallery}</div>
+    </div>
+  </section>
+
+  <div class="cta-band"><a class="btn btn--yellow" href="#popup:pinyaty">Заказать пиньяту</a></div>
+
+  {band(flip=True)}
+
+  {render_contact_section()}
+</main>
+
+{render_footer()}
+
+{render_float_button()}
+
+<script type="application/ld+json">{BUSINESS_LD}</script>
+
+{popups}
+
+{PAGE_SCRIPT}
+</body>
+</html>
+"""
+    path = os.path.join(HERE, 'pinyaty.html')
+    with open(path, 'w', encoding='utf-8') as f:
+        f.write(html)
+    print('pinyaty.html собран:', len(html), 'байт')
+
+
+
 def build_partner():
     cards = []
     for name, descr, discount, url in PARTNER_LIST:
@@ -3575,5 +3855,7 @@ if __name__ == '__main__':
     build_korporativ()
     build_dlyagrupp()
     build_partner()
+    build_torty()
+    build_pinyaty()
     build_podarok()
     build_not_found()

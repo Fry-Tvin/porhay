@@ -1723,6 +1723,46 @@ ul { margin: 0; padding: 0; list-style: none; }
 .ct td.ct__rec { box-shadow: inset 0 0 0 999px rgba(56, 162, 165, .09); font-weight: 700; }
 .ct__foot { max-width: 1160px; margin: 16px auto 0; font-size: 13px; line-height: 1.55; color: var(--ink); opacity: .65; }
 .ct__foot b { font-weight: 700; opacity: .85; }
+.ct__links { max-width: 1160px; margin: 10px auto 0; text-align: right; font-size: 14px; }
+.ct__links a { color: var(--teal); font-weight: 700; text-decoration: none; margin-left: 20px; }
+.ct__links a:hover { text-decoration: underline; }
+
+/* --- Торты и пиньяты (/torty, /pinyaty) — новые страницы, не из экспорта.
+   Простая витрина: фото + подпись, без свободного позиционирования. */
+.torty-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 20px; margin: 48px auto 0; max-width: 1160px; }
+.torty-grid__item { text-align: center; }
+.torty-grid__item img { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 20px; }
+.torty-grid__item span { display: block; margin-top: 8px; font-size: 13px; font-weight: 700; color: var(--ink); }
+.torty-grid--big { grid-template-columns: repeat(4, 1fr); max-width: 1000px; }
+.torty-grid__item--big span { font-size: 15px; }
+
+.fillings { display: grid; grid-template-columns: repeat(4, 260px); gap: 32px 24px; justify-content: center; margin: 48px auto 0; }
+.fillings__item { text-align: left; }
+.fillings__item img { display: block; width: 100%; height: 140px; object-fit: cover; border-radius: 16px; }
+.fillings__item h3 { margin: 12px 0 0; font-size: 16px; font-weight: 700; color: var(--ink); }
+.fillings__item p { margin: 6px 0 0; font-size: 13px; line-height: 1.45; color: var(--ink); opacity: .75; }
+
+.desserts { display: flex; flex-wrap: wrap; justify-content: center; gap: 24px; margin: 48px auto 0; max-width: 900px; }
+.desserts__item { flex: 1 1 340px; max-width: 420px; padding: 28px; border-radius: 20px; background: var(--mint); text-align: left; }
+.desserts__head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.desserts__head h3 { margin: 0; font-size: 20px; font-weight: 700; color: var(--ink); }
+.desserts__price { font-size: 20px; font-weight: 700; color: var(--ink); white-space: nowrap; }
+.desserts__item p { margin: 10px 0 0; font-size: 14px; line-height: 1.5; color: var(--ink); opacity: .8; }
+
+@media (max-width: 1000px) {
+  .ct__links { text-align: center; }
+  .ct__links a { margin: 0 10px; }
+
+  .torty-grid { grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 32px; }
+  .torty-grid__item span { font-size: 12px; }
+  .torty-grid--big { grid-template-columns: repeat(2, 1fr); }
+
+  .fillings { grid-template-columns: repeat(2, 1fr); max-width: 480px; gap: 24px 16px; margin-top: 32px; }
+  .fillings__item img { height: 120px; }
+
+  .desserts { margin-top: 32px; }
+  .desserts__item { padding: 22px; }
+}
 
 /* --- Лента пакетов на главной ------------------------------------------- */
 /* Заказчик просил, чтобы пакеты листались вбок, как фотографии, и каждый
