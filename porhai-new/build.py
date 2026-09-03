@@ -2321,7 +2321,7 @@ DR_PLANS = [
 # «условия» (гости/аренда/аниматор), потом собственно наполнение праздника.
 DR_COMPARE_REC = 1  # «Под ключ» — колонка, отмеченная как популярный выбор
 DR_COMPARE = [
-    ('Сколько и как долго', [
+    ('Площадка и гости', [
         ('Гостей',                     ['15', '20', '20', '50']),
         ('Аренда зала',                ['3 ч', '3 ч', '3 ч', '4 ч']),
         ('Вся площадка центра',        ['—', '—', '—', '✓']),
@@ -2373,7 +2373,7 @@ def render_compare_table(pkg_names, groups, rec_index, common):
         '<th scope="col"%s>%s</th>' % (' class="ct__rec"' if i == rec_index else '', name)
         for i, name in enumerate(pkg_names))
     return (
-        '<table class="ct"><thead><tr><th scope="col">Что входит</th>%s</tr></thead>'
+        '<table class="ct"><thead><tr><th scope="col"></th>%s</tr></thead>'
         '<tbody>%s</tbody></table>'
         '<p class="ct__foot"><b>Во все пакеты входит:</b> %s.</p>'
         % (head, ''.join(rows), common)
@@ -2488,7 +2488,6 @@ def build_denrozhdeniya():
   <section class="section">
     <div class="stage">
       <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Пакеты «День рождения»</h2>
-      <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">Видно, с какого пакета что появляется</p>
       {render_compare_table(('Мини', 'Под ключ', 'Вип', 'Супер Вип'), DR_COMPARE, DR_COMPARE_REC, DR_COMPARE_COMMON)}
       <p class="ct__links"><a href="/torty">Все дизайны тортов →</a> <a href="/pinyaty">Все пиньяты →</a></p>
       <div class="plans__grid">{plans}</div>
@@ -3389,29 +3388,28 @@ def build_torty():
 {render_top_chrome()}
 
 <main>
-  <section class="page-hero">
+  <section class="page-hero page-hero--accent">
     <div class="stage">
       <div class="page-hero__uptitle" data-anim="fadeinup" data-anim-dur="1">«Порхай»</div>
       <h1 class="page-hero__title" data-anim="fadeinup" data-anim-dur="1">Торты и десерты</h1>
       <p class="page-hero__descr" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".1">Дизайн подбираем под тематику праздника — вот что мы уже готовили нашим гостям</p>
+      <a class="btn btn--yellow" href="#popup:torty" data-anim="zoomin" data-anim-dur="1">Заказать торт</a>
     </div>
   </section>
 
-  <div class="cta-band"><a class="btn btn--yellow" href="#popup:torty" data-anim="zoomin" data-anim-dur="1">Заказать торт</a></div>
-
   {band()}
 
-  <section class="section">
+  <section class="section section--compact">
     <div class="stage">
       <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">{len(CAKES)} готовых дизайнов</h2>
       <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">Возьмём готовый или предложим свой — под тему праздника</p>
-      <div class="torty-grid">{cakes}</div>
+      <div class="torty-grid torty-grid--round">{cakes}</div>
     </div>
   </section>
 
   {band(flip=True)}
 
-  <section class="section" style="background:var(--mint)">
+  <section class="section section--compact" style="background:var(--mint)">
     <div class="stage">
       <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Начинки на выбор</h2>
       <div class="fillings">{fillings}</div>
@@ -3420,14 +3418,14 @@ def build_torty():
 
   {band()}
 
-  <section class="section">
+  <section class="section section--compact">
     <div class="stage">
       <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Дополнительно</h2>
       <div class="desserts">{desserts}</div>
     </div>
   </section>
 
-  <div class="cta-band"><a class="btn btn--yellow" href="#popup:torty">Заказать торт</a></div>
+  <div class="cta-band cta-band--compact"><a class="btn btn--yellow" href="#popup:torty">Заказать торт</a></div>
 
   {band(flip=True)}
 
@@ -3459,7 +3457,6 @@ PINYATY_GALLERY = [
     ('pinyata-zvezda.webp', 'Звезда'),
     ('pinyata-edinorog.webp', 'Единорог'),
     ('pinyata-edinorog-golova.webp', 'Единорог'),
-    ('pinyata-futbolnyy-myach.webp', 'Футбольный мяч'),
     ('pinyata-tachki.webp', 'Тачки'),
     ('pinyata-lol-syurpriz.webp', 'LOL Сюрприз'),
     ('pinyata-ponchik.webp', 'Пончик'),
@@ -3498,25 +3495,24 @@ def build_pinyaty():
 {render_top_chrome()}
 
 <main>
-  <section class="page-hero">
+  <section class="page-hero page-hero--accent">
     <div class="stage">
       <div class="page-hero__uptitle" data-anim="fadeinup" data-anim-dur="1">«Порхай»</div>
       <h1 class="page-hero__title" data-anim="fadeinup" data-anim-dur="1">Пиньяты</h1>
       <p class="page-hero__descr" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".1">С наполнением — на радость гостям праздника</p>
+      <a class="btn btn--yellow" href="#popup:pinyaty" data-anim="zoomin" data-anim-dur="1">Заказать пиньяту</a>
     </div>
   </section>
 
-  <div class="cta-band"><a class="btn btn--yellow" href="#popup:pinyaty" data-anim="zoomin" data-anim-dur="1">Заказать пиньяту</a></div>
-
   {band()}
 
-  <section class="section">
+  <section class="section section--compact">
     <div class="stage">
       <div class="torty-grid torty-grid--big">{gallery}</div>
     </div>
   </section>
 
-  <div class="cta-band"><a class="btn btn--yellow" href="#popup:pinyaty">Заказать пиньяту</a></div>
+  <div class="cta-band cta-band--compact"><a class="btn btn--yellow" href="#popup:pinyaty">Заказать пиньяту</a></div>
 
   {band(flip=True)}
 

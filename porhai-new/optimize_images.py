@@ -382,7 +382,6 @@ DISPLAY_WIDTH = {
     'pinyata-bomba.jpg': 260,
     'pinyata-edinorog-golova.jpg': 260,
     'pinyata-edinorog.jpg': 260,
-    'pinyata-futbolnyy-myach.jpg': 260,
     'pinyata-lol-syurpriz.jpg': 260,
     'pinyata-maynkraft.jpg': 260,
     'pinyata-nindzya.jpg': 260,

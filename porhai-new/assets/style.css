@@ -288,6 +288,11 @@ ul { margin: 0; padding: 0; list-style: none; }
 /* --- Секция с карточками ------------------------------------------------ */
 .section { position: relative; padding: 109px 0 84px; background: var(--white); }
 .section--mint { background: var(--mint); }
+/* Плотный интервал — карточные витрины /torty и /pinyaty, заказчик
+   03.09.2026: между блоками было слишком свободно для сеток из мелких
+   плиток (обычный .section рассчитан на заголовки/текст, не на плотный
+   grid). */
+.section--compact { padding: 72px 0 60px; }
 
 .section__head { text-align: center; max-width: 856px; margin: 0 auto; }
 .section__title {
@@ -1339,6 +1344,16 @@ ul { margin: 0; padding: 0; list-style: none; }
 .page-hero__uptitle { font-size: 16px; font-weight: 700; color: var(--ink); }
 .page-hero__title { margin-top: 24px; font-size: 48px; line-height: 1.23; font-weight: 700; color: var(--ink); }
 .page-hero__descr { margin-top: 21px; font-size: 18px; line-height: 1.55; font-weight: 400; color: var(--ink); }
+/* Акцентный фон для первого экрана (/torty, /pinyaty — по просьбе заказчика
+   03.09.2026, кнопка заказа переехала прямо сюда). Синего токена в
+   дизайн-системе нет — берём --teal, он и так основной интерактивный
+   цвет сайта; текст на нём переключаем в белый, тёмно-серый --ink
+   на этом фоне не проходит по контрасту. */
+.page-hero--accent { background: var(--teal); }
+.page-hero--accent .page-hero__uptitle,
+.page-hero--accent .page-hero__title,
+.page-hero--accent .page-hero__descr { color: var(--white); }
+.page-hero--accent .btn { margin-top: 32px; }
 
 .slider { position: relative; max-width: 1160px; margin: 60px auto 0; }
 .slider__track {
@@ -1743,20 +1758,23 @@ ul { margin: 0; padding: 0; list-style: none; }
 
 /* --- Торты и пиньяты (/torty, /pinyaty) — новые страницы, не из экспорта.
    Простая витрина: фото + подпись, без свободного позиционирования. */
-.torty-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 20px; margin: 48px auto 0; max-width: 1160px; }
+.torty-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 20px; margin: 36px auto 0; max-width: 1160px; }
 .torty-grid__item { text-align: center; }
 .torty-grid__item img { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 20px; }
 .torty-grid__item span { display: block; margin-top: 8px; font-size: 13px; font-weight: 700; color: var(--ink); }
 .torty-grid--big { grid-template-columns: repeat(4, 1fr); max-width: 1000px; }
 .torty-grid__item--big span { font-size: 15px; }
+/* Круглые рамки — только у тортов (по просьбе заказчика 03.09.2026),
+   у пиньят формат окон остался прежним. */
+.torty-grid--round .torty-grid__item img { border-radius: 50%; }
 
-.fillings { display: grid; grid-template-columns: repeat(4, 260px); gap: 32px 24px; justify-content: center; margin: 48px auto 0; }
+.fillings { display: grid; grid-template-columns: repeat(4, 260px); gap: 32px 24px; justify-content: center; margin: 36px auto 0; }
 .fillings__item { text-align: left; }
 .fillings__item img { display: block; width: 100%; height: 140px; object-fit: cover; border-radius: 16px; }
 .fillings__item h3 { margin: 12px 0 0; font-size: 16px; font-weight: 700; color: var(--ink); }
 .fillings__item p { margin: 6px 0 0; font-size: 13px; line-height: 1.45; color: var(--ink); opacity: .75; }
 
-.desserts { display: flex; flex-wrap: wrap; justify-content: center; gap: 24px; margin: 48px auto 0; max-width: 900px; }
+.desserts { display: flex; flex-wrap: wrap; justify-content: center; gap: 24px; margin: 36px auto 0; max-width: 900px; }
 .desserts__item { flex: 1 1 340px; max-width: 420px; padding: 28px; border-radius: 20px; background: var(--mint); text-align: left; }
 .desserts__head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
 .desserts__head h3 { margin: 0; font-size: 20px; font-weight: 700; color: var(--ink); }
@@ -1815,6 +1833,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .packages__arrow--prev { rotate: 180deg; }
 
 .cta-band--tight { padding-top: 40px; }
+.cta-band--compact { padding: 0 0 60px; }
 
 @media (max-width: 1000px) {
   .packages { gap: 8px; margin-top: 36px; }
