@@ -19,6 +19,28 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 # растр пережат в WebP, SVG скопированы как есть.
 IMG = 'assets/img/'
 
+# Яндекс.Метрика (группа A аудита — «Цели Метрики… при подключении
+# аналитики», счётчик прислан заказчиком 03.09.2026). Ставится сразу
+# после <head>, как рекомендует Яндекс — до подключения style.css, чтобы
+# счётчик не ждал загрузки CSS. webvisor/clickmap/trackLinks включены
+# в самом коде счётчика, отдельно ничего не настраиваем; цель на отправку
+# формы — вызовом ym(...,'reachGoal','form_submit') в PAGE_SCRIPT
+# и в дублирующем скрипте privacy.html (см. ниже).
+YANDEX_METRIKA_ID = 112256802
+YANDEX_METRIKA = """<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=112256802', 'ym');
+
+    ym(112256802, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/112256802" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->"""
+
 # Акция «Неоновое ленточное шоу в подарок», до 31.08.2026, только White Room —
 # по просьбе заказчика 21.08.2026. Группа B по духу (новый элемент, но в
 # фирменном стиле), не из спеки. Единственное место, где ставим этот бейдж —
@@ -997,6 +1019,7 @@ PAGE_SCRIPT = """<script>
         e.preventDefault();
         form.hidden = true;
         dlg.querySelector('[data-form-thanks]').hidden = false;
+        if (window.ym) ym(112256802, 'reachGoal', 'form_submit');
       });
     }
   });
@@ -1161,6 +1184,7 @@ def build():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+{YANDEX_METRIKA}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Развлекательный центр «Порхай»</title>
@@ -1393,6 +1417,7 @@ def build_privacy():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+{YANDEX_METRIKA}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Политика конфиденциальности — Порхай</title>
@@ -1447,6 +1472,7 @@ document.querySelectorAll('.popup').forEach(function (dlg) {{
       e.preventDefault();
       form.hidden = true;
       dlg.querySelector('[data-form-thanks]').hidden = false;
+      if (window.ym) ym(112256802, 'reachGoal', 'form_submit');
     }});
   }}
 }});
@@ -1565,6 +1591,7 @@ def build_pravila():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+{YANDEX_METRIKA}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Правила посещения — Порхай</title>
@@ -1707,6 +1734,7 @@ def build_razovoe():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+{YANDEX_METRIKA}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Разовое посещение развлекательного центра «Порхай»</title>
@@ -2065,6 +2093,7 @@ def render_rental_page(slug):
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+{YANDEX_METRIKA}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{p['meta_title']}</title>
@@ -2425,6 +2454,7 @@ def build_denrozhdeniya():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+{YANDEX_METRIKA}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>День рождения «ПОД КЛЮЧ» в развлекательном центре «Порхай»</title>
@@ -2620,6 +2650,7 @@ def build_vypusknye():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+{YANDEX_METRIKA}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Выпускные «ПОД КЛЮЧ» в развлекательном центре «Порхай»</title>
@@ -2842,6 +2873,7 @@ def build_korporativ():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+{YANDEX_METRIKA}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Корпоративные мероприятия для семей сотрудников в развлекательном центре «Порхай»</title>
@@ -3080,6 +3112,7 @@ def build_dlyagrupp():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+{YANDEX_METRIKA}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Для организованных групп — развлекательный центр «Порхай»</title>
@@ -3336,6 +3369,7 @@ def build_torty():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+{YANDEX_METRIKA}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Торты на праздник — развлекательный центр «Порхай»</title>
@@ -3444,6 +3478,7 @@ def build_pinyaty():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+{YANDEX_METRIKA}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Пиньяты на праздник — развлекательный центр «Порхай»</title>
@@ -3520,6 +3555,7 @@ def build_partner():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+{YANDEX_METRIKA}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Скидки от партнёров развлекательного центра «Порхай»</title>
@@ -3746,6 +3782,7 @@ def build_podarok():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+{YANDEX_METRIKA}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Подарок — бесплатное посещение «Порхай»</title>
@@ -3825,6 +3862,7 @@ def build_not_found():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+{YANDEX_METRIKA}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ошибка 404 — Порхай</title>
