@@ -1107,6 +1107,12 @@ ul { margin: 0; padding: 0; list-style: none; }
 /* --- Формы заявки --------------------------------------------------------- */
 .popup--form { max-width: 460px; }
 .form { display: flex; flex-direction: column; gap: 18px; margin-top: 28px; }
+/* [hidden] и .form { display:flex } — одинаковая специфичность (один класс
+   против одного атрибутного селектора), а наш стиль в каскаде идёт после
+   стиля браузера — значит именно наш flex и побеждает. Без этой строки
+   form.hidden=true из PAGE_SCRIPT ничего не скрывает, поля формы остаются
+   видны поверх/рядом с «Спасибо!». Тот же приём уже есть у .mobile-menu[hidden]. */
+.form[hidden] { display: none; }
 .form__field { display: flex; flex-direction: column; gap: 8px; }
 .form__label { font-size: 14px; color: var(--ink); opacity: .7; }
 .form__input {
@@ -1126,7 +1132,14 @@ ul { margin: 0; padding: 0; list-style: none; }
 .form__consent input { width: 20px; height: 20px; flex: 0 0 20px; accent-color: var(--teal); margin-top: 1px; }
 .form__consent a { color: var(--teal); }
 .form__submit { align-self: flex-start; }
-.form__thanks { margin-top: 28px; font-size: 18px; font-weight: 700; color: var(--teal); text-align: center; }
+/* Форма и заголовок/подзаголовок попапа прячутся при отправке (data-form-head,
+   data-form-thanks в PAGE_SCRIPT) — остаётся только это окно с благодарностью,
+   без хвоста старого текста формы над ним. Кегли — те же, что у .popup__title/
+   .popup__subtitle, чтобы окно выглядело частью той же системы, а не наспех
+   добавленной строкой. */
+.form__thanks { padding: 32px 0 24px; text-align: center; }
+.form__thanks-title { margin: 0; font-size: 28px; line-height: 1.25; font-weight: 700; color: var(--ink); }
+.form__thanks-text { margin: 14px 0 0; font-size: 18px; line-height: 1.35; font-weight: 700; color: var(--teal); }
 
 /* --- Баннер согласия на cookie -------------------------------------------- */
 /* Карточка внизу слева, а не во всю ширину — чтобы не перекрывать плавающую
@@ -1261,6 +1274,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   .popup__box { padding: 36px 20px 28px; max-height: 90vh; }
   .popup__title { font-size: 22px; padding-right: 90px; }
   .popup__gallery { grid-template-columns: repeat(2, 1fr); }
+  .form__thanks-title { font-size: 22px; }
 
   .reviews { margin-top: 32px; gap: 8px; }
   .reviews__arrow { width: 44px; height: 44px; }

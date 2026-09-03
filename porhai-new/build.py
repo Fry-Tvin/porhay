@@ -634,8 +634,8 @@ def render_form_popup(popup_id, title='Оставьте свои контакт�
         '<dialog class="popup popup--form" id="popup-%s" aria-label="%s">'
         '<div class="popup__box">'
         '<button class="popup__close" type="button" data-popup-close>Назад</button>'
-        '<h3 class="popup__title">%s</h3>'
-        '<div class="popup__subtitle"><p>%s</p></div>'
+        '<div data-form-head><h3 class="popup__title">%s</h3>'
+        '<div class="popup__subtitle"><p>%s</p></div></div>'
         '<form class="form" data-form>'
         '<label class="form__field"><span class="form__label">Ваше имя</span>'
         '<input class="form__input" type="text" name="name" autocomplete="name" required></label>'
@@ -647,7 +647,10 @@ def render_form_popup(popup_id, title='Оставьте свои контакт�
         '<span>Хочу получать новости, акции и приглашения на праздники</span></label>'
         '<button class="btn btn--yellow form__submit" type="submit">Отправить</button>'
         '</form>'
-        '<p class="form__thanks" data-form-thanks hidden>Спасибо! Мы свяжемся с вами в ближайшее время.</p>'
+        '<div class="form__thanks" data-form-thanks hidden>'
+        '<p class="form__thanks-title">Спасибо!</p>'
+        '<p class="form__thanks-text">Мы свяжемся с вами в ближайшее время.</p>'
+        '</div>'
         '</div>'
         '</dialog>'
         % (popup_id, title, title, subtitle))
@@ -1018,6 +1021,8 @@ PAGE_SCRIPT = """<script>
       form.addEventListener('submit', function (e) {
         e.preventDefault();
         form.hidden = true;
+        var head = dlg.querySelector('[data-form-head]');
+        if (head) head.hidden = true;
         dlg.querySelector('[data-form-thanks]').hidden = false;
         if (window.ym) ym(112256802, 'reachGoal', 'form_submit');
       });
@@ -1471,6 +1476,8 @@ document.querySelectorAll('.popup').forEach(function (dlg) {{
     form.addEventListener('submit', function (e) {{
       e.preventDefault();
       form.hidden = true;
+      var head = dlg.querySelector('[data-form-head]');
+      if (head) head.hidden = true;
       dlg.querySelector('[data-form-thanks]').hidden = false;
       if (window.ym) ym(112256802, 'reachGoal', 'form_submit');
     }});
