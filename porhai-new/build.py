@@ -41,13 +41,13 @@ YANDEX_METRIKA = """<!-- Yandex.Metrika counter -->
 <noscript><div><img src="https://mc.yandex.ru/watch/112256802" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 <!-- /Yandex.Metrika counter -->"""
 
-# Акция «Неоновое ленточное шоу в подарок», до 31.08.2026, только White Room —
-# по просьбе заказчика 21.08.2026. Группа B по духу (новый элемент, но в
-# фирменном стиле), не из спеки. Единственное место, где ставим этот бейдж —
-# именно в этих местах просил заказчик: секция «Праздники под ключ» на
-# главной и страница White Room.
+# Акция «Неоновое ленточное шоу в подарок», продлена до 30.09.2026
+# (заказчик 03.09.2026 — раньше было до 31.08, срок истёк, просто продлить).
+# Группа B по духу (новый элемент, но в фирменном стиле), не из спеки.
+# Единственное место, где ставим этот бейдж — именно в этих местах просил
+# заказчик: секция «Праздники под ключ» на главной и страница White Room.
 PROMO_NEON = ('<p class="promo-badge">Неоновое ленточное шоу в подарок при '
-              'аренде White&nbsp;Room от&nbsp;3 часов — до&nbsp;31 августа</p>')
+              'аренде White&nbsp;Room от&nbsp;3 часов — до&nbsp;30 сентября</p>')
 
 # --- Кляксы ---------------------------------------------------------------
 # Две «фигмовские» ссылки в оригинале битые; локальные копии тех же файлов
@@ -634,8 +634,8 @@ def render_form_popup(popup_id, title='Оставьте свои контакт�
         '<dialog class="popup popup--form" id="popup-%s" aria-label="%s">'
         '<div class="popup__box">'
         '<button class="popup__close" type="button" data-popup-close>Назад</button>'
-        '<h3 class="popup__title">%s</h3>'
-        '<div class="popup__subtitle"><p>%s</p></div>'
+        '<div data-form-head><h3 class="popup__title">%s</h3>'
+        '<div class="popup__subtitle"><p>%s</p></div></div>'
         '<form class="form" data-form>'
         '<label class="form__field"><span class="form__label">Ваше имя</span>'
         '<input class="form__input" type="text" name="name" autocomplete="name" required></label>'
@@ -647,7 +647,10 @@ def render_form_popup(popup_id, title='Оставьте свои контакт�
         '<span>Хочу получать новости, акции и приглашения на праздники</span></label>'
         '<button class="btn btn--yellow form__submit" type="submit">Отправить</button>'
         '</form>'
-        '<p class="form__thanks" data-form-thanks hidden>Спасибо! Мы свяжемся с вами в ближайшее время.</p>'
+        '<div class="form__thanks" data-form-thanks hidden>'
+        '<p class="form__thanks-title">Спасибо!</p>'
+        '<p class="form__thanks-text">Мы свяжемся с вами в ближайшее время.</p>'
+        '</div>'
         '</div>'
         '</dialog>'
         % (popup_id, title, title, subtitle))
@@ -1018,6 +1021,8 @@ PAGE_SCRIPT = """<script>
       form.addEventListener('submit', function (e) {
         e.preventDefault();
         form.hidden = true;
+        var head = dlg.querySelector('[data-form-head]');
+        if (head) head.hidden = true;
         dlg.querySelector('[data-form-thanks]').hidden = false;
         if (window.ym) ym(112256802, 'reachGoal', 'form_submit');
       });
@@ -1254,11 +1259,12 @@ def build():
         {PROMO_NEON}
       </div>
       {render_packages_carousel()}
-      <div class="cta-band cta-band--tight"><a class="btn btn--yellow" href="/denrozhdeniya">Все пакеты</a></div>
+      <div class="cta-band cta-band--pair">
+        <a class="btn btn--yellow" href="/denrozhdeniya">Все пакеты</a>
+        <a class="btn btn--yellow" href="#popup:main">Оставить заявку</a>
+      </div>
     </div>
   </section>
-
-  <div class="cta-band"><a class="btn btn--yellow" href="#popup:main">Оставить заявку</a></div>
 
   <section class="section section--tariffs" id="zaly">
     <div class="stage">
@@ -1471,6 +1477,8 @@ document.querySelectorAll('.popup').forEach(function (dlg) {{
     form.addEventListener('submit', function (e) {{
       e.preventDefault();
       form.hidden = true;
+      var head = dlg.querySelector('[data-form-head]');
+      if (head) head.hidden = true;
       dlg.querySelector('[data-form-thanks]').hidden = false;
       if (window.ym) ym(112256802, 'reachGoal', 'form_submit');
     }});
@@ -2125,7 +2133,7 @@ def render_rental_page(slug):
 
   {promo}
 
-  <div class="cta-band"><a class="btn btn--yellow" href="#popup:{slug}" data-anim="zoomin" data-anim-dur="1">Записаться</a></div>
+  <div class="cta-band{' cta-band--tight' if promo else ''}"><a class="btn btn--yellow" href="#popup:{slug}" data-anim="zoomin" data-anim-dur="1">Записаться</a></div>
 
   {band(flip=True)}
 
@@ -2314,7 +2322,7 @@ DR_PLANS = [
 # «условия» (гости/аренда/аниматор), потом собственно наполнение праздника.
 DR_COMPARE_REC = 1  # «Под ключ» — колонка, отмеченная как популярный выбор
 DR_COMPARE = [
-    ('Сколько и как долго', [
+    ('Площадка и гости', [
         ('Гостей',                     ['15', '20', '20', '50']),
         ('Аренда зала',                ['3 ч', '3 ч', '3 ч', '4 ч']),
         ('Вся площадка центра',        ['—', '—', '—', '✓']),
@@ -2366,7 +2374,7 @@ def render_compare_table(pkg_names, groups, rec_index, common):
         '<th scope="col"%s>%s</th>' % (' class="ct__rec"' if i == rec_index else '', name)
         for i, name in enumerate(pkg_names))
     return (
-        '<table class="ct"><thead><tr><th scope="col">Что входит</th>%s</tr></thead>'
+        '<table class="ct"><thead><tr><th scope="col"></th>%s</tr></thead>'
         '<tbody>%s</tbody></table>'
         '<p class="ct__foot"><b>Во все пакеты входит:</b> %s.</p>'
         % (head, ''.join(rows), common)
@@ -2481,7 +2489,6 @@ def build_denrozhdeniya():
   <section class="section">
     <div class="stage">
       <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Пакеты «День рождения»</h2>
-      <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">Видно, с какого пакета что появляется</p>
       {render_compare_table(('Мини', 'Под ключ', 'Вип', 'Супер Вип'), DR_COMPARE, DR_COMPARE_REC, DR_COMPARE_COMMON)}
       <p class="ct__links"><a href="/torty">Все дизайны тортов →</a> <a href="/pinyaty">Все пиньяты →</a></p>
       <div class="plans__grid">{plans}</div>
@@ -3144,7 +3151,7 @@ def build_dlyagrupp():
 
   {band(flip=True)}
 
-  <section class="problems" style="background:{KP_BG}">
+  <section class="problems problems--after-band" style="background:{KP_BG}">
     <div class="stage">
       <div class="section__head">
         <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Для кого</h2>
@@ -3382,29 +3389,28 @@ def build_torty():
 {render_top_chrome()}
 
 <main>
-  <section class="page-hero">
+  <section class="page-hero page-hero--accent">
     <div class="stage">
       <div class="page-hero__uptitle" data-anim="fadeinup" data-anim-dur="1">«Порхай»</div>
       <h1 class="page-hero__title" data-anim="fadeinup" data-anim-dur="1">Торты и десерты</h1>
       <p class="page-hero__descr" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".1">Дизайн подбираем под тематику праздника — вот что мы уже готовили нашим гостям</p>
+      <a class="btn btn--yellow" href="#popup:torty" data-anim="zoomin" data-anim-dur="1">Заказать торт</a>
     </div>
   </section>
 
-  <div class="cta-band"><a class="btn btn--yellow" href="#popup:torty" data-anim="zoomin" data-anim-dur="1">Заказать торт</a></div>
-
   {band()}
 
-  <section class="section">
+  <section class="section section--compact">
     <div class="stage">
       <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">{len(CAKES)} готовых дизайнов</h2>
       <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">Возьмём готовый или предложим свой — под тему праздника</p>
-      <div class="torty-grid">{cakes}</div>
+      <div class="torty-grid torty-grid--round">{cakes}</div>
     </div>
   </section>
 
   {band(flip=True)}
 
-  <section class="section" style="background:var(--mint)">
+  <section class="section section--compact" style="background:var(--mint)">
     <div class="stage">
       <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Начинки на выбор</h2>
       <div class="fillings">{fillings}</div>
@@ -3413,14 +3419,14 @@ def build_torty():
 
   {band()}
 
-  <section class="section">
+  <section class="section section--compact">
     <div class="stage">
       <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Дополнительно</h2>
       <div class="desserts">{desserts}</div>
     </div>
   </section>
 
-  <div class="cta-band"><a class="btn btn--yellow" href="#popup:torty">Заказать торт</a></div>
+  <div class="cta-band cta-band--compact"><a class="btn btn--yellow" href="#popup:torty">Заказать торт</a></div>
 
   {band(flip=True)}
 
@@ -3452,7 +3458,6 @@ PINYATY_GALLERY = [
     ('pinyata-zvezda.webp', 'Звезда'),
     ('pinyata-edinorog.webp', 'Единорог'),
     ('pinyata-edinorog-golova.webp', 'Единорог'),
-    ('pinyata-futbolnyy-myach.webp', 'Футбольный мяч'),
     ('pinyata-tachki.webp', 'Тачки'),
     ('pinyata-lol-syurpriz.webp', 'LOL Сюрприз'),
     ('pinyata-ponchik.webp', 'Пончик'),
@@ -3491,25 +3496,24 @@ def build_pinyaty():
 {render_top_chrome()}
 
 <main>
-  <section class="page-hero">
+  <section class="page-hero page-hero--accent">
     <div class="stage">
       <div class="page-hero__uptitle" data-anim="fadeinup" data-anim-dur="1">«Порхай»</div>
       <h1 class="page-hero__title" data-anim="fadeinup" data-anim-dur="1">Пиньяты</h1>
       <p class="page-hero__descr" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".1">С наполнением — на радость гостям праздника</p>
+      <a class="btn btn--yellow" href="#popup:pinyaty" data-anim="zoomin" data-anim-dur="1">Заказать пиньяту</a>
     </div>
   </section>
 
-  <div class="cta-band"><a class="btn btn--yellow" href="#popup:pinyaty" data-anim="zoomin" data-anim-dur="1">Заказать пиньяту</a></div>
-
   {band()}
 
-  <section class="section">
+  <section class="section section--compact">
     <div class="stage">
       <div class="torty-grid torty-grid--big">{gallery}</div>
     </div>
   </section>
 
-  <div class="cta-band"><a class="btn btn--yellow" href="#popup:pinyaty">Заказать пиньяту</a></div>
+  <div class="cta-band cta-band--compact"><a class="btn btn--yellow" href="#popup:pinyaty">Заказать пиньяту</a></div>
 
   {band(flip=True)}
 
