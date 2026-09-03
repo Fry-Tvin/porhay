@@ -41,13 +41,13 @@ YANDEX_METRIKA = """<!-- Yandex.Metrika counter -->
 <noscript><div><img src="https://mc.yandex.ru/watch/112256802" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 <!-- /Yandex.Metrika counter -->"""
 
-# Акция «Неоновое ленточное шоу в подарок», до 31.08.2026, только White Room —
-# по просьбе заказчика 21.08.2026. Группа B по духу (новый элемент, но в
-# фирменном стиле), не из спеки. Единственное место, где ставим этот бейдж —
-# именно в этих местах просил заказчик: секция «Праздники под ключ» на
-# главной и страница White Room.
+# Акция «Неоновое ленточное шоу в подарок», продлена до 30.09.2026
+# (заказчик 03.09.2026 — раньше было до 31.08, срок истёк, просто продлить).
+# Группа B по духу (новый элемент, но в фирменном стиле), не из спеки.
+# Единственное место, где ставим этот бейдж — именно в этих местах просил
+# заказчик: секция «Праздники под ключ» на главной и страница White Room.
 PROMO_NEON = ('<p class="promo-badge">Неоновое ленточное шоу в подарок при '
-              'аренде White&nbsp;Room от&nbsp;3 часов — до&nbsp;31 августа</p>')
+              'аренде White&nbsp;Room от&nbsp;3 часов — до&nbsp;30 сентября</p>')
 
 # --- Кляксы ---------------------------------------------------------------
 # Две «фигмовские» ссылки в оригинале битые; локальные копии тех же файлов
@@ -1259,11 +1259,12 @@ def build():
         {PROMO_NEON}
       </div>
       {render_packages_carousel()}
-      <div class="cta-band cta-band--tight"><a class="btn btn--yellow" href="/denrozhdeniya">Все пакеты</a></div>
+      <div class="cta-band cta-band--pair">
+        <a class="btn btn--yellow" href="/denrozhdeniya">Все пакеты</a>
+        <a class="btn btn--yellow" href="#popup:main">Оставить заявку</a>
+      </div>
     </div>
   </section>
-
-  <div class="cta-band"><a class="btn btn--yellow" href="#popup:main">Оставить заявку</a></div>
 
   <section class="section section--tariffs" id="zaly">
     <div class="stage">
@@ -2132,7 +2133,7 @@ def render_rental_page(slug):
 
   {promo}
 
-  <div class="cta-band"><a class="btn btn--yellow" href="#popup:{slug}" data-anim="zoomin" data-anim-dur="1">Записаться</a></div>
+  <div class="cta-band{' cta-band--tight' if promo else ''}"><a class="btn btn--yellow" href="#popup:{slug}" data-anim="zoomin" data-anim-dur="1">Записаться</a></div>
 
   {band(flip=True)}
 
@@ -3150,7 +3151,7 @@ def build_dlyagrupp():
 
   {band(flip=True)}
 
-  <section class="problems" style="background:{KP_BG}">
+  <section class="problems problems--after-band" style="background:{KP_BG}">
     <div class="stage">
       <div class="section__head">
         <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Для кого</h2>

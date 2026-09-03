@@ -1250,21 +1250,28 @@ ul { margin: 0; padding: 0; list-style: none; }
     width: 100%;
     max-width: 335px;
     min-height: 0;
-    padding: 250px 24px 32px;
+    padding: 200px 24px 22px;
     box-sizing: border-box;
   }
   /* Второе (маленькое) фото раньше заканчивалось на 238px (top:84 + высота
      154), а текст начинался с padding-top:210px — фото перекрывало
      заголовок. Отступ увеличен до 250px, чтобы фото гарантированно не
-     задевало текст. */
-  .tariff__photo--big  { top: 16px; left: 5%; width: 56%; height: auto; aspect-ratio: 1; }
-  .tariff__photo--small { top: 84px; left: 48%; width: 46%; height: auto; aspect-ratio: 1; }
+     задевало текст.
+     03.09.2026, заказчик: карточка карусели «Наши залы» такая высокая, что
+     заголовок секции и сама карусель не помещаются на экран телефона
+     вместе (карточка была 586px). Фото и отступы между строками ужаты —
+     фото пропорционально меньше (46%/38% вместо 56%/46%), отступ под них
+     195→200px с тем же запасом от перекрытия текстом, что и раньше (26px
+     вместо прежних 40px, но при уменьшенных фото этого достаточно).
+     Кегли не трогали — риск разойтись с дизайн-системой, только геометрия. */
+  .tariff__photo--big  { top: 16px; left: 5%; width: 46%; height: auto; aspect-ratio: 1; }
+  .tariff__photo--small { top: 68px; left: 48%; width: 38%; height: auto; aspect-ratio: 1; }
   .tariff__title, .tariff__desc, .tariff__note, .tariff__price, .tariff__more {
     position: static;
     top: auto; left: auto; right: auto;
   }
-  .tariff__desc, .tariff__note, .tariff__price { margin-top: 12px; }
-  .tariff__more { margin-top: 20px; }
+  .tariff__desc, .tariff__note, .tariff__price { margin-top: 8px; }
+  .tariff__more { margin-top: 14px; }
 
   .section--groups { padding: 64px 0; }
   .groups {
@@ -1834,6 +1841,12 @@ ul { margin: 0; padding: 0; list-style: none; }
 
 .cta-band--tight { padding-top: 40px; }
 .cta-band--compact { padding: 0 0 60px; }
+/* Пара кнопок вместо двух раздельных .cta-band друг под другом — заказчик
+   03.09.2026: «под карточками пакетов сплошной белый фон и две кнопки
+   рядом с большим расстоянием». Раньше «Все пакеты» и «Оставить заявку»
+   были в разных секциях (граница между ними добавляла ещё и padding
+   секции), из-за чего между ними набегало ~250px пустоты. */
+.cta-band--pair { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; padding: 40px 0 60px; }
 
 @media (max-width: 1000px) {
   .packages { gap: 8px; margin-top: 36px; }
@@ -1890,9 +1903,16 @@ ul { margin: 0; padding: 0; list-style: none; }
 .problems__item { display: flex; align-items: center; gap: 24px; padding: 16px 0; }
 .problems__item svg { width: 55px; height: 55px; flex-shrink: 0; }
 .problems__item span { font-size: 20px; line-height: 1.4; font-weight: 400; color: var(--ink); }
+/* Секция сразу после band(flip=True) («Для кого», /dlyagrupp) — у обычного
+   .section 109/72px сверху с запасом хватает, а у .problems всего 60/40px:
+   самый высокий шарик ленты (band__bubble--lg, top:-18px) наплывает на 70px
+   ниже подошвы самой ленты и перекрывал заголовок. Своего отступа достаточно,
+   чтобы шарик гасился в мятном фоне до текста. */
+.problems--after-band { padding-top: 100px; }
 
 @media (max-width: 1000px) {
   .problems { padding: 40px 0; }
+  .problems--after-band { padding-top: 90px; }
   .problems__item { gap: 16px; }
   .problems__item svg { width: 40px; height: 40px; }
   .problems__item span { font-size: 16px; }
