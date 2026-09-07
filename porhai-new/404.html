@@ -46,7 +46,7 @@
 
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "LocalBusiness", "name": "Порхай", "telephone": "+7 951 000 04 99", "address": {"@type": "PostalAddress", "streetAddress": "ул. Державина, 23", "addressLocality": "Владивосток", "addressCountry": "RU"}, "openingHours": "Mo-Su 10:00-21:00"}</script>
 
-<dialog class="popup popup--form" id="popup-header" aria-label="Оставьте свои контакты"><div class="popup__box"><button class="popup__close" type="button" data-popup-close>Назад</button><h3 class="popup__title">Оставьте свои контакты</h3><div class="popup__subtitle"><p>И мы свяжемся с Вами в ближайшее время!</p></div><form class="form" data-form><label class="form__field"><span class="form__label">Ваше имя</span><input class="form__input" type="text" name="name" autocomplete="name" required></label><label class="form__field"><span class="form__label">Номер телефона</span><input class="form__input" type="tel" name="phone" autocomplete="tel" required></label><label class="form__consent"><input type="checkbox" name="consent" required><span>Согласен(-на) на <a href="/privacy.html" target="_blank">обработку персональных данных</a></span></label><label class="form__consent"><input type="checkbox" name="marketing"><span>Хочу получать новости, акции и приглашения на праздники</span></label><button class="btn btn--yellow form__submit" type="submit">Отправить</button></form><p class="form__thanks" data-form-thanks hidden>Спасибо! Мы свяжемся с вами в ближайшее время.</p></div></dialog>
+<dialog class="popup popup--form" id="popup-header" aria-label="Оставьте свои контакты"><div class="popup__box"><button class="popup__close" type="button" data-popup-close>Назад</button><div data-form-head><h3 class="popup__title">Оставьте свои контакты</h3><div class="popup__subtitle"><p>И мы свяжемся с Вами в ближайшее время!</p></div></div><form class="form" data-form><label class="form__field"><span class="form__label">Ваше имя</span><input class="form__input" type="text" name="name" autocomplete="name" required></label><label class="form__field"><span class="form__label">Номер телефона</span><input class="form__input" type="tel" name="phone" autocomplete="tel" required></label><label class="form__consent"><input type="checkbox" name="consent" required><span>Согласен(-на) на <a href="/privacy.html" target="_blank">обработку персональных данных</a></span></label><label class="form__consent"><input type="checkbox" name="marketing"><span>Хочу получать новости, акции и приглашения на праздники</span></label><button class="btn btn--yellow form__submit" type="submit">Отправить</button></form><div class="form__thanks" data-form-thanks hidden><p class="form__thanks-title">Спасибо!</p><p class="form__thanks-text">Мы свяжемся с вами в ближайшее время.</p></div></div></dialog>
 
 <script>
 (function () {
@@ -237,6 +237,8 @@
       form.addEventListener('submit', function (e) {
         e.preventDefault();
         form.hidden = true;
+        var head = dlg.querySelector('[data-form-head]');
+        if (head) head.hidden = true;
         dlg.querySelector('[data-form-thanks]').hidden = false;
         if (window.ym) ym(112256802, 'reachGoal', 'form_submit');
       });
