@@ -7,9 +7,10 @@
 <meta name="description" content="Выберите бонус на день рождения в «Порхай» и закрепите его за собой за пару шагов">
 <link rel="stylesheet" href="assets/style.css">
 <style>
-  .bonus{ min-height:100vh; display:flex; align-items:center; }
+  .bonus{ padding-top:calc(var(--header-h) + 40px); }
   .bonus__stage{ max-width:640px; margin:0 auto; }
-  .bonus__lead{ text-align:center; margin-bottom:32px; }
+  .bonus__title{ font-size:40px; line-height:1.2; text-align:center; }
+  .bonus__lead{ text-align:center; margin-bottom:28px; }
 
   .bonus__summary{ display:flex; flex-wrap:wrap; gap:10px; margin-bottom:20px; }
   .bonus__chip{ display:flex; align-items:center; gap:8px; background:var(--mint); border-radius:20px; padding:8px 8px 8px 16px; font-size:14px; color:var(--ink); }
@@ -17,12 +18,17 @@
   .bonus__chip button{ font:inherit; font-size:13px; color:var(--teal); background:#fff; border:none; border-radius:14px; padding:6px 12px; cursor:pointer; min-height:28px; }
   .bonus__chip button:hover{ text-decoration:underline; }
 
-  .bonus__grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-  .bonus__option{ display:flex; flex-direction:column; align-items:flex-start; gap:6px; text-align:left; padding:18px; border:2px solid var(--mint-grey); border-radius:24px; background:#fff; cursor:pointer; font:inherit; color:var(--ink); min-height:40px; transition:border-color .15s, transform .15s; }
+  .bonus__grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .bonus__option{ display:flex; flex-direction:column; align-items:flex-start; gap:6px; text-align:left; padding:16px; border:2px solid var(--mint-grey); border-radius:24px; background:#fff; cursor:pointer; font:inherit; color:var(--ink); min-height:40px; transition:border-color .15s, transform .15s; }
   .bonus__option:hover{ border-color:var(--teal); transform:translateY(-2px); }
-  .bonus__option-emoji{ font-size:28px; line-height:1; }
-  .bonus__option-title{ font-weight:700; font-size:16px; }
-  .bonus__option-desc{ font-size:13px; color:var(--ink); opacity:.7; }
+  .bonus__option-emoji{ font-size:26px; line-height:1; }
+  .bonus__option-title{ font-weight:700; font-size:15px; }
+  .bonus__option-desc{ font-size:12px; color:var(--ink); opacity:.7; }
+
+  .bonus__carousel{ margin-top:20px; display:flex; gap:12px; overflow-x:auto; padding-bottom:6px; scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch; }
+  .bonus__carousel::-webkit-scrollbar{ display:none; }
+  .bonus__carousel{ scrollbar-width:none; }
+  .bonus__carousel img{ flex:0 0 auto; scroll-snap-align:start; width:180px; height:240px; object-fit:cover; border-radius:20px; display:block; }
 
   .bonus__field{ display:flex; flex-direction:column; gap:14px; }
   .bonus__label{ font-weight:700; font-size:16px; }
@@ -43,17 +49,14 @@
 
   .bonus__error{ color:#C0392B; font-size:13px; }
 
-  .bonus__gallery{ margin-bottom:32px; }
-  .bonus__gallery-grid{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
-  .bonus__gallery-grid img{ width:100%; aspect-ratio:4/3; object-fit:cover; border-radius:20px; display:block; }
-
-  .bonus__cta{ margin-top:48px; text-align:center; }
+  .bonus__cta{ margin-top:24px; text-align:center; }
   .bonus__cta p{ font-size:16px; margin-bottom:16px; }
 
   [hidden]{ display:none !important; }
   @media (max-width: 639px){
-    .bonus__grid{ grid-template-columns:1fr; }
-    .bonus__gallery-grid{ grid-template-columns:1fr 1fr; }
+    .bonus{ padding-top:calc(var(--header-h) + 24px); }
+    .bonus__title{ font-size:28px; }
+    .bonus__carousel img{ width:150px; height:200px; }
   }
 </style>
 </head>
@@ -72,16 +75,8 @@
   <section class="section bonus">
     <div class="stage bonus__stage">
       <div class="section__head">
-        <h1 class="section__title" style="font-size:40px;line-height:1.2;text-align:center;">Заберите бонус на день рождения</h1>
+        <h1 class="section__title bonus__title">Заберите бонус на день рождения</h1>
         <p class="section__lead bonus__lead">Планируете праздник у нас? Выберите один бонус, укажите дату дня рождения и оставьте номер — мы закрепим бонус за вами</p>
-      </div>
-
-      <div class="bonus__gallery">
-        <div class="bonus__gallery-grid">
-          <img src="assets/img/tild6631-6164-4662-a432-643636393437__f8b680e9-d185-4e5c-a.webp" alt="Сухие бассейны в «Порхай»" loading="lazy" width="400" height="300">
-          <img src="assets/img/tild6631-6530-4933-a263-616162353439__rectangle_10.webp" alt="Фотозона в «Порхай»" loading="lazy" width="400" height="300">
-          <img src="assets/img/tild3662-3462-4531-b130-666539343532__rectangle_13.webp" alt="Волшебная комната с фонариками" loading="lazy" width="400" height="300">
-        </div>
       </div>
 
       <div class="bonus__summary" id="bonusSummary" hidden></div>
@@ -110,12 +105,21 @@
               <span class="bonus__option-desc">Настоящий праздничный салют</span>
             </button>
           </div>
+
+          <div class="bonus__carousel" aria-label="Фото из «Порхай»">
+            <img src="assets/img/IMG_2527.webp" alt="Праздник дня рождения в неоновом бассейне «Порхай»" loading="lazy" width="180" height="240">
+            <img src="assets/img/photo_2_2026-08-21_17-28-51.webp" alt="Дети прыгают в бассейне с шариками" loading="lazy" width="180" height="240">
+            <img src="assets/img/IMG_2453.webp" alt="Светящееся конфетти-шоу в «Порхай»" loading="lazy" width="180" height="240">
+            <img src="assets/img/photo_1_2026-08-21_17-28-51.webp" alt="Дети в розовом бассейне с шариками" loading="lazy" width="180" height="240">
+            <img src="assets/img/tild3662-3462-4531-b130-666539343532__rectangle_13.webp" alt="Волшебная комната с фонариками" loading="lazy" width="180" height="240">
+            <img src="assets/img/tild6631-6164-4662-a432-643636393437__f8b680e9-d185-4e5c-a.webp" alt="Сухие бассейны в «Порхай»" loading="lazy" width="180" height="240">
+          </div>
         </div>
 
         <div class="bonus__step bonus__field" data-step="date" id="stepDate" hidden>
           <label class="bonus__label" for="bonusDate">На какую дату запланирован день рождения?</label>
           <input class="bonus__input" type="date" id="bonusDate" name="date">
-          <p class="bonus__hint">Можно выбрать в календаре или ввести вручную</p>
+          <p class="bonus__hint">Нажмите на поле, чтобы открыть календарь, или введите дату вручную</p>
           <p class="bonus__error" id="dateError" hidden>Укажите дату не раньше сегодняшней</p>
           <button type="button" class="btn btn--yellow" id="dateNext">Продолжить</button>
         </div>
@@ -152,8 +156,9 @@
 <script>
 (function(){
   var LEAD_URL = 'https://leads.xn--80asndg4a.xn--p1ai/lead';
+  var STORAGE_KEY = 'porhayBonusDraft';
 
-  var state = { bonus:null, bonusLabel:null, date:null, phone:null };
+  var state = { bonus:null, bonusLabel:null, date:null, phone:null, consent:false, step:'bonus' };
 
   var steps = {
     bonus: document.getElementById('stepBonus'),
@@ -179,8 +184,15 @@
     return p[2] + '.' + p[1] + '.' + p[0];
   }
 
+  function saveDraft(){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+  }
+
   function showStep(name){
+    state.step = name;
     Object.keys(steps).forEach(function(k){ steps[k].hidden = (k!==name); });
+    renderSummary();
+    saveDraft();
   }
 
   function renderSummary(){
@@ -192,16 +204,14 @@
       chips.push('<span class="bonus__chip">Дата: <b>'+fmtDate(state.date)+'</b><button type="button" data-edit="date">Изменить</button></span>');
     }
     summary.innerHTML = chips.join('');
-    summary.hidden = chips.length===0;
+    summary.hidden = chips.length===0 || state.step==='bonus';
   }
 
   document.querySelectorAll('.bonus__option').forEach(function(btn){
     btn.addEventListener('click', function(){
       state.bonus = btn.getAttribute('data-value');
       state.bonusLabel = btn.getAttribute('data-label');
-      renderSummary();
       showStep('date');
-      dateInput.focus();
     });
   });
 
@@ -213,18 +223,27 @@
     }
     dateError.hidden = true;
     state.date = v;
-    renderSummary();
     showStep('phone');
-    phoneInput.focus();
   });
+
+  dateInput.addEventListener('change', function(){ state.date = dateInput.value; saveDraft(); });
+  phoneInput.addEventListener('input', function(){ state.phone = phoneInput.value; saveDraft(); });
+  consentInput.addEventListener('change', function(){ state.consent = consentInput.checked; saveDraft(); });
 
   summary.addEventListener('click', function(e){
     var editTarget = e.target.closest('[data-edit]');
     if(!editTarget) return;
     var which = editTarget.getAttribute('data-edit');
-    if(which==='bonus'){ showStep('bonus'); }
-    if(which==='date'){ showStep('date'); }
+    if(which==='bonus'){ showStep('bonus'); renderSummary(); }
+    if(which==='date'){ showStep('date'); renderSummary(); }
   });
+
+  function fetchWithTimeout(url, opts, ms){
+    var controller = ('AbortController' in window) ? new AbortController() : null;
+    var timer = controller && setTimeout(function(){ controller.abort(); }, ms);
+    var merged = controller ? Object.assign({}, opts, { signal: controller.signal }) : opts;
+    return fetch(url, merged).finally(function(){ if(timer) clearTimeout(timer); });
+  }
 
   submitBtn.addEventListener('click', function(){
     var phone = phoneInput.value.trim();
@@ -234,11 +253,13 @@
     }
     phoneError.hidden = true;
     state.phone = phone;
+    state.consent = true;
+    saveDraft();
 
     submitBtn.disabled = true;
     submitBtn.textContent = 'Отправляем…';
 
-    fetch(LEAD_URL, {
+    fetchWithTimeout(LEAD_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -248,14 +269,50 @@
         source: location.href,
         website: document.querySelector('.bonus__hp').value
       })
-    }).catch(function(){ /* лог уйдёт в leads.jsonl на сервере, даже если Telegram недоступен */ })
+    }, 8000).catch(function(){ /* лог уйдёт в leads.jsonl на сервере, даже если Telegram недоступен; таймаут не даёт кнопке зависнуть */ })
       .then(function(){
         document.getElementById('doneText').textContent =
           'Бонус «' + state.bonusLabel + '» на день рождения ' + fmtDate(state.date) + ' закреплён за вами. Мы свяжемся по номеру ' + state.phone + ' для подтверждения.';
         showStep('done');
-        summary.hidden = true;
+        renderSummary();
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Закрепить бонус';
       });
   });
+
+  // Восстановление черновика после обновления страницы
+  (function restoreDraft(){
+    var raw;
+    try{ raw = localStorage.getItem(STORAGE_KEY); }catch(e){ raw = null; }
+    if(!raw) return;
+    var saved;
+    try{ saved = JSON.parse(raw); }catch(e){ return; }
+    if(!saved || !saved.bonus) return;
+
+    state.bonus = saved.bonus;
+    state.bonusLabel = saved.bonusLabel;
+    state.date = saved.date || null;
+    state.phone = saved.phone || null;
+    state.consent = !!saved.consent;
+
+    if(state.date) dateInput.value = state.date;
+    if(state.phone) phoneInput.value = state.phone;
+    consentInput.checked = state.consent;
+
+    renderSummary();
+
+    var step = saved.step;
+    if(step === 'done' && state.date && state.phone){
+      document.getElementById('doneText').textContent =
+        'Бонус «' + state.bonusLabel + '» на день рождения ' + fmtDate(state.date) + ' закреплён за вами. Мы свяжемся по номеру ' + state.phone + ' для подтверждения.';
+      showStep('done');
+    } else if((step === 'phone' || step === 'done') && state.date){
+      showStep('phone');
+    } else if(state.bonus){
+      showStep('date');
+    }
+    renderSummary();
+  })();
 })();
 </script>
 </body>
