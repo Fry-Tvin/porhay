@@ -19,11 +19,9 @@
   .bonus__chip button:hover{ text-decoration:underline; }
 
   .bonus__grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-  .bonus__option{ display:flex; flex-direction:column; align-items:flex-start; gap:6px; text-align:left; padding:16px; border:2px solid var(--mint-grey); border-radius:24px; background:#fff; cursor:pointer; font:inherit; color:var(--ink); min-height:40px; transition:border-color .15s, transform .15s; }
+  .bonus__option{ display:block; padding:0; border:2px solid var(--mint-grey); border-radius:24px; background:#fff; cursor:pointer; overflow:hidden; min-height:40px; transition:border-color .15s, transform .15s; }
   .bonus__option:hover{ border-color:var(--teal); transform:translateY(-2px); }
-  .bonus__option-emoji{ font-size:26px; line-height:1; }
-  .bonus__option-title{ font-weight:700; font-size:15px; }
-  .bonus__option-desc{ font-size:12px; color:var(--ink); opacity:.7; }
+  .bonus__option img{ display:block; width:100%; height:auto; border-radius:22px; }
 
   .bonus__carousel{ margin-top:20px; display:flex; gap:12px; overflow-x:auto; padding-bottom:6px; scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch; }
   .bonus__carousel::-webkit-scrollbar{ display:none; }
@@ -85,24 +83,16 @@
         <div class="bonus__step" data-step="bonus" id="stepBonus">
           <div class="bonus__grid">
             <button type="button" class="bonus__option" data-value="3 пиццы" data-label="3 пиццы">
-              <span class="bonus__option-emoji">🍕</span>
-              <span class="bonus__option-title">3 пиццы</span>
-              <span class="bonus__option-desc">К празднику</span>
+              <img src="assets/img/bonus-pizza.webp" alt="3 пиццы на праздник" width="314" height="314" loading="lazy">
             </button>
             <button type="button" class="bonus__option" data-value="Пиньята с наполнением" data-label="Пиньята с наполнением">
-              <span class="bonus__option-emoji">🎉</span>
-              <span class="bonus__option-title">Пиньята с наполнением</span>
-              <span class="bonus__option-desc">Сюрприз для детей</span>
+              <img src="assets/img/bonus-pinata.webp" alt="Пиньята с наполнением" width="314" height="314" loading="lazy">
             </button>
             <button type="button" class="bonus__option" data-value="Блеск-тату" data-label="Блеск-тату">
-              <span class="bonus__option-emoji">✨</span>
-              <span class="bonus__option-title">Блеск-тату</span>
-              <span class="bonus__option-desc">Для всех гостей праздника</span>
+              <img src="assets/img/bonus-glow.webp" alt="Блеск-тату для детей" width="314" height="314" loading="lazy">
             </button>
             <button type="button" class="bonus__option" data-value="Серебряное шоу" data-label="Серебряное шоу">
-              <span class="bonus__option-emoji">🎪</span>
-              <span class="bonus__option-title">Серебряное шоу</span>
-              <span class="bonus__option-desc">Настоящий праздничный салют</span>
+              <img src="assets/img/bonus-show.webp" alt="Серебряное шоу" width="314" height="314" loading="lazy">
             </button>
           </div>
 
