@@ -177,6 +177,26 @@
   var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   var header = document.getElementById('header');
 
+  // 0. Отправка заявки на бэкенд (leads.порхай.рф -> porhay-leads-bot -> Telegram + amoCRM).
+  //    Fire-and-forget: сеть/CORS не должны ломать UI, «Спасибо» показывается
+  //    независимо от результата. Домен в punycode — ровно как server_name в nginx.
+  function sendLead(form, dlgId) {
+    var data = new FormData(form);
+    try {
+      fetch('https://leads.xn--80asndg4a.xn--p1ai/lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: data.get('name') || '',
+          phone: data.get('phone') || '',
+          marketing_consent: data.get('marketing') === 'on',
+          page: location.pathname,
+          form: (dlgId || '').replace(/^popup-/, '')
+        })
+      })['catch'](function () {});
+    } catch (err) {}
+  }
+
   // 1. Появление при прокрутке: fadeinright / fadeinup / zoomin.
   var appear = [].slice.call(document.querySelectorAll('[data-anim]'));
   function show(el) {
@@ -360,6 +380,7 @@
     if (form) {
       form.addEventListener('submit', function (e) {
         e.preventDefault();
+        sendLead(form, dlg.id);
         form.hidden = true;
         var head = dlg.querySelector('[data-form-head]');
         if (head) head.hidden = true;
