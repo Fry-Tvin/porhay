@@ -1166,7 +1166,7 @@ def build():
     keys = render_tariff_cards(KEYS)
 
     popups = (render_form_popup('header') + render_form_popup('main')
-              + render_form_popup('bonus', title='Бесплатное посещение + 3 пиццы',
+              + render_form_popup('bonus', title='Второй час посещения бесплатно + 3 пиццы',
                                    subtitle='Оставьте контакты — расскажем об условиях акции и подберём дату'))
 
     reviews = ''.join(
@@ -1209,7 +1209,7 @@ def build():
         <h1 class="hero__title" data-anim="fadeinright" data-anim-dur="1.7">Развлекательный центр для всей семьи</h1>
         <p class="hero__text" data-anim="fadeinright" data-anim-dur="1.7" data-anim-delay=".2">Проведение мероприятий <b>во&nbsp;Владивостоке</b>: от&nbsp;дней рождений и&nbsp;выпускных до&nbsp;взрослых корпоративов и&nbsp;романтических свиданий</p>
         <div class="hero__buttons" data-anim="zoomin" data-anim-dur="2.4" data-anim-delay=".4">
-          <a class="btn btn--yellow" href="#popup:bonus">Получи бесплатное посещение и 3 пиццы</a>
+          <a class="btn btn--yellow" href="#popup:bonus">Получи второй час бесплатно и 3 пиццы</a>
           <a class="btn btn--teal" href="/denrozhdeniya">Праздник</a>
         </div>
       </div>
@@ -3700,8 +3700,11 @@ def render_zaly_carousel():
 #
 # Перенос присланного заказчиком промо-раздела (23.08.2026) в стилистику
 # сайта. Текст обновлён по его же указанию: раньше дарили просто бесплатное
-# посещение, теперь — сертификат на бесплатное посещение детского центра
+# посещение, потом — сертификат на бесплатное посещение детского центра
 # (детский билет); добавлен блок про сертификат 1000 ₽ в телеграм-боте.
+# 14.09.2026: оффер поменян ещё раз — вместо бесплатного посещения дарим
+# второй час посещения бесплатно, обновлено по всему сайту (эта страница
+# и попап «бонус» на главной).
 #
 # Фото: в присланном коде было шесть картинок, вшитых base64. Три из них
 # с водяным знаком стороннего сайта (Farpost) — их не берём, вместо них
@@ -3728,7 +3731,7 @@ PODAROK_STEPS = [
 ]
 
 # Текст приветствия в мессенджер — один и тот же во всех трёх кнопках.
-PODAROK_HELLO = quote('Здравствуйте! Хочу получить бесплатное посещение')
+PODAROK_HELLO = quote('Здравствуйте! Хочу получить второй час посещения бесплатно')
 
 WA_ICON = ('<path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15'
            '-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475'
@@ -3789,7 +3792,7 @@ def build_podarok():
 {YANDEX_METRIKA}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Подарок — бесплатное посещение «Порхай»</title>
+<title>Подарок — второй час посещения бесплатно «Порхай»</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="stylesheet" href="assets/style.css">
 </head>
@@ -3805,13 +3808,13 @@ def build_podarok():
     <img src="{IMG}podarok_hero.webp" alt="Дети в белом бассейне с шариками" width="800" height="533">
     <div class="gift__hero-text">
       <p class="gift__eyebrow">Подарок для вас</p>
-      <h1 class="gift__title">Бесплатное<br>посещение</h1>
+      <h1 class="gift__title">Второй час<br>бесплатно</h1>
     </div>
   </div>
 
   <div class="gift__body">
     <div class="gift__card gift__card--offer">
-      <p>Дарим <strong>сертификат на бесплатное посещение детского центра (детский билет)</strong>.
+      <p>Дарим <strong>сертификат на второй час посещения детского центра&nbsp;— бесплатно</strong>.
       Если вы у&nbsp;нас уже были&nbsp;— для вас действует скидка на&nbsp;посещение 50%.</p>
       <div class="gift__chips">
         <span class="gift__chip">Державина 23</span>
