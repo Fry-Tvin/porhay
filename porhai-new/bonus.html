@@ -32,7 +32,7 @@
 
   .bonus__field{ display:flex; flex-direction:column; gap:14px; }
   .bonus__label{ font-weight:700; font-size:16px; }
-  .bonus__input{ font:inherit; font-size:16px; color:var(--ink); background:#fff; border:2px solid var(--mint-grey); border-radius:16px; padding:12px 16px; min-height:40px; width:100%; box-sizing:border-box; }
+  .bonus__input{ font:inherit; font-size:16px; color:var(--ink); background:#fff; border:2px solid var(--mint-grey); border-radius:16px; padding:12px 16px; min-height:40px; width:100%; min-width:0; max-width:100%; box-sizing:border-box; }
   .bonus__input:focus{ outline:3px solid var(--teal); outline-offset:2px; }
   .bonus__hint{ font-size:13px; color:var(--ink); opacity:.65; }
 
@@ -76,7 +76,7 @@
     <div class="stage bonus__stage">
       <div class="section__head">
         <h1 class="section__title bonus__title">Заберите бонус на день рождения</h1>
-        <p class="section__lead bonus__lead">Планируете праздник у нас? Выберите один бонус, укажите дату дня рождения и оставьте номер — мы закрепим бонус за вами</p>
+        <p class="section__lead bonus__lead" id="bonusLead">Выберите один бонус, укажите дату дня рождения и оставьте номер — мы закрепим бонус за вами 🦋</p>
       </div>
 
       <div class="bonus__summary" id="bonusSummary" hidden></div>
@@ -167,6 +167,7 @@
     done: document.getElementById('stepDone')
   };
   var summary = document.getElementById('bonusSummary');
+  var leadEl = document.getElementById('bonusLead');
   var dateInput = document.getElementById('bonusDate');
   var dateError = document.getElementById('dateError');
   var phoneInput = document.getElementById('bonusPhone');
@@ -191,6 +192,7 @@
   function showStep(name){
     state.step = name;
     Object.keys(steps).forEach(function(k){ steps[k].hidden = (k!==name); });
+    leadEl.hidden = (name !== 'bonus');
     renderSummary();
     saveDraft();
   }
@@ -204,7 +206,7 @@
       chips.push('<span class="bonus__chip">Дата: <b>'+fmtDate(state.date)+'</b><button type="button" data-edit="date">Изменить</button></span>');
     }
     summary.innerHTML = chips.join('');
-    summary.hidden = chips.length===0 || state.step==='bonus';
+    summary.hidden = chips.length===0 || state.step==='bonus' || state.step==='done';
   }
 
   document.querySelectorAll('.bonus__option').forEach(function(btn){
