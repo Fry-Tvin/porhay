@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Бонус на день рождения — Порхай</title>
+<meta name="description" content="Выберите бонус на день рождения в «Порхай» и закрепите его за собой за пару шагов">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  .bonus{ min-height:100vh; display:flex; align-items:center; }
+  .bonus__stage{ max-width:640px; margin:0 auto; }
+  .bonus__lead{ text-align:center; margin-bottom:32px; }
+
+  .bonus__summary{ display:flex; flex-wrap:wrap; gap:10px; margin-bottom:20px; }
+  .bonus__chip{ display:flex; align-items:center; gap:8px; background:var(--mint); border-radius:20px; padding:8px 8px 8px 16px; font-size:14px; color:var(--ink); }
+  .bonus__chip b{ font-weight:700; }
+  .bonus__chip button{ font:inherit; font-size:13px; color:var(--teal); background:#fff; border:none; border-radius:14px; padding:6px 12px; cursor:pointer; min-height:28px; }
+  .bonus__chip button:hover{ text-decoration:underline; }
+
+  .bonus__grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .bonus__option{ display:flex; flex-direction:column; align-items:flex-start; gap:6px; text-align:left; padding:18px; border:2px solid var(--mint-grey); border-radius:24px; background:#fff; cursor:pointer; font:inherit; color:var(--ink); min-height:40px; transition:border-color .15s, transform .15s; }
+  .bonus__option:hover{ border-color:var(--teal); transform:translateY(-2px); }
+  .bonus__option-emoji{ font-size:28px; line-height:1; }
+  .bonus__option-title{ font-weight:700; font-size:16px; }
+  .bonus__option-desc{ font-size:13px; color:var(--ink); opacity:.7; }
+
+  .bonus__field{ display:flex; flex-direction:column; gap:14px; }
+  .bonus__label{ font-weight:700; font-size:16px; }
+  .bonus__input{ font:inherit; font-size:16px; color:var(--ink); background:#fff; border:2px solid var(--mint-grey); border-radius:16px; padding:12px 16px; min-height:40px; width:100%; box-sizing:border-box; }
+  .bonus__input:focus{ outline:3px solid var(--teal); outline-offset:2px; }
+  .bonus__hint{ font-size:13px; color:var(--ink); opacity:.65; }
+
+  .bonus__consent{ display:flex; align-items:flex-start; gap:10px; font-size:13px; color:var(--ink); opacity:.85; cursor:pointer; }
+  .bonus__consent input{ margin-top:3px; width:18px; height:18px; flex-shrink:0; }
+  .bonus__consent a{ color:var(--teal); text-decoration:underline; }
+
+  .bonus__hp{ position:absolute; left:-9999px; width:1px; height:1px; opacity:0; }
+
+  .bonus__done{ text-align:center; background:var(--mint); border-radius:24px; padding:32px 24px; }
+  .bonus__done-emoji{ font-size:40px; margin-bottom:10px; }
+  .bonus__done-title{ font-weight:700; font-size:20px; margin-bottom:8px; }
+  .bonus__done-text{ font-size:15px; opacity:.85; }
+
+  .bonus__error{ color:#C0392B; font-size:13px; }
+
+  .bonus__gallery{ margin-bottom:32px; }
+  .bonus__gallery-grid{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+  .bonus__gallery-grid img{ width:100%; aspect-ratio:4/3; object-fit:cover; border-radius:20px; display:block; }
+
+  .bonus__cta{ margin-top:48px; text-align:center; }
+  .bonus__cta p{ font-size:16px; margin-bottom:16px; }
+
+  [hidden]{ display:none !important; }
+  @media (max-width: 639px){
+    .bonus__grid{ grid-template-columns:1fr; }
+    .bonus__gallery-grid{ grid-template-columns:1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<script>document.documentElement.className+=' js'</script>
+
+<header class="header" id="header">
+  <div class="stage header__inner">
+    <a class="header__logo" href="/" aria-label="Порхай — на главную">
+      <img src="assets/img/tild3166-3639-4666-b462-333535343563__photo.svg" alt="Порхай" width="150" height="46">
+    </a>
+  </div>
+</header>
+
+<main>
+  <section class="section bonus">
+    <div class="stage bonus__stage">
+      <div class="section__head">
+        <h1 class="section__title" style="font-size:40px;line-height:1.2;text-align:center;">Заберите бонус на день рождения</h1>
+        <p class="section__lead bonus__lead">Планируете праздник у нас? Выберите один бонус, укажите дату дня рождения и оставьте номер — мы закрепим бонус за вами</p>
+      </div>
+
+      <div class="bonus__gallery">
+        <div class="bonus__gallery-grid">
+          <img src="assets/img/tild6631-6164-4662-a432-643636393437__f8b680e9-d185-4e5c-a.webp" alt="Сухие бассейны в «Порхай»" loading="lazy" width="400" height="300">
+          <img src="assets/img/tild6631-6530-4933-a263-616162353439__rectangle_10.webp" alt="Фотозона в «Порхай»" loading="lazy" width="400" height="300">
+          <img src="assets/img/tild3662-3462-4531-b130-666539343532__rectangle_13.webp" alt="Волшебная комната с фонариками" loading="lazy" width="400" height="300">
+        </div>
+      </div>
+
+      <div class="bonus__summary" id="bonusSummary" hidden></div>
+
+      <form novalidate>
+        <div class="bonus__step" data-step="bonus" id="stepBonus">
+          <div class="bonus__grid">
+            <button type="button" class="bonus__option" data-value="3 пиццы" data-label="3 пиццы">
+              <span class="bonus__option-emoji">🍕</span>
+              <span class="bonus__option-title">3 пиццы</span>
+              <span class="bonus__option-desc">К празднику</span>
+            </button>
+            <button type="button" class="bonus__option" data-value="Пиньята с наполнением" data-label="Пиньята с наполнением">
+              <span class="bonus__option-emoji">🎉</span>
+              <span class="bonus__option-title">Пиньята с наполнением</span>
+              <span class="bonus__option-desc">Сюрприз для детей</span>
+            </button>
+            <button type="button" class="bonus__option" data-value="Блеск-тату" data-label="Блеск-тату">
+              <span class="bonus__option-emoji">✨</span>
+              <span class="bonus__option-title">Блеск-тату</span>
+              <span class="bonus__option-desc">Для всех гостей праздника</span>
+            </button>
+            <button type="button" class="bonus__option" data-value="Серебряное шоу" data-label="Серебряное шоу">
+              <span class="bonus__option-emoji">🎪</span>
+              <span class="bonus__option-title">Серебряное шоу</span>
+              <span class="bonus__option-desc">Настоящий праздничный салют</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="bonus__step bonus__field" data-step="date" id="stepDate" hidden>
+          <label class="bonus__label" for="bonusDate">На какую дату запланирован день рождения?</label>
+          <input class="bonus__input" type="date" id="bonusDate" name="date">
+          <p class="bonus__hint">Можно выбрать в календаре или ввести вручную</p>
+          <p class="bonus__error" id="dateError" hidden>Укажите дату не раньше сегодняшней</p>
+          <button type="button" class="btn btn--yellow" id="dateNext">Продолжить</button>
+        </div>
+
+        <div class="bonus__step bonus__field" data-step="phone" id="stepPhone" hidden>
+          <label class="bonus__label" for="bonusPhone">На какой номер отправить подтверждение?</label>
+          <input class="bonus__input" type="tel" id="bonusPhone" name="phone" placeholder="+7 999 123-45-67" autocomplete="tel">
+          <input class="bonus__hp" type="text" name="website" tabindex="-1" autocomplete="off">
+          <label class="bonus__consent">
+            <input type="checkbox" id="bonusConsent">
+            <span>Согласен(на) на <a href="https://порхай.рф/privacy" target="_blank" rel="noopener">обработку персональных данных</a></span>
+          </label>
+          <p class="bonus__error" id="phoneError" hidden>Укажите номер телефона и подтвердите согласие</p>
+          <button type="button" class="btn btn--yellow" id="phoneSubmit">Закрепить бонус</button>
+        </div>
+      </form>
+
+      <div class="bonus__step" data-step="done" id="stepDone" hidden>
+        <div class="bonus__done">
+          <div class="bonus__done-emoji">🎁</div>
+          <div class="bonus__done-title" id="doneTitle">Бонус закреплён за вами</div>
+          <div class="bonus__done-text" id="doneText"></div>
+        </div>
+
+        <div class="bonus__cta">
+          <p>Пока мы закрепляем за вами подарок — переходите и посмотрите наши залы! 🦋</p>
+          <a class="btn btn--teal" href="/#zaly">Посмотреть залы</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+(function(){
+  var LEAD_URL = 'https://leads.xn--80asndg4a.xn--p1ai/lead';
+
+  var state = { bonus:null, bonusLabel:null, date:null, phone:null };
+
+  var steps = {
+    bonus: document.getElementById('stepBonus'),
+    date: document.getElementById('stepDate'),
+    phone: document.getElementById('stepPhone'),
+    done: document.getElementById('stepDone')
+  };
+  var summary = document.getElementById('bonusSummary');
+  var dateInput = document.getElementById('bonusDate');
+  var dateError = document.getElementById('dateError');
+  var phoneInput = document.getElementById('bonusPhone');
+  var consentInput = document.getElementById('bonusConsent');
+  var phoneError = document.getElementById('phoneError');
+  var submitBtn = document.getElementById('phoneSubmit');
+
+  var today = new Date().toISOString().slice(0,10);
+  dateInput.min = today;
+
+  function fmtDate(iso){
+    if(!iso) return '';
+    var p = iso.split('-');
+    if(p.length!==3) return iso;
+    return p[2] + '.' + p[1] + '.' + p[0];
+  }
+
+  function showStep(name){
+    Object.keys(steps).forEach(function(k){ steps[k].hidden = (k!==name); });
+  }
+
+  function renderSummary(){
+    var chips = [];
+    if(state.bonus){
+      chips.push('<span class="bonus__chip">Бонус: <b>'+state.bonusLabel+'</b><button type="button" data-edit="bonus">Изменить</button></span>');
+    }
+    if(state.date){
+      chips.push('<span class="bonus__chip">Дата: <b>'+fmtDate(state.date)+'</b><button type="button" data-edit="date">Изменить</button></span>');
+    }
+    summary.innerHTML = chips.join('');
+    summary.hidden = chips.length===0;
+  }
+
+  document.querySelectorAll('.bonus__option').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      state.bonus = btn.getAttribute('data-value');
+      state.bonusLabel = btn.getAttribute('data-label');
+      renderSummary();
+      showStep('date');
+      dateInput.focus();
+    });
+  });
+
+  document.getElementById('dateNext').addEventListener('click', function(){
+    var v = dateInput.value;
+    if(!v || v < today){
+      dateError.hidden = false;
+      return;
+    }
+    dateError.hidden = true;
+    state.date = v;
+    renderSummary();
+    showStep('phone');
+    phoneInput.focus();
+  });
+
+  summary.addEventListener('click', function(e){
+    var editTarget = e.target.closest('[data-edit]');
+    if(!editTarget) return;
+    var which = editTarget.getAttribute('data-edit');
+    if(which==='bonus'){ showStep('bonus'); }
+    if(which==='date'){ showStep('date'); }
+  });
+
+  submitBtn.addEventListener('click', function(){
+    var phone = phoneInput.value.trim();
+    if(!phone || !consentInput.checked){
+      phoneError.hidden = false;
+      return;
+    }
+    phoneError.hidden = true;
+    state.phone = phone;
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Отправляем…';
+
+    fetch(LEAD_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        phone: state.phone,
+        message: 'Бонус: ' + state.bonusLabel + '. Дата: ' + fmtDate(state.date) + '.',
+        form: 'bonus-picker',
+        source: location.href,
+        website: document.querySelector('.bonus__hp').value
+      })
+    }).catch(function(){ /* лог уйдёт в leads.jsonl на сервере, даже если Telegram недоступен */ })
+      .then(function(){
+        document.getElementById('doneText').textContent =
+          'Бонус «' + state.bonusLabel + '» на день рождения ' + fmtDate(state.date) + ' закреплён за вами. Мы свяжемся по номеру ' + state.phone + ' для подтверждения.';
+        showStep('done');
+        summary.hidden = true;
+      });
+  });
+})();
+</script>
+</body>
+</html>
