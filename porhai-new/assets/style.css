@@ -970,6 +970,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 /* --- Политика конфиденциальности ----------------------------------------- */
 .legal { padding-top: calc(var(--header-h) + 60px); }
 .legal .section__title { text-align: left; font-size: 40px; }
+.legal__meta { margin-top: 10px; font-size: 15px; color: var(--ink); opacity: .65; }
 .legal__section { max-width: 800px; margin-top: 40px; }
 .legal__section h2 { font-size: 22px; font-weight: 700; color: var(--ink); }
 .legal__section p { margin-top: 12px; font-size: 16px; line-height: 1.6; color: var(--ink); }
