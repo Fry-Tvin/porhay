@@ -56,6 +56,23 @@
 <script>
 document.getElementById('header').classList.toggle('is-stuck', scrollY > 40);
 
+function sendLead(form, dlgId) {
+  var data = new FormData(form);
+  try {
+    fetch('https://leads.xn--80asndg4a.xn--p1ai/lead', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: data.get('name') || '',
+        phone: data.get('phone') || '',
+        marketing_consent: data.get('marketing') === 'on',
+        page: location.pathname,
+        form: (dlgId || '').replace(/^popup-/, '')
+      })
+    })['catch'](function () {});
+  } catch (err) {}
+}
+
 document.querySelectorAll('a[href^="#popup:"]').forEach(function (a) {
   a.addEventListener('click', function (e) {
     e.preventDefault();
@@ -70,6 +87,7 @@ document.querySelectorAll('.popup').forEach(function (dlg) {
   if (form) {
     form.addEventListener('submit', function (e) {
       e.preventDefault();
+      sendLead(form, dlg.id);
       form.hidden = true;
       var head = dlg.querySelector('[data-form-head]');
       if (head) head.hidden = true;
