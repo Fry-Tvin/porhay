@@ -421,6 +421,32 @@ SLIDER_ARROW = ('<svg viewBox="0 0 15.3 29" xmlns="http://www.w3.org/2000/svg">'
                  '<polyline points="0.5,0.5 14.5,14.5 0.5,28.5" fill="none" '
                  'stroke="#4a4a4a" stroke-width="1"/></svg>')
 
+# Видео о центре (RuTube, прислано заказчиком 15.09.2026) — в секции
+# «Незабываемые эмоции» на главной, над плиткой фотографий: заголовок секции
+# ровно про это, а фото под видео его же и подтверждают.
+#
+# Плеер подключён «фасадом»: до клика на странице лежит обычная наша webp-
+# обложка, а iframe RuTube подставляется скриптом только по клику
+# (см. PAGE_SCRIPT). Так сторонний плеер не тянет свои скрипты и куки при
+# загрузке страницы — это и держит бюджет скорости (сейчас вся страница
+# грузится за ~390мс, один плеер RuTube весит больше всей страницы), и
+# делает честным баннер согласия на cookie: до явного действия посетителя
+# никакой сторонней аналитики не подключается.
+VIDEO_ID = '4f6084355bd39abd57fdf42311a97a44'
+VIDEO_POSTER = 'tild6532-6665-4533-a137-383934346536__iii_7613.webp'
+
+
+def render_video():
+    return (
+        '<div class="video" data-video="%s" data-anim="zoomin" data-anim-dur="1">'
+        '<button class="video__cover" type="button" '
+        'aria-label="Смотреть видео о центре «Порхай»">'
+        '<img class="video__poster" src="%s%s" alt="" loading="lazy" width="1680" height="1120">'
+        '<span class="video__play" aria-hidden="true">'
+        '<svg viewBox="0 0 24 28" xmlns="http://www.w3.org/2000/svg">'
+        '<path d="M23 12.3 2.5.4A2 2 0 0 0 0 2.1v23.8a2 2 0 0 0 2.5 1.7L23 15.7a2 2 0 0 0 0-3.4z"/>'
+        '</svg></span></button></div>' % (VIDEO_ID, IMG, VIDEO_POSTER))
+
 # Галерея «Незабываемые эмоции» (rec560775553). В экспорте у каждого файла
 # есть ещё маленький blur-плейсхолдер "-__empty__..." для прогрессивной
 # подгрузки у Тильды — не нужен, у нас своя лёгкая loading="lazy".
@@ -1118,6 +1144,22 @@ PAGE_SCRIPT = """<script>
     }
   }
 
+  // 5c. Видео о центре: до клика на странице только наша картинка-обложка,
+  //     плеер RuTube (его скрипты и куки) подставляется одним iframe'ом
+  //     по первому клику — страница грузится без стороннего плеера вообще.
+  var video = document.querySelector('[data-video]');
+  if (video) {
+    video.addEventListener('click', function () {
+      var frame = document.createElement('iframe');
+      frame.src = 'https://rutube.ru/play/embed/' + video.getAttribute('data-video') + '/?autoplay=1';
+      frame.title = 'Видео о центре «Порхай»';
+      frame.allow = 'autoplay; fullscreen; clipboard-write';
+      frame.allowFullscreen = true;
+      frame.className = 'video__frame';
+      video.replaceChildren(frame);
+    }, { once: true });
+  }
+
   // 6. Мобильное меню.
   var burger = document.querySelector('.burger');
   var menu = document.getElementById('mobile-menu');
@@ -1231,7 +1273,7 @@ def build():
         <h1 class="hero__title" data-anim="fadeinright" data-anim-dur="1.7">Развлекательный центр для всей семьи</h1>
         <p class="hero__text" data-anim="fadeinright" data-anim-dur="1.7" data-anim-delay=".2">Проведение мероприятий <b>во&nbsp;Владивостоке</b>: от&nbsp;дней рождений и&nbsp;выпускных до&nbsp;взрослых корпоративов и&nbsp;романтических свиданий</p>
         <div class="hero__buttons" data-anim="zoomin" data-anim-dur="2.4" data-anim-delay=".4">
-          <a class="btn btn--yellow" href="#popup:bonus">Получи второй час бесплатно и 3 пиццы</a>
+          <a class="btn btn--yellow" href="#popup:bonus">Получите 3&nbsp;пиццы на&nbsp;праздник и&nbsp;второй час посещения бесплатно</a>
           <a class="btn btn--teal" href="/denrozhdeniya">Праздник</a>
         </div>
       </div>
@@ -1330,6 +1372,7 @@ def build():
   <section class="section" id="emotions">
     <div class="stage">
       <h2 class="section__title" data-anim="fadeinup" data-anim-dur="1">Незабываемые эмоции</h2>
+      {render_video()}
       <div class="gallery">{gallery}</div>
     </div>
   </section>

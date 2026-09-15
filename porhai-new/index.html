@@ -37,7 +37,7 @@
         <h1 class="hero__title" data-anim="fadeinright" data-anim-dur="1.7">Развлекательный центр для всей семьи</h1>
         <p class="hero__text" data-anim="fadeinright" data-anim-dur="1.7" data-anim-delay=".2">Проведение мероприятий <b>во&nbsp;Владивостоке</b>: от&nbsp;дней рождений и&nbsp;выпускных до&nbsp;взрослых корпоративов и&nbsp;романтических свиданий</p>
         <div class="hero__buttons" data-anim="zoomin" data-anim-dur="2.4" data-anim-delay=".4">
-          <a class="btn btn--yellow" href="#popup:bonus">Получи второй час бесплатно и 3 пиццы</a>
+          <a class="btn btn--yellow" href="#popup:bonus">Получите 3&nbsp;пиццы на&nbsp;праздник и&nbsp;второй час посещения бесплатно</a>
           <a class="btn btn--teal" href="/denrozhdeniya">Праздник</a>
         </div>
       </div>
@@ -136,6 +136,7 @@
   <section class="section" id="emotions">
     <div class="stage">
       <h2 class="section__title" data-anim="fadeinup" data-anim-dur="1">Незабываемые эмоции</h2>
+      <div class="video" data-video="4f6084355bd39abd57fdf42311a97a44" data-anim="zoomin" data-anim-dur="1"><button class="video__cover" type="button" aria-label="Смотреть видео о центре «Порхай»"><img class="video__poster" src="assets/img/tild6532-6665-4533-a137-383934346536__iii_7613.webp" alt="" loading="lazy" width="1680" height="1120"><span class="video__play" aria-hidden="true"><svg viewBox="0 0 24 28" xmlns="http://www.w3.org/2000/svg"><path d="M23 12.3 2.5.4A2 2 0 0 0 0 2.1v23.8a2 2 0 0 0 2.5 1.7L23 15.7a2 2 0 0 0 0-3.4z"/></svg></span></button></div>
       <div class="gallery"><div class="gallery__item gallery__item--wide"><img src="assets/img/photo_2_2026-08-21_17-28-51.webp" alt="" loading="lazy"></div><div class="gallery__item gallery__item--tall"><img src="assets/img/IMG_2453.webp" alt="" loading="lazy"></div><div class="gallery__item gallery__item--wide"><img src="assets/img/tild6337-3862-4436-b139-346435333238__ce4a0538.webp" alt="" loading="lazy"></div><div class="gallery__item gallery__item--tall"><img src="assets/img/tild6166-3964-4535-b531-646432353565__f70a9379-1.webp" alt="" loading="lazy"></div><div class="gallery__item gallery__item--wide"><img src="assets/img/tild3964-6461-4031-b762-383135653235__iii_5366.webp" alt="" loading="lazy"></div><div class="gallery__item gallery__item--wide"><img src="assets/img/tild3734-3361-4664-a338-376264373263__iii_8850_2.webp" alt="" loading="lazy"></div><div class="gallery__item gallery__item--tall"><img src="assets/img/tild6666-3564-4564-a663-313035323039__img_1763.webp" alt="" loading="lazy"></div><div class="gallery__item gallery__item--wide"><img src="assets/img/tild3561-3964-4662-b637-353038656332__photo_2021-06-30_10-.webp" alt="" loading="lazy"></div><div class="gallery__item gallery__item--tall"><img src="assets/img/tild6261-3031-4238-b634-343638303230__photo_2021-07-20_18-.webp" alt="" loading="lazy"></div><div class="gallery__item gallery__item--wide"><img src="assets/img/tild3664-3830-4265-b364-383836643865__photo_2022-07-10_10-.webp" alt="" loading="lazy"></div><div class="gallery__item gallery__item--tall"><img src="assets/img/tild6139-6263-4964-b831-396334303632__photo_2022-10-29_08-.webp" alt="" loading="lazy"></div><div class="gallery__item gallery__item--tall"><img src="assets/img/tild6239-3831-4534-a234-633535336337__photo_2022-10-29_09-.webp" alt="" loading="lazy"></div><div class="gallery__item gallery__item--tall"><img src="assets/img/tild6437-6438-4135-b735-663031393762__photo_2022-11-09_17-.webp" alt="" loading="lazy"></div></div>
     </div>
   </section>
@@ -455,6 +456,22 @@
         if (!document.hidden) sliderNext();
       }, 5000);
     }
+  }
+
+  // 5c. Видео о центре: до клика на странице только наша картинка-обложка,
+  //     плеер RuTube (его скрипты и куки) подставляется одним iframe'ом
+  //     по первому клику — страница грузится без стороннего плеера вообще.
+  var video = document.querySelector('[data-video]');
+  if (video) {
+    video.addEventListener('click', function () {
+      var frame = document.createElement('iframe');
+      frame.src = 'https://rutube.ru/play/embed/' + video.getAttribute('data-video') + '/?autoplay=1';
+      frame.title = 'Видео о центре «Порхай»';
+      frame.allow = 'autoplay; fullscreen; clipboard-write';
+      frame.allowFullscreen = true;
+      frame.className = 'video__frame';
+      video.replaceChildren(frame);
+    }, { once: true });
   }
 
   // 6. Мобильное меню.

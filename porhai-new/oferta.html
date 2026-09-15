@@ -331,6 +331,22 @@
     }
   }
 
+  // 5c. Видео о центре: до клика на странице только наша картинка-обложка,
+  //     плеер RuTube (его скрипты и куки) подставляется одним iframe'ом
+  //     по первому клику — страница грузится без стороннего плеера вообще.
+  var video = document.querySelector('[data-video]');
+  if (video) {
+    video.addEventListener('click', function () {
+      var frame = document.createElement('iframe');
+      frame.src = 'https://rutube.ru/play/embed/' + video.getAttribute('data-video') + '/?autoplay=1';
+      frame.title = 'Видео о центре «Порхай»';
+      frame.allow = 'autoplay; fullscreen; clipboard-write';
+      frame.allowFullscreen = true;
+      frame.className = 'video__frame';
+      video.replaceChildren(frame);
+    }, { once: true });
+  }
+
   // 6. Мобильное меню.
   var burger = document.querySelector('.burger');
   var menu = document.getElementById('mobile-menu');

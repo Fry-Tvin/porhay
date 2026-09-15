@@ -693,6 +693,53 @@ ul { margin: 0; padding: 0; list-style: none; }
 .reviews__arrow svg polyline { transition: stroke .15s ease; }
 .reviews__arrow--prev svg { transform: scaleX(-1); }
 
+/* --- Видео о центре (над галереей «Незабываемые эмоции») ------------------- */
+/* Плеер RuTube подставляется скриптом только по клику (PAGE_SCRIPT, п. 5c):
+   до этого здесь обычная наша картинка, поэтому страница не тянет чужой
+   плеер и его куки, пока посетитель сам не нажал «play». Скругление — то же
+   35px, что у карточек, кнопка — жёлтая из токенов. */
+.video {
+  position: relative;
+  max-width: 900px;
+  margin: 48px auto 0;
+  aspect-ratio: 16 / 9;
+  border-radius: 35px;
+  overflow: hidden;
+  background: var(--ink);
+}
+.video__cover {
+  display: block;
+  width: 100%; height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.video__cover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, .05), rgba(0, 0, 0, .35));
+}
+.video__poster { display: block; width: 100%; height: 100%; object-fit: cover; }
+.video__play {
+  position: absolute;
+  top: 50%; left: 50%;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 96px; height: 96px;
+  border-radius: 50%;
+  background: var(--yellow);
+  box-shadow: 0 10px 30px rgba(74, 74, 74, .28);
+  transform: translate(-50%, -50%);
+  transition: transform .2s ease;
+}
+.video__cover:hover .video__play { transform: translate(-50%, -50%) scale(1.08); }
+.video__play svg { width: 26px; height: 30px; margin-left: 6px; fill: var(--ink); }
+.video__frame { display: block; width: 100%; height: 100%; border: 0; }
+
 /* --- Галерея «Незабываемые эмоции» ----------------------------------------- */
 .gallery {
   display: grid;
@@ -1293,6 +1340,10 @@ ul { margin: 0; padding: 0; list-style: none; }
   .reviews__arrow { width: 44px; height: 44px; }
   .reviews__arrow svg { width: 11px; height: 21px; }
   .reviews__track img { width: 200px; }
+
+  .video { margin-top: 32px; border-radius: 24px; }
+  .video__play { width: 68px; height: 68px; }
+  .video__play svg { width: 20px; height: 23px; margin-left: 4px; }
 
   .gallery { grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 32px; }
   .gallery__item--wide { grid-column: span 2; }
