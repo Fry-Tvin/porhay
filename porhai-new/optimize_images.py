@@ -394,6 +394,15 @@ DISPLAY_WIDTH = {
 RETINA = 3
 QUALITY = 82
 
+# Пиньяты — предметная съёмка на однотонном фоне, а не сюжетные кадры с
+# лицами и мелкими деталями, ради которых запас поднимали до ×3. Плитка на
+# странице — 235×260 на десктопе и 162×260 на мобильной (замерено), так что
+# ×2 (520px) перекрывает реальный показ даже на телефоне с DPR 3, а вес
+# страницы падает заметно: 12 фото занимали 0,8 МБ из 0,94 МБ всей
+# страницы, и заказчик заметил, что они видимо долго грузятся.
+RETINA_FLAT = 2
+FLAT_PREFIXES = ('pinyata-',)
+
 
 def collect():
     srcs = set()
@@ -439,7 +448,7 @@ def main():
             im = Image.open(src)
             target = DISPLAY_WIDTH.get(os.path.basename(src))
             if target:
-                target *= RETINA
+                target *= RETINA_FLAT if name.startswith(FLAT_PREFIXES) else RETINA
                 if im.width > target:
                     h = round(im.height * target / im.width)
                     im = im.resize((target, h), Image.LANCZOS)

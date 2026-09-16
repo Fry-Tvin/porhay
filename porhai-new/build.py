@@ -436,16 +436,18 @@ VIDEO_ID = '4f6084355bd39abd57fdf42311a97a44'
 VIDEO_POSTER = 'tild6532-6665-4533-a137-383934346536__iii_7613.webp'
 
 
-def render_video():
+def render_video(video_id=None, poster=None, label='о центре «Порхай»'):
+    video_id = video_id or VIDEO_ID
+    poster = poster or VIDEO_POSTER
     return (
         '<div class="video" data-video="%s" data-anim="zoomin" data-anim-dur="1">'
         '<button class="video__cover" type="button" '
-        'aria-label="Смотреть видео о центре «Порхай»">'
+        'aria-label="Смотреть видео %s">'
         '<img class="video__poster" src="%s%s" alt="" loading="lazy" width="1680" height="1120">'
         '<span class="video__play" aria-hidden="true">'
         '<svg viewBox="0 0 24 28" xmlns="http://www.w3.org/2000/svg">'
         '<path d="M23 12.3 2.5.4A2 2 0 0 0 0 2.1v23.8a2 2 0 0 0 2.5 1.7L23 15.7a2 2 0 0 0 0-3.4z"/>'
-        '</svg></span></button></div>' % (VIDEO_ID, IMG, VIDEO_POSTER))
+        '</svg></span></button></div>' % (video_id, label, IMG, poster))
 
 # Галерея «Незабываемые эмоции» (rec560775553). В экспорте у каждого файла
 # есть ещё маленький blur-плейсхолдер "-__empty__..." для прогрессивной
@@ -1347,11 +1349,7 @@ def build():
       <h2 class="section__title" data-anim="fadeinup" data-anim-dur="1">Предложения для организованных групп</h2>
       <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">Мафия, крио-кухня, шоу-программы и мастер-классы — для школ, лагерей, секций и компаний от 15 человек</p>
       <div class="teasers__grid teasers__grid--one" style="margin-top:32px">
-        <div class="teasers__item">
-          <a href="/dlyagrupp"><img src="{IMG}tild3034-6462-4234-a366-343963363266__photo_2022-04-02_09-.webp" alt="" loading="lazy" width="360" height="240"></a>
-          <h3><a href="/dlyagrupp">Все предложения для групп</a></h3>
-          <p>7 программ и специальные условия</p>
-        </div>
+        {render_teaser('tild3034-6462-4234-a366-343963363266__photo_2022-04-02_09-.webp', '/dlyagrupp', 'Все предложения для групп', '7 программ и специальные условия')}
       </div>
     </div>
   </section>
@@ -2099,6 +2097,22 @@ def render_price_groups(groups):
         for g in groups)
 
 
+def render_teaser(img, href, title, sub='Подробнее', item_id=None):
+    """Карточка-тизер: ссылкой работает вся карточка целиком.
+
+    Заказчик 15.09.2026: «чтобы человек не думал, куда именно нажать». До
+    этого ссылками были только заголовок и (на части страниц) фото, а слово
+    «Подробнее» кликом не было вообще — на /denrozhdeniya перейти к
+    выпускному можно было, только попав по самому слову «Выпускной».
+    Три копии этой разметки разошлись именно потому, что лежали порознь,
+    поэтому теперь они собираются здесь."""
+    return (
+        '<a class="teasers__item"%s href="%s">'
+        '<img src="%s%s" alt="" loading="lazy" width="360" height="240">'
+        '<h3>%s</h3><p>%s</p></a>'
+        % ((' id="%s"' % item_id) if item_id else '', href, IMG, img, title, sub))
+
+
 def render_checklist(items):
     """«Что включено» (t491) — иконка + строка, 4 колонки по 260px."""
     return ''.join(
@@ -2262,6 +2276,7 @@ RENTAL_PAGES = {
         meta_title='Аренда зала «WHITE ROOM» развлекательного центра «Порхай»',
         meta_descr='Стильная, светлая, просторная комната, которую вы можете арендовать под свой праздник и отметить любое мероприятие только в кругу близких.',
         cover='tild3461-3239-4265-b438-393435616565__iii_3488_1.webp',
+        video='659a38eb7447d3e037c32ae68ff2ca4a',
         avatar='tild3161-3162-4730-a239-353134636136__frame_15.svg',
         title='Аренда зала «White Room»',
         descr='Наша стильная, светлая, просторная комната, которую вы можете арендовать под свой праздник и отметить любое мероприятие только в кругу близких',
@@ -2325,6 +2340,7 @@ RENTAL_PAGES = {
         meta_descr='Отдельный банкетный зал + средний и маленький бассейны + все фотозоны музея.',
         # Было старое фото бассейна «Попкорн» — заменено на «Пляж» 24.08.2026.
         cover='photo_1_2026-08-21_17-28-51.webp',
+        video='3bfdf180eaa5041f3fb39437f8c796f3',
         avatar='tild3161-3162-4730-a239-353134636136__frame_15.svg',
         title='Аренда зала «Loft Box»',
         descr='Идеальный зал для компании, аренда включает в себя доступ ко всем фотозонам музея, а значит вашим гостям точно не&nbsp;будет&nbsp;скучно!',
@@ -2375,6 +2391,7 @@ RENTAL_PAGES = {
         meta_descr='Для больших компаний свыше 25 человек — АБСОЛЮТНО ВЕСЬ ЦЕНТР (335 м²).',
         # Было старое фото бассейна «Попкорн» — заменено на «Пляж» 24.08.2026.
         cover='photo_3_2026-08-21_17-28-51.webp',
+        video='6b212385382c75550c54ea99dc1d0d99',
         avatar='tild3161-3162-4730-a239-353134636136__frame_15.svg',
         title='Аренда залов «Комбо+»',
         descr='Для больших компаний свыше 25 человек, мы предлагаем к&nbsp;аренде АБСОЛЮТНО ВЕСЬ ЦЕНТР (335 кв.м.)',
@@ -2459,6 +2476,10 @@ def render_rental_page(slug):
 
     gallery = render_slider(p['gallery'], p['title'])
 
+    # Обложка видео — то же фото, что и в шапке страницы: это тот самый зал,
+    # который показывает ролик, и кадр уже выбран как «лицо» страницы.
+    video = render_video(p['video'], p['cover'], 'о зале %s' % p['gallery_title'])
+
     partners = ''.join(
         '<div class="partners__item">%s</div>' % (
             '<img src="%s%s" alt="" loading="lazy" width="160">' % (IMG, img) if img
@@ -2468,9 +2489,7 @@ def render_rental_page(slug):
     price_groups = render_price_groups(p['price_groups'])
 
     teasers = ''.join(
-        '<div class="teasers__item"><a href="%s"><img src="%s%s" alt="" loading="lazy" width="360" height="240"></a>'
-        '<h3><a href="%s">%s</a></h3><p>Подробнее</p></div>'
-        % (href, IMG, img, href, title) for img, href, title in RENTAL_TEASERS)
+        render_teaser(img, href, title) for img, href, title in RENTAL_TEASERS)
 
     reviews = ''.join(
         '<img src="%s%s" alt="" loading="lazy" width="260">' % (IMG, img)
@@ -2538,6 +2557,7 @@ def render_rental_page(slug):
         <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">{p['gallery_title']}</h2>
         <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">{p['gallery_descr']}</p>
       </div>
+      {video}
       {gallery}
     </div>
   </section>
@@ -2836,9 +2856,7 @@ def build_denrozhdeniya():
     # id на карточке — точка, куда со слайдера пакетов на главной ведёт
     # якорь (см. all_packages()/render_packages_carousel()).
     dr_teasers = ''.join(
-        '<div class="teasers__item" id="plan-%s"><img src="%s%s" alt="" loading="lazy" width="360" height="240">'
-        '<h3><a href="%s">%s</a></h3><p>Подробнее</p></div>'
-        % (slug, IMG, img, href, title)
+        render_teaser(img, href, title, item_id='plan-%s' % slug)
         for (img, href, title), slug in zip(RENTAL_TEASERS[1:], ('vypusknoy', 'korporativ')))
 
     partners = ''.join(
@@ -2896,10 +2914,6 @@ def build_denrozhdeniya():
       <div class="teasers__grid">{dr_teasers}</div>
     </div>
   </section>
-
-  <p class="price-line">Стоимость от&nbsp;16 500&nbsp;₽</p>
-
-  <div class="cta-band"><a class="btn btn--yellow" href="#popup:denrozhdeniya" data-anim="zoomin" data-anim-dur="1">Записаться</a></div>
 
   {band(flip=True)}
 
@@ -2981,20 +2995,32 @@ def build_denrozhdeniya():
 VP_COVER = 'tild6235-3331-4465-b435-386366663338__2.webp'
 VP_BG = '#dfddf5'
 
+# Наполнение обновлено 15.09.2026 по присланному тексту «ВЫПУСКНЫЕ 2027».
+# Ушли «Фотограф – 2 часа» (теперь бонус первым 10 бронированиям, VP_PROMO),
+# «Секретный бонус» и «Лимонадница»; добавились три шоу, оба бассейна,
+# 14 фотозон и вода.
 VP_CHECKLIST = [
-    ('tild6331-6332-4134-b336-653838336437__photo.svg', 'Аренда зала – 4 часа, включён сбор гостей 30 минут'),
-    ('tild3061-6337-4234-a337-643237303762__photo.svg', 'Фотограф – 2 часа'),
-    ('tild6331-6332-4134-b336-653838336437__photo.svg', 'Анимационная программа 1,5 часа, ДВА анимационных героя + диджей'),
-    ('tild6331-6332-4134-b336-653838336437__photo.svg', 'Секретный бонус от «Порхай»'),
+    ('tild6331-6332-4134-b336-653838336437__photo.svg', 'Аренда зала – 4 часа (включён сбор гостей 30 минут)'),
+    ('tild6331-6332-4134-b336-653838336437__photo.svg', 'Анимационная программа 1,5 часа: ДВА анимационных героя + диджей'),
+    ('tild6331-6332-4134-b336-653838336437__photo.svg', 'Серебряное шоу'),
+    ('tild6331-6332-4134-b336-653838336437__photo.svg', 'Неоновая дискотека'),
+    ('tild6331-6332-4134-b336-653838336437__photo.svg', 'Поролоновое шоу'),
+    ('tild6331-6332-4134-b336-653838336437__photo.svg', 'Белый бассейн'),
+    ('tild6331-6332-4134-b336-653838336437__photo.svg', 'Бассейн «Пляж»'),
     ('tild6331-6332-4134-b336-653838336437__photo.svg', 'Игры, задания, эстафеты'),
     ('tild6331-6332-4134-b336-653838336437__photo.svg', 'Сопровождающие праздника'),
-    ('tild6331-6332-4134-b336-653838336437__photo.svg', 'Дискотека и светомузыка'),
-    ('tild6331-6332-4134-b336-653838336437__photo.svg', 'Скатерть и одноразовая посуда (цветная) + посуда для сервировки'),
-    ('tild6331-6332-4134-b336-653838336437__photo.svg', 'Чай/конфеты'),
-    ('tild6331-6332-4134-b336-653838336437__photo.svg', 'Лимонадница'),
+    ('tild6331-6332-4134-b336-653838336437__photo.svg', '14 фотозон'),
+    ('tild6331-6332-4134-b336-653838336437__photo.svg', 'Светомузыка'),
+    ('tild6331-6332-4134-b336-653838336437__photo.svg', 'Скатерть, салфетки и одноразовая посуда'),
+    ('tild6331-6332-4134-b336-653838336437__photo.svg', 'Праздничная посуда для сервировки'),
+    ('tild6331-6332-4134-b336-653838336437__photo.svg', 'Чай/конфеты, холодная и горячая вода'),
     ('tild6331-6332-4134-b336-653838336437__photo.svg', 'Электронные приглашения для ваших гостей'),
-    ('tild6331-6332-4134-b336-653838336437__photo.svg', 'Вместимость 50 человек'),
+    ('tild6331-6332-4134-b336-653838336437__photo.svg', 'Вместимость до 50 человек'),
 ]
+
+# Акция: тот же компонент .promo-badge, что и у неонового шоу на главной.
+VP_PROMO = ('<p class="promo-badge">Первым 10 бронированиям&nbsp;— '
+            'фотограф на&nbsp;2 часа в&nbsp;подарок 🎁</p>')
 
 VP_GALLERY = [
     'tild6331-3438-4163-a535-656238353162__photo_2022-03-17_18-.webp',
@@ -3018,13 +3044,17 @@ VP_GALLERY = [
 
 # Сноски «при N гостях — цена за человека» — из оригинала (T812), перенесены
 # дословно, до этого при переносе были потеряны.
+# Цены 15.09.2026. Группировка поменялась: раньше группой было время, а
+# внутри будни/выходные, теперь наоборот — у будней два разных времени с
+# разной ценой, а у выходных одна цена на оба слота (показываем двумя
+# строками, как у будней: одной строкой подпись не влезала в колонку).
 VP_PRICE_GROUPS = [
-    dict(note='«Счастливые часы» 10:00 — 14:00',
-         items=[('Будни', '54 800 ₽', 'При 50 людях — 1090 ₽/чел, при 30&nbsp;— 1825 ₽/чел'),
-                ('Выходные', '68 800 ₽', 'При 50 людях — 1375 ₽/чел, при 30&nbsp;— 2290 ₽/чел')]),
-    dict(note='16:00 — 21:00',
-         items=[('Будни', '64 400 ₽', 'При 50 людях — 1290 ₽/чел, при 30&nbsp;— 2150 ₽/чел'),
-                ('Выходные', '79 800 ₽', 'При 50 людях — 1600 ₽/чел, при 30&nbsp;— 2650 ₽/чел')]),
+    dict(note='Будни',
+         items=[('10:00 — 14:00', '79 500 ₽', 'При 50 людях — 1590 ₽/чел, при 30&nbsp;— 2650 ₽/чел'),
+                ('16:00 — 21:00', '88 500 ₽', 'При 50 людях — 1750 ₽/чел, при 30&nbsp;— 2950 ₽/чел')]),
+    dict(note='Выходные',
+         items=[('10:00 — 14:00', '93 000 ₽', 'При 50 людях — 1860 ₽/чел, при 30&nbsp;— 3100 ₽/чел'),
+                ('16:00 — 21:00', '93 000 ₽', 'При 50 людях — 1860 ₽/чел, при 30&nbsp;— 3100 ₽/чел')]),
 ]
 
 
@@ -3084,9 +3114,11 @@ def build_vypusknye():
     </div>
   </section>
 
-  <p class="price-line">Стоимость от&nbsp;1090&nbsp;₽/чел.</p>
+  <p class="price-line">Стоимость от&nbsp;1590&nbsp;₽/чел.</p>
 
-  <div class="cta-band"><a class="btn btn--yellow" href="#popup:vypusknye" data-anim="zoomin" data-anim-dur="1">Записаться</a></div>
+  {VP_PROMO}
+
+  <div class="cta-band cta-band--tight"><a class="btn btn--yellow" href="#popup:vypusknye" data-anim="zoomin" data-anim-dur="1">Записаться</a></div>
 
   {band(flip=True)}
 
