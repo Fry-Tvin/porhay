@@ -326,7 +326,14 @@ ul { margin: 0; padding: 0; list-style: none; }
    как чекбокс согласия или cookie-баннер: сохраняем стиль, не добавляем
    новую палитру). Ограничен по времени, добавлен по просьбе заказчика. */
 .promo-badge {
-  display: inline-block;
+  /* display:table + авто-поля центрируют плашку, оставляя её по ширине
+     текста. С inline-block она прижималась к левому краю экрана: рядом
+     нет строчного контекста с text-align:center, плашка лежит прямо в
+     потоке страницы (на /whiteroom было так же, просто не бросалось в
+     глаза до появления второй такой плашки на /vypusknye). */
+  display: table;
+  margin-left: auto;
+  margin-right: auto;
   margin-top: 20px;
   padding: 12px 28px;
   background: var(--yellow);
@@ -1640,10 +1647,13 @@ ul { margin: 0; padding: 0; list-style: none; }
 .teasers { padding: 135px 0 105px; background: var(--mint); }
 .teasers__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; max-width: 1160px; margin: 45px auto 0; }
 .teasers__grid--one { grid-template-columns: 1fr; max-width: 360px; }
-.teasers__item { text-align: center; }
-.teasers__item img { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 16px; }
+/* Ссылкой работает вся карточка, а не только заголовок — заказчик
+   15.09.2026: «чтобы человек не думал, куда именно нажать». */
+.teasers__item { display: block; text-align: center; color: var(--ink); text-decoration: none; }
+.teasers__item img { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 16px; transition: transform .2s ease; }
+.teasers__item:hover img { transform: translateY(-4px); }
 .teasers__item h3 { margin-top: 16px; font-size: 24px; font-weight: 700; }
-.teasers__item h3 a { color: var(--ink); }
+.teasers__item:hover h3 { text-decoration: underline; }
 .teasers__item p { margin-top: 4px; font-size: 16px; font-weight: 400; color: var(--ink); }
 
 @media (max-width: 1000px) {
@@ -1688,7 +1698,11 @@ ul { margin: 0; padding: 0; list-style: none; }
 .split-hero__descr { font-size: 20px; line-height: 1.55; font-weight: 400; color: var(--ink); }
 .split-hero__subtitle { max-width: 400px; margin: 16px auto 0; font-size: 16px; line-height: 1.55; font-weight: 400; color: var(--ink); }
 
-.checklist { padding: 0 0 60px; background: var(--white); }
+/* Свой верхний отступ обязателен: без него блок опирался только на нижний
+   отступ предыдущей секции, и на телефоне заголовок «Что включено»
+   оказывался в 48px от текста обложки — заказчик 15.09.2026 «буквально
+   прилип». На десктопе это пряталось за высоким фото обложки. */
+.checklist { padding: 40px 0 60px; background: var(--white); }
 .checklist__grid {
   display: grid;
   grid-template-columns: repeat(4, 260px);
@@ -1825,7 +1839,11 @@ ul { margin: 0; padding: 0; list-style: none; }
 .torty-grid__item--big span { font-size: 15px; }
 /* Круглые рамки — только у тортов (по просьбе заказчика 03.09.2026),
    у пиньят формат окон остался прежним. */
-.torty-grid--round .torty-grid__item img { border-radius: 50%; }
+/* height:auto обязателен: у картинок есть атрибут height (180), и пока
+   высота задана явно, `aspect-ratio: 1/1` выше не работает — браузер
+   считает размер по ширине колонки и этой высоте. Получался не круг, а
+   овал, тем более вытянутый, чем уже колонка (на мобильной ~110×180). */
+.torty-grid--round .torty-grid__item img { border-radius: 50%; height: auto; }
 
 .fillings { display: grid; grid-template-columns: repeat(4, 260px); gap: 32px 24px; justify-content: center; margin: 36px auto 0; }
 .fillings__item { text-align: left; }
@@ -1875,7 +1893,10 @@ ul { margin: 0; padding: 0; list-style: none; }
   scroll-snap-align: start;
   padding: 28px 22px;
 }
-.packages__track .tariff { flex: 0 0 360px; scroll-snap-align: start; }
+/* 340, а не 360: три карточки с зазорами должны помещаться в дорожку
+   целиком (3×340 + 2×24 = 1068 при доступных ~1081), иначе третья
+   обрезается краем и приходится подкручивать, чтобы увидеть её границу. */
+.packages__track .tariff { flex: 0 0 340px; scroll-snap-align: start; }
 .plan--link { text-decoration: none; transition: transform .2s ease, box-shadow .2s ease; }
 .plan--link:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(74,74,74,.14); }
 .plan__cta { margin-top: 20px; font-size: 15px; font-weight: 700; color: var(--ink); }
@@ -1905,7 +1926,13 @@ ul { margin: 0; padding: 0; list-style: none; }
   .packages__track { gap: 16px; }
   .packages__track .plan { flex: 0 0 250px; padding: 24px 18px; }
   .packages__track .tariff { flex: 0 0 280px; }
-  .packages__arrow { width: 40px; height: 40px; }
+  /* На телефоне две стрелки с зазорами съедали 96px из 335px ширины, и
+     дорожка оставалась 239px — уже любой карточки (280px), поэтому ни
+     одна не была видна целиком, её всё время приходилось подкручивать.
+     Листают на телефоне пальцем, поэтому стрелки убираем и отдаём всю
+     ширину карточкам: одна помещается полностью, следующая выглядывает
+     краем и подсказывает, что ленту можно листать. */
+  .packages__arrow { display: none; }
   .plans__grid--two { grid-template-columns: 1fr; max-width: 340px; }
 }
 
@@ -1926,7 +1953,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   .split-hero__title { font-size: 26px; }
   .split-hero__descr { font-size: 16px; }
 
-  .checklist { padding: 0 0 40px; }
+  .checklist { padding: 32px 0 40px; }
   .checklist__grid { grid-template-columns: 1fr; row-gap: 24px; max-width: 320px; }
 
   .plans { padding: 48px 0; }
