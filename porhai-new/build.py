@@ -10,6 +10,8 @@
 """
 import os
 import json
+import glob
+import re
 from html import escape
 from urllib.parse import quote
 
@@ -208,7 +210,7 @@ MOBILE_MENU = [
     ('Главная', '/', None),
     ('Разовое посещение', '/razovoe', None),
     ('Аренда залов', None, [
-        ('WhiteBox', '/whiteroom'), ('LoftBox', '/loftbox'), ('Комбо+', '/combo')]),
+        ('White Room', '/whiteroom'), ('Loft Box', '/loftbox'), ('Комбо+', '/combo')]),
     ('Праздник <span class="mobile-menu__accent">под ключ</span>', '/denrozhdeniya', None),
     ('Для групп', '/dlyagrupp', None),
     ('Отзывы', '#otziv', None),
@@ -543,7 +545,7 @@ SOCIALS = [
 # это credit прежней студии-разработчика Тильда-версии, а не владелицы сайта.
 FOOTER_LINKS = [
     ('Разовое посещение', '/razovoe'),
-    ('WhiteBox', '/whiteroom'),
+    ('White Room', '/whiteroom'),
     ('Loft Box', '/loftbox'),
     ('Комбо+', '/combo'),
     ('День рождения', '/denrozhdeniya'),
@@ -4634,6 +4636,42 @@ def build_not_found():
     print('404.html собран:', len(html), 'байт')
 
 
+def fix_cross_page_anchors():
+    """Чинит ссылки меню и подвала на секции, которых на этой странице нет.
+
+    NAV, FOOTER_LINKS и MOBILE_MENU общие для всего сайта, но сами секции —
+    нет: «Наши залы» (#zaly) есть только на главной, а FAQ, отзывы и
+    контакты — не на каждой странице. На такой странице пункт меню просто
+    ничего не делал: браузер не находит якорь и остаётся на месте, будто
+    ссылка неживая. Заказчик поймал это 18.09.2026 на «Аренде залов»;
+    проверка показала, что #zaly был мёртв на всех 16 внутренних
+    страницах, а #faq/#otziv/#kontakt — на доброй половине.
+
+    Правится здесь, а не в самих списках меню, потому что набор секций
+    знает только уже собранная страница: если якоря на ней нет, ссылка
+    становится абсолютной («/#zaly») и ведёт на главную к нужному блоку,
+    а где секция есть — остаётся локальной и просто прокручивает.
+
+    Попапы (href="#popup:...") не трогаем: у них нет и не должно быть
+    элемента с таким id, их открывает скрипт.
+    """
+    fixed = 0
+    for path in sorted(glob.glob(os.path.join(HERE, '*.html'))):
+        html = open(path, encoding='utf-8').read()
+        ids = set(re.findall(r'id="([^"]+)"', html))
+
+        def to_home(m):
+            frag = m.group(1)
+            return m.group(0) if frag in ids else 'href="/#%s"' % frag
+
+        new = re.sub(r'href="#([A-Za-z][\w-]*)"', to_home, html)
+        if new != html:
+            with open(path, 'w', encoding='utf-8') as f:
+                f.write(new)
+            fixed += 1
+    print('ссылки на чужие секции исправлены на страницах:', fixed)
+
+
 if __name__ == '__main__':
     build()
     build_privacy()
@@ -4653,3 +4691,4 @@ if __name__ == '__main__':
     build_pinyaty()
     build_podarok()
     build_not_found()
+    fix_cross_page_anchors()
