@@ -3839,7 +3839,13 @@ def build_dlyagrupp():
         '<img src="%s%s" alt="" loading="lazy" width="260">' % (IMG, img)
         for img in REVIEWS)
 
-    popups = render_popups(POPUPS) + render_form_popup('header') + render_form_popup('dlyagrupp')
+    # Только те попапы, до которых есть чем дойти: карточки «Уэнсдей» и
+    # «CashFlow» убраны из GROUPS 24.08.2026, а их <dialog> продолжали
+    # уезжать в разметку — открыть их было нечем, но они грузились на
+    # каждом заходе и несли цены 2023 года. Сами записи в POPUPS оставлены
+    # на случай, если программы вернут.
+    reachable = {k: v for k, v in POPUPS.items() if k in {g[1] for g in GROUPS}}
+    popups = render_popups(reachable) + render_form_popup('header') + render_form_popup('dlyagrupp')
     faq_ld = faq_jsonld()
 
     html = f"""<!DOCTYPE html>
