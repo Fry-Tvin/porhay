@@ -40,8 +40,15 @@
   /* Шаги с полями */
   .bonus__field{ display:flex; flex-direction:column; gap:12px; }
   .bonus__label{ font-weight:700; font-size:18px; line-height:1.3; }
-  .bonus__input{ font:inherit; font-size:16px; color:var(--ink); background:#fff; border:2px solid var(--mint-grey); border-radius:16px; padding:14px 18px; min-height:52px; width:100%; min-width:0; max-width:100%; box-sizing:border-box; }
+  .bonus__input{ font:inherit; font-size:16px; color:var(--ink); background:#fff; border:2px solid var(--mint-grey); border-radius:16px; padding:14px 18px; min-height:52px; width:100%; min-width:0; max-width:100%; box-sizing:border-box; display:block; -webkit-appearance:none; appearance:none; }
   .bonus__input:focus{ outline:3px solid var(--teal); outline-offset:2px; }
+  /* Мобильные браузеры (особенно Android WebView/Samsung Internet) иногда
+     рисуют внутренние поля дд/мм/гггг у type="date" шире собственного
+     box'а инпута, игнорируя width:100% — appearance:none выше снимает
+     нативное оформление виджета и заставляет браузер уважать заданную
+     ширину; overflow:hidden здесь — подстраховка на случай, если какой-то
+     движок всё равно нарисует поле шире контейнера. */
+  input.bonus__input[type="date"]{ overflow:hidden; text-overflow:ellipsis; }
   .bonus__hint{ font-size:13px; line-height:1.45; color:var(--ink); opacity:.65; }
   .bonus__error{ color:#C0392B; font-size:13px; line-height:1.45; }
   .bonus__field .btn{ margin-top:16px; align-self:center; min-width:260px; }
