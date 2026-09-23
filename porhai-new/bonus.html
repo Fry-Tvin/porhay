@@ -205,6 +205,17 @@
     return p[2] + '.' + p[1] + '.' + p[0];
   }
 
+  // Ребёнку не может быть меньше месяца — дата рождения не может быть
+  // позже, чем месяц назад от сегодня (это разом отсекает и будущие даты,
+  // и последний месяц). Считаем один раз при загрузке страницы, не при
+  // каждой проверке — иначе граница будет ползти в течение долгой сессии.
+  var maxBirthDate = (function(){
+    var d = new Date();
+    d.setMonth(d.getMonth() - 1);
+    return d.toISOString().slice(0, 10);
+  })();
+  dateInput.max = maxBirthDate;
+
   function saveDraft(){
     try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
   }
@@ -240,6 +251,12 @@
   document.getElementById('dateNext').addEventListener('click', function(){
     var v = dateInput.value;
     if(!v){
+      dateError.textContent = 'Укажите дату рождения ребёнка';
+      dateError.hidden = false;
+      return;
+    }
+    if(v > maxBirthDate){
+      dateError.textContent = 'Проверьте дату — ребёнку не может быть меньше месяца';
       dateError.hidden = false;
       return;
     }
