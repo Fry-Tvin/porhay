@@ -27,8 +27,13 @@
   .bonus__option:hover{ border-color:var(--teal); transform:translateY(-2px); box-shadow:0 8px 24px rgba(56,162,165,.16); }
   .bonus__option img{ display:block; width:100%; height:auto; border-radius:22px; }
 
+  /* Разделитель перед каруселью фото */
+  .bonus__divider{ display:flex; align-items:center; gap:16px; margin-top:32px; }
+  .bonus__divider::before, .bonus__divider::after{ content:''; flex:1 1 auto; height:2px; background:var(--mint-grey); }
+  .bonus__divider-label{ flex:0 0 auto; font-weight:700; font-size:18px; line-height:1.3; text-align:center; white-space:nowrap; }
+
   /* Карусель фото под плиткой */
-  .bonus__carousel{ margin-top:32px; display:flex; gap:14px; overflow-x:auto; padding-bottom:8px; scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+  .bonus__carousel{ margin-top:24px; display:flex; gap:14px; overflow-x:auto; padding-bottom:8px; scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
   .bonus__carousel::-webkit-scrollbar{ display:none; }
   .bonus__carousel img{ flex:0 0 auto; scroll-snap-align:start; width:180px; height:240px; object-fit:cover; border-radius:20px; display:block; }
 
@@ -65,7 +70,9 @@
     .bonus__lead{ margin-top:12px; }
     .bonus__summary{ margin-bottom:24px; }
     .bonus__grid{ gap:12px; }
-    .bonus__carousel{ margin-top:24px; gap:12px; }
+    .bonus__divider{ margin-top:24px; gap:10px; }
+    .bonus__divider-label{ font-size:15px; white-space:normal; }
+    .bonus__carousel{ margin-top:16px; gap:12px; }
     .bonus__carousel img{ width:150px; height:200px; }
     .bonus__field .btn{ align-self:stretch; min-width:0; }
     .bonus__done{ padding:28px 20px; }
@@ -89,7 +96,7 @@
     <div class="stage bonus__stage">
       <div class="section__head">
         <h1 class="section__title bonus__title">Заберите бонус на день рождения</h1>
-        <p class="section__lead bonus__lead" id="bonusLead">Выберите один бонус, укажите дату дня рождения и оставьте номер — мы закрепим бонус за вами 🦋</p>
+        <p class="section__lead bonus__lead" id="bonusLead">Выберите один бонус, укажите дату рождения ребёнка и оставьте номер — мы закрепим бонус за вами 🦋</p>
       </div>
 
       <div class="bonus__summary" id="bonusSummary" hidden></div>
@@ -111,6 +118,10 @@
             </button>
           </div>
 
+          <div class="bonus__divider" role="separator">
+            <p class="bonus__divider-label">Место для вашего праздника 💛</p>
+          </div>
+
           <div class="bonus__carousel" aria-label="Фото из «Порхай»">
             <img src="assets/img/IMG_2527.webp" alt="Праздник дня рождения в неоновом бассейне «Порхай»" loading="lazy" width="180" height="240">
             <img src="assets/img/photo_2_2026-08-21_17-28-51.webp" alt="Дети прыгают в бассейне с шариками" loading="lazy" width="180" height="240">
@@ -122,10 +133,10 @@
         </div>
 
         <div class="bonus__step bonus__field" data-step="date" id="stepDate" hidden>
-          <label class="bonus__label" for="bonusDate">На какую дату запланирован день рождения?</label>
+          <label class="bonus__label" for="bonusDate">Укажите дату рождения вашего ребёнка</label>
           <input class="bonus__input" type="date" id="bonusDate" name="date">
           <p class="bonus__hint">Нажмите на поле, чтобы открыть календарь, или введите дату вручную</p>
-          <p class="bonus__error" id="dateError" hidden>Укажите дату не раньше сегодняшней</p>
+          <p class="bonus__error" id="dateError" hidden>Укажите дату рождения ребёнка</p>
           <button type="button" class="btn btn--yellow" id="dateNext">Продолжить</button>
         </div>
 
@@ -180,9 +191,6 @@
   var phoneError = document.getElementById('phoneError');
   var submitBtn = document.getElementById('phoneSubmit');
 
-  var today = new Date().toISOString().slice(0,10);
-  dateInput.min = today;
-
   function fmtDate(iso){
     if(!iso) return '';
     var p = iso.split('-');
@@ -208,7 +216,7 @@
       chips.push('<span class="bonus__chip">Бонус: <b>'+state.bonusLabel+'</b><button type="button" data-edit="bonus">Изменить</button></span>');
     }
     if(state.date){
-      chips.push('<span class="bonus__chip">Дата: <b>'+fmtDate(state.date)+'</b><button type="button" data-edit="date">Изменить</button></span>');
+      chips.push('<span class="bonus__chip">Дата рождения ребёнка: <b>'+fmtDate(state.date)+'</b><button type="button" data-edit="date">Изменить</button></span>');
     }
     summary.innerHTML = chips.join('');
     summary.hidden = chips.length===0 || state.step==='bonus' || state.step==='done';
@@ -224,7 +232,7 @@
 
   document.getElementById('dateNext').addEventListener('click', function(){
     var v = dateInput.value;
-    if(!v || v < today){
+    if(!v){
       dateError.hidden = false;
       return;
     }
@@ -271,7 +279,7 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         phone: state.phone,
-        message: 'Бонус: ' + state.bonusLabel + '. Дата: ' + fmtDate(state.date) + '.',
+        message: 'Бонус: ' + state.bonusLabel + '. Дата рождения ребёнка: ' + fmtDate(state.date) + '.',
         form: 'bonus-picker',
         source: location.href,
         website: document.querySelector('.bonus__hp').value
@@ -279,7 +287,7 @@
     }, 8000).catch(function(){ /* лог уйдёт в leads.jsonl на сервере, даже если Telegram недоступен; таймаут не даёт кнопке зависнуть */ })
       .then(function(){
         document.getElementById('doneText').textContent =
-          'Бонус «' + state.bonusLabel + '» на день рождения ' + fmtDate(state.date) + ' закреплён за вами. Мы свяжемся по номеру ' + state.phone + ' для подтверждения.';
+          'Бонус «' + state.bonusLabel + '» ко дню рождения вашего ребёнка (' + fmtDate(state.date) + ') закреплён за вами. Мы свяжемся по номеру ' + state.phone + ' для подтверждения.';
         showStep('done');
         renderSummary();
         submitBtn.disabled = false;
@@ -311,7 +319,7 @@
     var step = saved.step;
     if(step === 'done' && state.date && state.phone){
       document.getElementById('doneText').textContent =
-        'Бонус «' + state.bonusLabel + '» на день рождения ' + fmtDate(state.date) + ' закреплён за вами. Мы свяжемся по номеру ' + state.phone + ' для подтверждения.';
+        'Бонус «' + state.bonusLabel + '» ко дню рождения вашего ребёнка (' + fmtDate(state.date) + ') закреплён за вами. Мы свяжемся по номеру ' + state.phone + ' для подтверждения.';
       showStep('done');
     } else if((step === 'phone' || step === 'done') && state.date){
       showStep('phone');
