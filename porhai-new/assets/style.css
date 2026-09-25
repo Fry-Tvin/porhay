@@ -1210,6 +1210,14 @@ ul { margin: 0; padding: 0; list-style: none; }
 .form__thanks-title { margin: 0; font-size: 28px; line-height: 1.25; font-weight: 700; color: var(--ink); }
 .form__thanks-text { margin: 14px 0 0; font-size: 18px; line-height: 1.35; font-weight: 700; color: var(--teal); }
 
+/* Сообщение об ошибке отправки (расширенная аналитика, 25.09.2026) — тот же
+   приём, что у .finetext--note (цвет --plum на предупреждающий текст), форма
+   при этом не прячется и остаётся заполненной. [hidden] отдельно — та же
+   ловушка специфичности, что уже чинили у .form/.mobile-menu: класс с своим
+   display перебивает атрибутный [hidden] без явного правила. */
+.form__error { margin: 0; font-size: 16px; line-height: 1.4; font-weight: 700; color: var(--plum); text-align: center; }
+.form__error[hidden] { display: none; }
+
 /* --- Баннер согласия на cookie -------------------------------------------- */
 /* Карточка внизу слева, а не во всю ширину — чтобы не перекрывать плавающую
    кнопку связи в правом нижнем углу (.float). Группа B аудита, в оригинале
