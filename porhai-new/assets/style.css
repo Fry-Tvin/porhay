@@ -545,25 +545,34 @@ ul { margin: 0; padding: 0; list-style: none; }
   font-weight: 400;
   color: var(--ink);
 }
-.tariff__note {
+/* note/price/more сидят в общей обёртке .tariff__stack, а не по своим
+   фиксированным top — иначе двухстрочная заметка (у «Loft Box» текст
+   длиннее, чем у White Room/Комбо+) заезжает на цену: раньше top у price
+   (424px) был всего на 31px ниже top у note, что хватает только на одну
+   строку note (21,6px). Обёртка задаёт исходную позицию (393px, как и было
+   у note), а price/more просто идут по потоку следом с тем же зазором,
+   что и раньше при однострочной заметке — для White Room и Комбо+ пиксель
+   в пиксель то же место, для Loft Box цена и «Подробнее» просто опускаются
+   на высоту второй строки. */
+.tariff__stack {
   position: absolute;
   top: 393px; left: 18px; right: 18px;
+}
+.tariff__note {
   font-size: 18px;
   line-height: 1.2;
   font-weight: 400;
   color: var(--ink);
 }
 .tariff__price {
-  position: absolute;
-  top: 424px; left: 18px; right: 18px;
+  margin-top: 9px;
   font-size: 18px;
   line-height: 1.2;
   font-weight: 400;
   color: var(--ink);
 }
 .tariff__more {
-  position: absolute;
-  top: 469px; left: 18px;
+  margin-top: 23px;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -1321,7 +1330,7 @@ ul { margin: 0; padding: 0; list-style: none; }
      Кегли не трогали — риск разойтись с дизайн-системой, только геометрия. */
   .tariff__photo--big  { top: 16px; left: 5%; width: 46%; height: auto; aspect-ratio: 1; }
   .tariff__photo--small { top: 68px; left: 48%; width: 38%; height: auto; aspect-ratio: 1; }
-  .tariff__title, .tariff__desc, .tariff__note, .tariff__price, .tariff__more {
+  .tariff__title, .tariff__desc, .tariff__stack, .tariff__note, .tariff__price, .tariff__more {
     position: static;
     top: auto; left: auto; right: auto;
   }

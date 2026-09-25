@@ -598,6 +598,9 @@ def render_tariff_cards(cards):
     for n, t in enumerate(cards):
         note = '<p class="tariff__note">%s</p>' % t['note'] if t['note'] else ''
         price = '<p class="tariff__price">%s</p>' % t['price'] if t['price'] else ''
+        more = ('<a class="tariff__more" href="%s">Подробнее'
+                '<img src="%stild6461-6262-4664-a333-343239356263__arrow_7.svg" alt="" width="20" height="11"></a>'
+                % (t['href'], IMG))
         out.append(
             '<article class="tariff" style="background:%s" data-anim="zoomin" data-anim-dur="1" data-anim-delay="%.1f">'
             '<span class="tariff__frame tariff__frame--teal" data-swing="-10"></span>'
@@ -606,12 +609,10 @@ def render_tariff_cards(cards):
             '<span class="tariff__photo tariff__photo--small"><img src="%s%s" alt="" width="162" height="162"></span>'
             '<h3 class="tariff__title">%s</h3>'
             '<p class="tariff__desc">%s</p>'
-            '%s%s'
-            '<a class="tariff__more" href="%s">Подробнее'
-            '<img src="%stild6461-6262-4664-a333-343239356263__arrow_7.svg" alt="" width="20" height="11"></a>'
+            '<div class="tariff__stack">%s%s%s</div>'
             '</article>'
             % (t['color'], n * 0.1, IMG, t['big'], IMG, t['small'], t['title'], t['desc'],
-               note, price, t['href'], IMG))
+               note, price, more))
     return ''.join(out)
 
 
