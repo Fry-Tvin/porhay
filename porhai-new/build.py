@@ -15,6 +15,14 @@ import re
 from html import escape
 from urllib.parse import quote
 
+
+def alt_text(s):
+    """escape() для alt/aria-label из строк, где уже есть литеральный
+    &nbsp; для вставки в HTML как есть (RAZOVOE_FEATURES, DR_WHY, KP_WHY,
+    amenities и т.п.) — иначе escape() превращает "&nbsp;" в "&amp;nbsp;",
+    и в alt показывается сам код сущности, а не пробел."""
+    return escape(s.replace('&nbsp;', ' '))
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 # Картинки берём из assets/img — их готовит optimize_images.py:
@@ -414,8 +422,8 @@ def render_groups():
     """Сетка из 7 карточек-программ с попапами (GROUPS/POPUPS выше).
     До 24.08.2026 жила на главной, теперь — на отдельной /dlyagrupp
     (заказчик попросил свернуть блок на главной до одной ссылки)."""
-    icon = lambda img: (
-        '<img src="%s%s" alt="" width="134" height="134">' % (IMG, img) if img
+    icon = lambda img, title: (
+        '<img src="%s%s" alt="%s" width="134" height="134">' % (IMG, img, alt_text(title)) if img
         else '<span class="group__icon--empty"></span>')
     return ''.join(
         '<a class="group" href="#popup:%s" data-anim="zoomin" data-anim-dur="1.2" data-anim-delay="%.1f">'
@@ -424,7 +432,7 @@ def render_groups():
         '<span class="group__more">Подробнее'
         '<img src="%stild6461-6262-4664-a333-343239356263__arrow_7.svg" alt="" width="20" height="11"></span>'
         '</a>'
-        % (popup, n * 0.1, icon(img), title, IMG)
+        % (popup, n * 0.1, icon(img, title), title, IMG)
         for n, (img, popup, title) in enumerate(GROUPS))
 
 
@@ -479,11 +487,11 @@ def render_video(video_id=None, poster=None, label='о центре «Порха
         '<div class="video" data-video="%s" data-anim="zoomin" data-anim-dur="1">'
         '<button class="video__cover" type="button" '
         'aria-label="Смотреть видео %s">'
-        '<img class="video__poster" src="%s%s" alt="" loading="lazy" width="1680" height="1120">'
+        '<img class="video__poster" src="%s%s" alt="Видео %s" loading="lazy" width="1680" height="1120">'
         '<span class="video__play" aria-hidden="true">'
         '<svg viewBox="0 0 24 28" xmlns="http://www.w3.org/2000/svg">'
         '<path d="M23 12.3 2.5.4A2 2 0 0 0 0 2.1v23.8a2 2 0 0 0 2.5 1.7L23 15.7a2 2 0 0 0 0-3.4z"/>'
-        '</svg></span></button></div>' % (video_id, label, IMG, poster))
+        '</svg></span></button></div>' % (video_id, label, IMG, poster, escape(label)))
 
 # Галерея «Незабываемые эмоции» (rec560775553). В экспорте у каждого файла
 # есть ещё маленький blur-плейсхолдер "-__empty__..." для прогрессивной
@@ -639,13 +647,13 @@ def render_tariff_cards(cards):
             '<article class="tariff" style="background:%s" data-anim="zoomin" data-anim-dur="1" data-anim-delay="%.1f">'
             '<span class="tariff__frame tariff__frame--teal" data-swing="-10"></span>'
             '<span class="tariff__frame tariff__frame--yellow" data-swing="10"></span>'
-            '<span class="tariff__photo tariff__photo--big"><img src="%s%s" alt="" width="196" height="196"></span>'
+            '<span class="tariff__photo tariff__photo--big"><img src="%s%s" alt="%s" width="196" height="196"></span>'
             '<span class="tariff__photo tariff__photo--small"><img src="%s%s" alt="" width="162" height="162"></span>'
             '<h3 class="tariff__title">%s</h3>'
             '<p class="tariff__desc">%s</p>'
             '<div class="tariff__stack">%s%s%s</div>'
             '</article>'
-            % (t['color'], n * 0.1, IMG, t['big'], IMG, t['small'], t['title'], t['desc'],
+            % (t['color'], n * 0.1, IMG, t['big'], escape(t['title']), IMG, t['small'], t['title'], t['desc'],
                note, price, more))
     return ''.join(out)
 
@@ -663,7 +671,7 @@ def render_popups(popups):
     out = []
     for key, p in popups.items():
         gallery = ''.join(
-            '<img src="%s%s" alt="" loading="lazy" width="260" height="195">' % (IMG, img)
+            '<img src="%s%s" alt="%s" loading="lazy" width="260" height="195">' % (IMG, img, escape(p['title']))
             for img in p['images'])
         out.append(
             '<dialog class="popup" id="popup-%s" aria-label="%s">'
@@ -869,7 +877,7 @@ def render_footer():
         for text, href in FOOTER_LINKS)
     return (
         '<footer class="footer"><div class="stage">'
-        '<img class="footer__badge" src="%stild3563-3865-4136-b066-653462313065___1.svg" alt="" width="180" height="126">'
+        '<img class="footer__badge" src="%stild3563-3865-4136-b066-653462313065___1.svg" alt="Порхай" width="180" height="126">'
         '<p class="footer__title">Приходите повеселиться в&nbsp;«Порхай!»</p>'
         '<ul class="footer__nav">%s</ul>'
         '<p class="footer__copy">© Развлекательный центр «Порхай» &middot; '
@@ -1279,19 +1287,20 @@ def build():
                                    subtitle='Оставьте контакты — расскажем об условиях акции и подберём дату'))
 
     reviews = ''.join(
-        '<img src="%s%s" alt="" loading="lazy" width="260">' % (IMG, img)
-        for img in REVIEWS)
+        '<img src="%s%s" alt="Скриншот отзыва клиента о «Порхай», %d" loading="lazy" width="260">' % (IMG, img, n)
+        for n, img in enumerate(REVIEWS, 1))
 
     gallery = ''.join(
         '<div class="gallery__item gallery__item--%s">'
-        '<img src="%s%s" alt="" loading="lazy"></div>' % (size, IMG, img)
-        for img, size in GALLERY)
+        '<img src="%s%s" alt="Праздник в развлекательном центре «Порхай», фото %d" loading="lazy"></div>'
+        % (size, IMG, img, n)
+        for n, (img, size) in enumerate(GALLERY, 1))
 
     faq_ld = faq_jsonld()
 
     partners = ''.join(
         '<div class="partners__item">%s</div>' % (
-            '<img src="%s%s" alt="" loading="lazy" width="160">' % (IMG, img) if img
+            '<img src="%s%s" alt="%s" loading="lazy" width="160">' % (IMG, img, escape(PARTNER_NAME.get(img, name or ''))) if img
             else '<span class="partners__name">%s</span>' % name)
         for img, name in PARTNERS)
 
@@ -1553,7 +1562,7 @@ def build_privacy():
 
 <footer class="footer">
   <div class="stage">
-    <img class="footer__badge" src="{IMG}tild3563-3865-4136-b066-653462313065___1.svg" alt="" width="180" height="126">
+    <img class="footer__badge" src="{IMG}tild3563-3865-4136-b066-653462313065___1.svg" alt="Порхай" width="180" height="126">
     <p class="footer__title">Приходите повеселиться в&nbsp;«Порхай!»</p>
     <ul class="footer__nav">{footer_links}</ul>
     <p class="footer__copy">
@@ -2449,9 +2458,9 @@ def render_teaser(img, href, title, sub='Подробнее', item_id=None):
     поэтому теперь они собираются здесь."""
     return (
         '<a class="teasers__item"%s href="%s">'
-        '<img src="%s%s" alt="" loading="lazy" width="360" height="240">'
+        '<img src="%s%s" alt="%s" loading="lazy" width="360" height="240">'
         '<h3>%s</h3><p>%s</p></a>'
-        % ((' id="%s"' % item_id) if item_id else '', href, IMG, img, title, sub))
+        % ((' id="%s"' % item_id) if item_id else '', href, IMG, img, alt_text(title), title, sub))
 
 
 def render_checklist(items):
@@ -2478,9 +2487,9 @@ def build_razovoe():
     slider = render_slider(RAZOVOE_GALLERY, 'Разовое посещение «Порхай»')
 
     features = ''.join(
-        '<div class="features__item"><img src="%s%s" alt="" width="140" height="140">'
+        '<div class="features__item"><img src="%s%s" alt="%s" width="140" height="140">'
         '<h3>%s</h3>%s</div>'
-        % (IMG, img, title, ('<p>%s</p>' % descr) if descr else '')
+        % (IMG, img, alt_text(title), title, ('<p>%s</p>' % descr) if descr else '')
         for img, title, descr in RAZOVOE_FEATURES)
 
     price_rows = ''.join(
@@ -2539,7 +2548,7 @@ def build_razovoe():
           <polygon points="40,31.7 40,4 0,4 0,0 44,0 44,22.3 67.2,0 1200,0 1200,4 68.8,4"></polygon>
         </svg>
         <div class="quote__author">
-          <img src="{IMG}tild3566-3138-4961-a631-363663616362__noroot.webp" alt="" width="80" height="80">
+          <img src="{IMG}tild3566-3138-4961-a631-363663616362__noroot.webp" alt="Порхай" width="80" height="80">
           <p class="quote__author-name">«Порхай»</p>
           <p class="quote__author-role">Развлекательный центр</p>
         </div>
@@ -2811,9 +2820,9 @@ def render_rental_page(slug):
     p = RENTAL_PAGES[slug]
 
     amenities = ''.join(
-        '<div class="amenities__item"><img src="%s%s" alt="" width="60" height="60">'
+        '<div class="amenities__item"><img src="%s%s" alt="%s" width="60" height="60">'
         '<h3>%s</h3>%s</div>'
-        % (IMG, img, title, ('<p>%s</p>' % descr) if descr else '')
+        % (IMG, img, alt_text(title), title, ('<p>%s</p>' % descr) if descr else '')
         for img, title, descr in p['amenities'])
 
     gallery = render_slider(p['gallery'], p['title'])
@@ -2824,7 +2833,7 @@ def render_rental_page(slug):
 
     partners = ''.join(
         '<div class="partners__item">%s</div>' % (
-            '<img src="%s%s" alt="" loading="lazy" width="160">' % (IMG, img) if img
+            '<img src="%s%s" alt="%s" loading="lazy" width="160">' % (IMG, img, escape(PARTNER_NAME.get(img, name or ''))) if img
             else '<span class="partners__name">%s</span>' % name)
         for img, name in PARTNERS)
 
@@ -2834,8 +2843,8 @@ def render_rental_page(slug):
         render_teaser(img, href, title) for img, href, title in RENTAL_TEASERS)
 
     reviews = ''.join(
-        '<img src="%s%s" alt="" loading="lazy" width="260">' % (IMG, img)
-        for img in REVIEWS)
+        '<img src="%s%s" alt="Скриншот отзыва клиента о «Порхай», %d" loading="lazy" width="260">' % (IMG, img, n)
+        for n, img in enumerate(REVIEWS, 1))
 
     popups = render_form_popup('header') + render_form_popup(slug)
     faq_ld = faq_jsonld()
@@ -2872,7 +2881,7 @@ def render_rental_page(slug):
 
 <main>
   <section class="cover-hero" style="background-image:url({IMG}{p['cover']})">
-    <img class="cover-hero__avatar" src="{IMG}{p['avatar']}" alt="">
+    <img class="cover-hero__avatar" src="{IMG}{p['avatar']}" alt="{escape(p['title'])}">
   </section>
   <div class="cover-hero__content">
     <h1 class="cover-hero__title">{p['title']}</h1>
@@ -3177,8 +3186,8 @@ def build_denrozhdeniya():
     gallery = render_slider(DR_GALLERY, 'День рождения «под ключ» в «Порхай»')
 
     why = ''.join(
-        '<div class="features__item"><img src="%s%s" alt="" width="140" height="140">'
-        '<h3>%s</h3></div>' % (IMG, img, title) for img, title in DR_WHY)
+        '<div class="features__item"><img src="%s%s" alt="%s" width="140" height="140">'
+        '<h3>%s</h3></div>' % (IMG, img, alt_text(title), title) for img, title in DR_WHY)
 
     plans = ''.join(
         '<div class="plan plan--%s%s" id="plan-%s">%s<h3 class="plan__title">%s</h3>'
@@ -3204,13 +3213,13 @@ def build_denrozhdeniya():
 
     partners = ''.join(
         '<div class="partners__item">%s</div>' % (
-            '<img src="%s%s" alt="" loading="lazy" width="160">' % (IMG, img) if img
+            '<img src="%s%s" alt="%s" loading="lazy" width="160">' % (IMG, img, escape(PARTNER_NAME.get(img, name or ''))) if img
             else '<span class="partners__name">%s</span>' % name)
         for img, name in PARTNERS)
 
     reviews = ''.join(
-        '<img src="%s%s" alt="" loading="lazy" width="260">' % (IMG, img)
-        for img in REVIEWS)
+        '<img src="%s%s" alt="Скриншот отзыва клиента о «Порхай», %d" loading="lazy" width="260">' % (IMG, img, n)
+        for n, img in enumerate(REVIEWS, 1))
 
     popups = render_form_popup('header') + render_form_popup('denrozhdeniya')
     faq_ld = faq_jsonld()
@@ -3406,19 +3415,19 @@ def build_vypusknye():
     checklist = render_checklist(VP_CHECKLIST)
     gallery = render_slider(VP_GALLERY, 'Выпускной «под ключ» в «Порхай»')
     why = ''.join(
-        '<div class="features__item"><img src="%s%s" alt="" width="140" height="140">'
-        '<h3>%s</h3></div>' % (IMG, img, title) for img, title in DR_WHY)
+        '<div class="features__item"><img src="%s%s" alt="%s" width="140" height="140">'
+        '<h3>%s</h3></div>' % (IMG, img, alt_text(title), title) for img, title in DR_WHY)
     price_groups = render_price_groups(VP_PRICE_GROUPS)
 
     partners = ''.join(
         '<div class="partners__item">%s</div>' % (
-            '<img src="%s%s" alt="" loading="lazy" width="160">' % (IMG, img) if img
+            '<img src="%s%s" alt="%s" loading="lazy" width="160">' % (IMG, img, escape(PARTNER_NAME.get(img, name or ''))) if img
             else '<span class="partners__name">%s</span>' % name)
         for img, name in PARTNERS)
 
     reviews = ''.join(
-        '<img src="%s%s" alt="" loading="lazy" width="260">' % (IMG, img)
-        for img in REVIEWS)
+        '<img src="%s%s" alt="Скриншот отзыва клиента о «Порхай», %d" loading="lazy" width="260">' % (IMG, img, n)
+        for n, img in enumerate(REVIEWS, 1))
 
     popups = render_form_popup('header') + render_form_popup('vypusknye')
     faq_ld = faq_jsonld()
@@ -3633,18 +3642,18 @@ def build_korporativ():
     gallery = render_slider(KP_GALLERY, 'Корпоративные мероприятия для семей сотрудников в «Порхай»')
 
     why = ''.join(
-        '<div class="features__item"><img src="%s%s" alt="" width="140" height="140">'
-        '<h3>%s</h3></div>' % (IMG, img, title) for img, title in KP_WHY)
+        '<div class="features__item"><img src="%s%s" alt="%s" width="140" height="140">'
+        '<h3>%s</h3></div>' % (IMG, img, alt_text(title), title) for img, title in KP_WHY)
 
     partners = ''.join(
         '<div class="partners__item">%s</div>' % (
-            '<img src="%s%s" alt="" loading="lazy" width="160">' % (IMG, img) if img
+            '<img src="%s%s" alt="%s" loading="lazy" width="160">' % (IMG, img, escape(PARTNER_NAME.get(img, name or ''))) if img
             else '<span class="partners__name">%s</span>' % name)
         for img, name in PARTNERS)
 
     reviews = ''.join(
-        '<img src="%s%s" alt="" loading="lazy" width="260">' % (IMG, img)
-        for img in REVIEWS)
+        '<img src="%s%s" alt="Скриншот отзыва клиента о «Порхай», %d" loading="lazy" width="260">' % (IMG, img, n)
+        for n, img in enumerate(REVIEWS, 1))
 
     popups = render_form_popup('header') + render_form_popup('korporativ')
     faq_ld = faq_jsonld()
@@ -3789,6 +3798,10 @@ PARTNER_LOGO = {
     'MaxiBoom': 'tild6366-3935-4136-b063-646232626366__frame_14.webp',
     'Пицца Просто Находка': 'tild3937-3166-4035-b338-346233316366__frame_12.webp',
 }
+# Обратный словарь для alt у логотипов партнёров на главной и страницах
+# аренды залов (там PARTNERS хранит только файл, без имени) — те же 6
+# файлов, что и в PARTNER_LOGO выше.
+PARTNER_NAME = {v: k for k, v in PARTNER_LOGO.items()}
 
 PARTNER_LIST = [
     ('Пингвин', 'Детские шоу, аниматоры, ростовые куклы', '−10%', 'https://t.me/s/pingvin_vl'),
@@ -3883,8 +3896,8 @@ def build_dlyagrupp():
     gallery = render_slider(GF_GALLERY, 'Живые фото с мероприятий для групп «Порхай»')
 
     reviews = ''.join(
-        '<img src="%s%s" alt="" loading="lazy" width="260">' % (IMG, img)
-        for img in REVIEWS)
+        '<img src="%s%s" alt="Скриншот отзыва клиента о «Порхай», %d" loading="lazy" width="260">' % (IMG, img, n)
+        for n, img in enumerate(REVIEWS, 1))
 
     # Только те попапы, до которых есть чем дойти: карточки «Уэнсдей» и
     # «CashFlow» убраны из GROUPS 24.08.2026, а их <dialog> продолжали
@@ -3994,7 +4007,7 @@ def build_dlyagrupp():
           <polygon points="40,31.7 40,4 0,4 0,0 44,0 44,22.3 67.2,0 1200,0 1200,4 68.8,4"></polygon>
         </svg>
         <div class="quote__author">
-          <img src="{IMG}tild3566-3138-4961-a631-363663616362__noroot.webp" alt="" width="80" height="80">
+          <img src="{IMG}tild3566-3138-4961-a631-363663616362__noroot.webp" alt="Порхай" width="80" height="80">
           <p class="quote__author-name">Отзыв клиента</p>
           <p class="quote__author-role">Корпоративное мероприятие в «Порхай»</p>
         </div>
@@ -4140,8 +4153,8 @@ def build_torty():
         for img, name in CAKES)
 
     fillings = ''.join(
-        '<div class="fillings__item"><img src="%s%s" alt="" loading="lazy" width="260" height="140">'
-        '<h3>%s</h3><p>%s</p></div>' % (IMG, img, name, descr)
+        '<div class="fillings__item"><img src="%s%s" alt="%s" loading="lazy" width="260" height="140">'
+        '<h3>%s</h3><p>%s</p></div>' % (IMG, img, escape(name), name, descr)
         for img, name, descr in FILLINGS)
 
     desserts = ''.join(
@@ -4667,7 +4680,7 @@ def build_not_found():
 <main>
   <section class="cover cover--full" style="background-image:url({IMG}{NOT_FOUND_COVER})">
     <div class="cover__inner">
-      <img class="cover__logo" src="{IMG}{NOT_FOUND_LOGO}" alt="">
+      <img class="cover__logo" src="{IMG}{NOT_FOUND_LOGO}" alt="Порхай">
       <h1 class="cover__title">Упс! Что-то пошло не&nbsp;так, этой страницы не&nbsp;существует</h1>
       <p class="cover__descr">Но&nbsp;на&nbsp;нашем сайте еще много интересного ;)</p>
       <a class="btn btn--yellow" href="/">Перейти на главную</a>
