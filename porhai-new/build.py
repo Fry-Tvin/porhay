@@ -21,6 +21,40 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 # растр пережат в WebP, SVG скопированы как есть.
 IMG = 'assets/img/'
 
+# --- SEO: канонические адреса, Open Graph, sitemap.xml, robots.txt --------
+# Диагностика 25.09.2026: у сайта не было ни canonical, ни og:*-тегов, ни
+# sitemap.xml/robots.txt — GitHub Pages без .html отдаёт страницу и по
+# чистому адресу (/razovoe), и по адресу с расширением (/razovoe.html) без
+# редиректа между ними, а без canonical это два разных URL с одинаковым
+# содержимым для поисковика. SITE_URL — punycode-форма порхай.рф (то же
+# значение, что и в CNAME и в адресе leads-бота), чтобы не зависеть от
+# поддержки кириллических доменов в конкретном инструменте.
+SITE_URL = 'https://xn--80asndg4a.xn--p1ai'
+# Фото по умолчанию для og:image/twitter:image — то же, что в hero на
+# главной, других специально подготовленных «социальных» картинок 1200×630
+# в проекте пока нет.
+SEO_IMAGE = IMG + 'tild3463-6130-4836-a539-636430646232__vector.webp'
+
+
+def seo_head(path, title, descr, image=None):
+    """canonical + Open Graph/Twitter — вызывается на каждой индексируемой
+    странице. title/descr берутся из уже согласованных <title>/description,
+    новый текст здесь не придумывается. path — чистый адрес без расширения
+    ('' для главной, иначе '/slug')."""
+    url = SITE_URL + (path or '/')
+    img = SITE_URL + '/' + (image or SEO_IMAGE)
+    return (
+        f'<link rel="canonical" href="{url}">\n'
+        f'<meta property="og:type" content="website">\n'
+        f'<meta property="og:locale" content="ru_RU">\n'
+        f'<meta property="og:site_name" content="Порхай">\n'
+        f'<meta property="og:url" content="{url}">\n'
+        f'<meta property="og:title" content="{title}">\n'
+        f'<meta property="og:description" content="{descr}">\n'
+        f'<meta property="og:image" content="{img}">\n'
+        f'<meta name="twitter:card" content="summary_large_image">'
+    )
+
 # Яндекс.Метрика (группа A аудита — «Цели Метрики… при подключении
 # аналитики», счётчик прислан заказчиком 03.09.2026). Ставится сразу
 # после <head>, как рекомендует Яндекс — до подключения style.css, чтобы
@@ -787,8 +821,12 @@ def faq_jsonld(faq=None):
 BUSINESS_LD = json.dumps({
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
+    '@id': SITE_URL + '/',
     'name': 'Порхай',
+    'url': SITE_URL + '/',
+    'image': SITE_URL + '/' + SEO_IMAGE,
     'telephone': PHONE,
+    'priceRange': '500–96 000 ₽',
     'address': {
         '@type': 'PostalAddress',
         'streetAddress': 'ул. Державина, 23',
@@ -796,6 +834,7 @@ BUSINESS_LD = json.dumps({
         'addressCountry': 'RU',
     },
     'openingHours': 'Mo-Su 10:00-21:00',
+    'sameAs': [url for _, url, _ in SOCIALS],
 }, ensure_ascii=False)
 
 
@@ -1264,6 +1303,7 @@ def build():
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Развлекательный центр «Порхай»</title>
 <meta name="description" content="Проведение различных мероприятий: от дней рождений и выпускных до взрослых корпоративов и романтических свиданий, во Владивостоке">
+{seo_head('', 'Развлекательный центр «Порхай»', 'Проведение различных мероприятий: от дней рождений и выпускных до взрослых корпоративов и романтических свиданий, во Владивостоке')}
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
@@ -2297,6 +2337,7 @@ def build_pravila():
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Правила посещения — Порхай</title>
 <meta name="description" content="Правила посещения развлекательного центра «Порхай»: безопасность, что взять с собой, парковка и видеонаблюдение.">
+{seo_head('/pravila', 'Правила посещения — Порхай', 'Правила посещения развлекательного центра «Порхай»: безопасность, что взять с собой, парковка и видеонаблюдение.')}
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
@@ -2456,6 +2497,7 @@ def build_razovoe():
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Разовое посещение развлекательного центра «Порхай»</title>
 <meta name="description" content="Разовое посещение центра «Порхай» во Владивостоке — 3 бассейна с шариками, 15 фотозон, ростовые фигуры и волшебная комната с фонариками.">
+{seo_head('/razovoe', 'Разовое посещение развлекательного центра «Порхай»', 'Разовое посещение центра «Порхай» во Владивостоке — 3 бассейна с шариками, 15 фотозон, ростовые фигуры и волшебная комната с фонариками.')}
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
@@ -2820,6 +2862,7 @@ def render_rental_page(slug):
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{p['meta_title']}</title>
 <meta name="description" content="{p['meta_descr']}">
+{seo_head('/' + slug, p['meta_title'], p['meta_descr'], image=IMG + p['cover'])}
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
@@ -3180,6 +3223,7 @@ def build_denrozhdeniya():
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>День рождения «ПОД КЛЮЧ» в развлекательном центре «Порхай»</title>
 <meta name="description" content="Мы собрали всё необходимое для вашего дня рождения, вам останется только наполнить праздник угощениями для гостей.">
+{seo_head('/denrozhdeniya', 'День рождения «ПОД КЛЮЧ» в развлекательном центре «Порхай»', 'Мы собрали всё необходимое для вашего дня рождения, вам останется только наполнить праздник угощениями для гостей.')}
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
@@ -3387,6 +3431,7 @@ def build_vypusknye():
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Выпускные «ПОД КЛЮЧ» в развлекательном центре «Порхай»</title>
 <meta name="description" content="Мы подготовили для вас идеальный пакет для выпускного, чтобы ваш праздник прошёл легко, без суеты и лишний траты времени на организацию.">
+{seo_head('/vypusknye', 'Выпускные «ПОД КЛЮЧ» в развлекательном центре «Порхай»', 'Мы подготовили для вас идеальный пакет для выпускного, чтобы ваш праздник прошёл легко, без суеты и лишний траты времени на организацию.')}
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
@@ -3612,6 +3657,7 @@ def build_korporativ():
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Корпоративные мероприятия для семей сотрудников в развлекательном центре «Порхай»</title>
 <meta name="description" content="Организуем корпоративные мероприятия для ваших сотрудников и их детей — от идеи до исполнения: праздничные даты, тимбилдинги, стратсессии и неформальные встречи на площадке до 50 человек.">
+{seo_head('/korporativ', 'Корпоративные мероприятия для семей сотрудников в развлекательном центре «Порхай»', 'Организуем корпоративные мероприятия для ваших сотрудников и их детей — от идеи до исполнения: праздничные даты, тимбилдинги, стратсессии и неформальные встречи на площадке до 50 человек.')}
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
@@ -3857,6 +3903,7 @@ def build_dlyagrupp():
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Для организованных групп — развлекательный центр «Порхай»</title>
 <meta name="description" content="Школы, лагеря, секции и корпоративные клиенты — организуем разовый визит, визит с программой или праздник под ключ для группы от 15 человек во Владивостоке.">
+{seo_head('/dlyagrupp', 'Для организованных групп — развлекательный центр «Порхай»', 'Школы, лагеря, секции и корпоративные клиенты — организуем разовый визит, визит с программой или праздник под ключ для группы от 15 человек во Владивостоке.')}
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
@@ -4114,6 +4161,7 @@ def build_torty():
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Торты на праздник — развлекательный центр «Порхай»</title>
 <meta name="description" content="{len(CAKES)} готовых дизайнов тортов, начинки на выбор и десерты на праздник в «Порхай»: кейк-попсы и капкейки.">
+{seo_head('/torty', 'Торты на праздник — развлекательный центр «Порхай»', f'{len(CAKES)} готовых дизайнов тортов, начинки на выбор и десерты на праздник в «Порхай»: кейк-попсы и капкейки.')}
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
@@ -4221,6 +4269,7 @@ def build_pinyaty():
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Пиньяты на праздник — развлекательный центр «Порхай»</title>
 <meta name="description" content="Пиньяты с наполнением на день рождения в «Порхай»: {len(PINYATY_GALLERY)} готовых дизайнов.">
+{seo_head('/pinyaty', 'Пиньяты на праздник — развлекательный центр «Порхай»', f'Пиньяты с наполнением на день рождения в «Порхай»: {len(PINYATY_GALLERY)} готовых дизайнов.')}
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
@@ -4297,6 +4346,7 @@ def build_partner():
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Скидки от партнёров развлекательного центра «Порхай»</title>
 <meta name="description" content="Скидки от партнёров развлекательного центра «Порхай» при аренде залов во Владивостоке.">
+{seo_head('/partner', 'Скидки от партнёров развлекательного центра «Порхай»', 'Скидки от партнёров развлекательного центра «Порхай» при аренде залов во Владивостоке.')}
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
@@ -4643,6 +4693,54 @@ def build_not_found():
     print('404.html собран:', len(html), 'байт')
 
 
+# Индексируемые страницы сайта — те же адреса, что и в FOOTER_LINKS, минус
+# якоря на секции (#faq и т.п.) и минус страницы с noindex (privacy, оферты,
+# podarok, bonus, 404). Отдельный список, а не парсинг FOOTER_LINKS, чтобы
+# явно видеть, что реально уходит в sitemap.
+SITEMAP_PAGES = [
+    '', '/razovoe', '/whiteroom', '/loftbox', '/combo',
+    '/denrozhdeniya', '/vypusknye', '/korporativ', '/dlyagrupp',
+    '/partner', '/torty', '/pinyaty', '/pravila',
+]
+
+
+def build_sitemap():
+    """sitemap.xml — до 25.09.2026 на сайте не было ни его, ни robots.txt:
+    поисковики находили страницы только через внутренние ссылки, без явного
+    списка адресов и явной точки входа для обхода. lastmod не проставляем —
+    честнее совсем не заявлять дату, чем подделывать её на каждой сборке."""
+    urls = ''.join(
+        '<url><loc>%s%s</loc></url>\n' % (SITE_URL, path or '/')
+        for path in SITEMAP_PAGES)
+    xml = ('<?xml version="1.0" encoding="UTF-8"?>\n'
+           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+           + urls + '</urlset>\n')
+    path = os.path.join(HERE, 'sitemap.xml')
+    with open(path, 'w', encoding='utf-8') as f:
+        f.write(xml)
+    print('sitemap.xml собран:', len(SITEMAP_PAGES), 'адресов')
+
+
+def build_robots():
+    """robots.txt — открыт для всех, явно закрыты служебные noindex-страницы
+    (не обязательно для индексации, раз там уже есть meta robots, но экономит
+    краулерам заход) и указывает на sitemap.xml."""
+    txt = (
+        'User-agent: *\n'
+        'Disallow: /privacy.html\n'
+        'Disallow: /oferta.html\n'
+        'Disallow: /oferta-vypusknye.html\n'
+        'Disallow: /podarok.html\n'
+        'Disallow: /bonus.html\n'
+        '\n'
+        'Sitemap: %s/sitemap.xml\n' % SITE_URL
+    )
+    path = os.path.join(HERE, 'robots.txt')
+    with open(path, 'w', encoding='utf-8') as f:
+        f.write(txt)
+    print('robots.txt собран')
+
+
 def fix_cross_page_anchors():
     """Чинит ссылки меню и подвала на секции, которых на этой странице нет.
 
@@ -4698,4 +4796,6 @@ if __name__ == '__main__':
     build_pinyaty()
     build_podarok()
     build_not_found()
+    build_sitemap()
+    build_robots()
     fix_cross_page_anchors()

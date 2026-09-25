@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /privacy.html
+Disallow: /oferta.html
+Disallow: /oferta-vypusknye.html
+Disallow: /podarok.html
+Disallow: /bonus.html
+
+Sitemap: https://xn--80asndg4a.xn--p1ai/sitemap.xml
