@@ -1,6 +1,19 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=112256802', 'ym');
+
+    ym(112256802, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/112256802" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Бонус на день рождения — Порхай</title>
@@ -157,6 +170,7 @@
             <span>Согласен(на) на <a href="https://порхай.рф/privacy" target="_blank" rel="noopener">обработку персональных данных</a></span>
           </label>
           <p class="bonus__error" id="phoneError" hidden>Укажите номер телефона и подтвердите согласие</p>
+          <p class="bonus__error" id="submitError" hidden>Не удалось отправить заявку. Попробуйте ещё раз или свяжитесь с нами по телефону/WhatsApp.</p>
           <button type="button" class="btn btn--yellow" id="phoneSubmit">Закрепить бонус</button>
         </div>
       </form>
@@ -181,6 +195,47 @@
 (function(){
   var LEAD_URL = 'https://leads.xn--80asndg4a.xn--p1ai/lead';
   var STORAGE_KEY = 'porhayBonusDraft';
+  var LEAD_TYPE = 'promo';
+  var FORM_KEY = 'bonus-picker';
+  var PLACEMENT = 'bonus';
+
+  // Расширенная аналитика Метрики (25.09.2026) — тот же приём, что и в общем
+  // PAGE_SCRIPT остального сайта (build.py), продублирован здесь: у bonus.html
+  // нет build.py-шаблона, страница ведётся руками.
+  function trackGoal(name, params){
+    try{ if(window.ym) ym(112256802, 'reachGoal', name, params || {}); }catch(e){}
+  }
+  function getClientId(callback){
+    var done = false;
+    function finish(id){ if(done) return; done = true; callback(id || ''); }
+    try{
+      if(window.ym){ ym(112256802, 'getClientID', finish); setTimeout(function(){ finish(''); }, 800); }
+      else finish('');
+    }catch(e){ finish(''); }
+  }
+  (function captureAttribution(){
+    try{
+      if(sessionStorage.getItem('attribution')) return;
+      var params = new URLSearchParams(location.search);
+      var attribution = {}, has = false;
+      ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','yclid'].forEach(function(k){
+        var v = params.get(k);
+        if(v){ attribution[k] = v; has = true; }
+      });
+      var ref = document.referrer;
+      if(ref && ref.indexOf(location.origin) !== 0){ attribution.referrer = ref; has = true; }
+      if(has) sessionStorage.setItem('attribution', JSON.stringify(attribution));
+    }catch(e){}
+  })();
+  function getAttribution(){
+    try{ return JSON.parse(sessionStorage.getItem('attribution') || '{}'); }catch(e){ return {}; }
+  }
+  var formStarted = false;
+  function trackFormStart(){
+    if(formStarted) return;
+    formStarted = true;
+    trackGoal('form_start', { page: location.pathname, lead_type: LEAD_TYPE, form: FORM_KEY, placement: PLACEMENT });
+  }
 
   var state = { bonus:null, bonusLabel:null, date:null, phone:null, consent:false, step:'bonus' };
 
@@ -197,6 +252,7 @@
   var phoneInput = document.getElementById('bonusPhone');
   var consentInput = document.getElementById('bonusConsent');
   var phoneError = document.getElementById('phoneError');
+  var submitError = document.getElementById('submitError');
   var submitBtn = document.getElementById('phoneSubmit');
 
   function fmtDate(iso){
@@ -245,7 +301,9 @@
     btn.addEventListener('click', function(){
       state.bonus = btn.getAttribute('data-value');
       state.bonusLabel = btn.getAttribute('data-label');
+      trackGoal('cta_click', { page: location.pathname, lead_type: LEAD_TYPE, form: FORM_KEY, placement: PLACEMENT, cta_text: state.bonusLabel });
       showStep('date');
+      trackGoal('form_open', { page: location.pathname, lead_type: LEAD_TYPE, form: FORM_KEY, placement: PLACEMENT });
     });
   });
 
@@ -266,8 +324,8 @@
     showStep('phone');
   });
 
-  dateInput.addEventListener('change', function(){ state.date = dateInput.value; saveDraft(); });
-  phoneInput.addEventListener('input', function(){ state.phone = phoneInput.value; saveDraft(); });
+  dateInput.addEventListener('change', function(){ state.date = dateInput.value; saveDraft(); trackFormStart(); });
+  phoneInput.addEventListener('input', function(){ state.phone = phoneInput.value; saveDraft(); trackFormStart(); });
   consentInput.addEventListener('change', function(){ state.consent = consentInput.checked; saveDraft(); });
 
   summary.addEventListener('click', function(e){
@@ -292,6 +350,7 @@
       return;
     }
     phoneError.hidden = true;
+    submitError.hidden = true;
     state.phone = phone;
     state.consent = true;
     saveDraft();
@@ -299,25 +358,43 @@
     submitBtn.disabled = true;
     submitBtn.textContent = 'Отправляем…';
 
-    fetchWithTimeout(LEAD_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        phone: state.phone,
-        message: 'Бонус: ' + state.bonusLabel + '. Дата рождения ребёнка: ' + fmtDate(state.date) + '.',
-        form: 'bonus-picker',
-        source: location.href,
-        website: document.querySelector('.bonus__hp').value
-      })
-    }, 8000).catch(function(){ /* лог уйдёт в leads.jsonl на сервере, даже если Telegram недоступен; таймаут не даёт кнопке зависнуть */ })
-      .then(function(){
+    var goalParams = { page: location.pathname, lead_type: LEAD_TYPE, form: FORM_KEY, placement: PLACEMENT };
+
+    getClientId(function(clientId){
+      var a = getAttribution();
+      fetchWithTimeout(LEAD_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          phone: state.phone,
+          message: 'Бонус: ' + state.bonusLabel + '. Дата рождения ребёнка: ' + fmtDate(state.date) + '.',
+          form: FORM_KEY,
+          lead_type: LEAD_TYPE,
+          placement: PLACEMENT,
+          source: location.href,
+          website: document.querySelector('.bonus__hp').value,
+          metrica_client_id: clientId,
+          page: location.pathname,
+          utm_source: a.utm_source || '', utm_medium: a.utm_medium || '', utm_campaign: a.utm_campaign || '',
+          utm_content: a.utm_content || '', utm_term: a.utm_term || '', yclid: a.yclid || '', referrer: a.referrer || ''
+        })
+      }, 8000).then(function(res){
+        if(!res.ok) throw new Error('http_' + res.status);
+        trackGoal('lead_submit', goalParams);
         document.getElementById('doneText').textContent =
           'Бонус «' + state.bonusLabel + '» ко дню рождения вашего ребёнка (' + fmtDate(state.date) + ') закреплён за вами. Мы свяжемся по номеру ' + state.phone + ' для подтверждения.';
         showStep('done');
         renderSummary();
         submitBtn.disabled = false;
         submitBtn.textContent = 'Закрепить бонус';
+      })['catch'](function(err){
+        var errorType = (err && err.name === 'AbortError') ? 'timeout' : ((err && err.message) || 'network_error');
+        trackGoal('lead_error', Object.assign({ error_type: errorType }, goalParams));
+        submitError.hidden = false;
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Закрепить бонус';
       });
+    });
   });
 
   // Восстановление черновика после обновления страницы

@@ -720,6 +720,8 @@ def render_form_popup(popup_id, title='Оставьте свои контакт�
         '<span>Согласен(-на) на <a href="/privacy.html" target="_blank">обработку персональных данных</a></span></label>'
         '<label class="form__consent"><input type="checkbox" name="marketing">'
         '<span>Хочу получать новости, акции и приглашения на праздники</span></label>'
+        '<p class="form__error" data-form-error hidden>Не удалось отправить заявку. '
+        'Попробуйте ещё раз или свяжитесь с нами по телефону/WhatsApp.</p>'
         '<button class="btn btn--yellow form__submit" type="submit">Отправить</button>'
         '</form>'
         '<div class="form__thanks" data-form-thanks hidden>'
@@ -779,7 +781,7 @@ def render_top_chrome():
         '<a class="header__logo" href="/" aria-label="Порхай — на главную">'
         '<img src="%stild3166-3639-4666-b462-333535343563__photo.svg" alt="Порхай" width="150" height="46"></a>'
         '<nav class="nav" aria-label="Основная навигация"><ul class="nav__list">%s</ul></nav>'
-        '<a class="btn btn--teal header__cta" href="#popup:header">Забронировать зал</a>'
+        '<a class="btn btn--teal header__cta" href="#popup:header" data-analytics-placement="header">Забронировать зал</a>'
         '<button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mobile-menu">'
         '<span></span><span></span><span></span></button>'
         '</div></header>\n\n'
@@ -850,7 +852,8 @@ def render_contact_section():
     """Контакты (rec560792713) — один и тот же блок на всех страницах:
     телефон, часы, адрес, соцсети, карта Яндекса по адресу."""
     socials = ''.join(
-        '<a class="contact__social" href="%s" target="_blank" rel="nofollow" aria-label="%s">'
+        '<a class="contact__social" href="%s" target="_blank" rel="nofollow" aria-label="%s" '
+        'data-analytics-placement="contacts">'
         '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">%s</svg></a>'
         % (url, name, svg) for name, url, svg in SOCIALS)
     address_q = quote(ADDRESS)
@@ -859,7 +862,7 @@ def render_contact_section():
         '<div class="stage"><div class="contact">'
         '<div class="contact__info" data-anim="zoomin" data-anim-dur="1">'
         '<h2 class="contact__title">Контакты</h2>'
-        '<p class="contact__text"><a href="%s">%s</a><br>%s<br>%s</p>'
+        '<p class="contact__text"><a href="%s" data-analytics-placement="contacts">%s</a><br>%s<br>%s</p>'
         '<div class="contact__socials">%s</div>'
         '</div>'
         '<div class="contact__map" data-anim="zoomin" data-anim-dur="1" data-anim-delay=".2">'
@@ -889,7 +892,8 @@ def render_footer():
 
 def render_float_button():
     float_links = ''.join(
-        '<a class="float__link" href="%s" target="_blank" rel="nofollow noopener noreferrer" aria-label="%s">'
+        '<a class="float__link" href="%s" target="_blank" rel="nofollow noopener noreferrer" '
+        'aria-label="%s" data-analytics-placement="floating">'
         '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">%s</svg></a>'
         % (href, label, svg) for href, label, svg in FLOAT_LINKS)
     return (
@@ -917,24 +921,109 @@ PAGE_SCRIPT = """<script>
   var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   var header = document.getElementById('header');
 
-  // 0. Отправка заявки на бэкенд (leads.порхай.рф -> porhay-leads-bot -> Telegram + amoCRM).
-  //    Fire-and-forget: сеть/CORS не должны ломать UI, «Спасибо» показывается
-  //    независимо от результата. Домен в punycode — ровно как server_name в nginx.
-  function sendLead(form, dlgId) {
-    var data = new FormData(form);
+  // 0a. Единый безопасный вызов целей Метрики. Ошибка/отсутствие ym не должна
+  //     ронять ни аналитику, ни отправку заявки. Персональные данные (имя,
+  //     телефон) сюда не передаём никогда.
+  function trackGoal(name, params) {
     try {
+      if (window.ym) ym(112256802, 'reachGoal', name, params || {});
+    } catch (err) {}
+  }
+
+  // 0b. ClientID Метрики — нужен для сквозной аналитики в amoCRM. Не должен
+  //     задерживать отправку заявки: если за 800мс не ответил (ym не успел
+  //     загрузиться, блокировщик и т.п.) — уходит пустой, заявка не ждёт.
+  function getClientId(callback) {
+    var done = false;
+    function finish(id) { if (done) return; done = true; callback(id || ''); }
+    try {
+      if (window.ym) {
+        ym(112256802, 'getClientID', finish);
+        setTimeout(function () { finish(''); }, 800);
+      } else {
+        finish('');
+      }
+    } catch (err) { finish(''); }
+  }
+
+  // 0c. UTM/источник перехода — фиксируем один раз за сессию (на самом первом
+  //     просмотре), храним в sessionStorage, чтобы переход по страницам сайта
+  //     без UTM в адресе не терял исходный источник до самой отправки заявки.
+  var UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'yclid'];
+  (function captureAttribution() {
+    try {
+      if (sessionStorage.getItem('attribution')) return;
+      var params = new URLSearchParams(location.search);
+      var attribution = {};
+      var has = false;
+      UTM_KEYS.forEach(function (k) {
+        var v = params.get(k);
+        if (v) { attribution[k] = v; has = true; }
+      });
+      var ref = document.referrer;
+      if (ref && ref.indexOf(location.origin) !== 0) { attribution.referrer = ref; has = true; }
+      if (has) sessionStorage.setItem('attribution', JSON.stringify(attribution));
+    } catch (err) {}
+  })();
+  function getAttribution() {
+    try { return JSON.parse(sessionStorage.getItem('attribution') || '{}'); } catch (err) { return {}; }
+  }
+
+  // 0d. Клики по телефону/WhatsApp/Telegram — по всей странице, делегированием,
+  //     чтобы не перечислять их поштучно (шапка, контакты, плавающая кнопка,
+  //     подвал — где угодно). placement берётся с самой ссылки, если задан.
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href]');
+    if (!a) return;
+    var href = a.getAttribute('href') || '';
+    var placement = a.dataset.analyticsPlacement || '';
+    if (href.indexOf('tel:') === 0) {
+      trackGoal('phone_click', { page: location.pathname, placement: placement });
+    } else if (href.indexOf('wa.me') !== -1 || href.indexOf('whatsapp.com') !== -1) {
+      trackGoal('whatsapp_click', { page: location.pathname, placement: placement });
+    } else if (href.indexOf('t.me') !== -1) {
+      trackGoal('telegram_click', { page: location.pathname, placement: placement });
+    }
+  });
+
+  // 0e. Отправка заявки на бэкенд (leads.порхай.рф -> porhay-leads-bot ->
+  //     Telegram + amoCRM). В отличие от старой версии — не fire-and-forget:
+  //     lead_submit и «Спасибо» показываются только при реальном успехе
+  //     (HTTP 2xx), lead_error — при сетевой ошибке или не-2xx, без ложного
+  //     «Спасибо». on2xx/onError вызываются ровно один раз.
+  function sendLead(form, dlgId, on2xx, onError) {
+    var formKey = (dlgId || '').replace(/^popup-/, '');
+    var data = new FormData(form);
+    getClientId(function (clientId) {
+      var a = getAttribution();
+      var payload = {
+        name: data.get('name') || '',
+        phone: data.get('phone') || '',
+        marketing_consent: data.get('marketing') === 'on',
+        page: location.pathname,
+        form: formKey,
+        lead_type: (document.body.dataset.leadType || 'general'),
+        placement: (document.getElementById(dlgId) && document.getElementById(dlgId).dataset.ctaPlacement) || '',
+        metrica_client_id: clientId,
+        utm_source: a.utm_source || '',
+        utm_medium: a.utm_medium || '',
+        utm_campaign: a.utm_campaign || '',
+        utm_content: a.utm_content || '',
+        utm_term: a.utm_term || '',
+        yclid: a.yclid || '',
+        referrer: a.referrer || ''
+      };
       fetch('https://leads.xn--80asndg4a.xn--p1ai/lead', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: data.get('name') || '',
-          phone: data.get('phone') || '',
-          marketing_consent: data.get('marketing') === 'on',
-          page: location.pathname,
-          form: (dlgId || '').replace(/^popup-/, '')
-        })
-      })['catch'](function () {});
-    } catch (err) {}
+        body: JSON.stringify(payload)
+      }).then(function (res) {
+        if (!res.ok) throw new Error('http_' + res.status);
+        on2xx();
+      })['catch'](function (err) {
+        onError((err && err.message) || 'network_error');
+      });
+    });
   }
 
   // 1. Появление при прокрутке: fadeinright / fadeinup / zoomin.
@@ -1106,28 +1195,72 @@ PAGE_SCRIPT = """<script>
 
   // 4. Поп-апы: открываются по ссылкам href="#popup:KEY".
   //    <dialog> сам даёт фокус-ловушку и закрытие по Esc.
+  //    cta_click/form_open — только для попапов с формой заявки (у попапов
+  //    программ вроде «Мафии» своей формы нет, это просто описание).
+  //    placement запоминается на самом диалоге (dlg.dataset.ctaPlacement) —
+  //    им пользуются и form_start, и submit-обработчик ниже.
+  var leadType = document.body.dataset.leadType || 'general';
   document.querySelectorAll('a[href^="#popup:"]').forEach(function (a) {
     a.addEventListener('click', function (e) {
       e.preventDefault();
-      var dlg = document.getElementById('popup-' + a.getAttribute('href').split(':')[1]);
-      if (dlg) dlg.showModal();
+      var key = a.getAttribute('href').split(':')[1];
+      var dlg = document.getElementById('popup-' + key);
+      if (!dlg) return;
+      var hasForm = !!dlg.querySelector('[data-form]');
+      var placement = a.dataset.analyticsPlacement || '';
+      if (hasForm) {
+        dlg.dataset.ctaPlacement = placement;
+        dlg.dataset.formStarted = '';
+        trackGoal('cta_click', {
+          page: location.pathname, lead_type: leadType, form: key,
+          placement: placement, cta_text: (a.textContent || '').trim()
+        });
+      }
+      dlg.showModal();
+      if (hasForm) {
+        trackGoal('form_open', { page: location.pathname, lead_type: leadType, form: key, placement: placement });
+      }
     });
   });
   document.querySelectorAll('.popup').forEach(function (dlg) {
     dlg.querySelector('[data-popup-close]').addEventListener('click', function () { dlg.close(); });
     dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
     var form = dlg.querySelector('[data-form]');
-    if (form) {
-      form.addEventListener('submit', function (e) {
-        e.preventDefault();
-        sendLead(form, dlg.id);
+    if (!form) return;
+    var formKey = (dlg.id || '').replace(/^popup-/, '');
+
+    // form_start — один раз за открытие формы, по первому реальному
+    // взаимодействию с полем «имя» или «телефон» (фокус или ввод).
+    function onFieldTouch(e) {
+      var name = e.target && e.target.name;
+      if (name !== 'name' && name !== 'phone') return;
+      if (dlg.dataset.formStarted) return;
+      dlg.dataset.formStarted = '1';
+      trackGoal('form_start', {
+        page: location.pathname, lead_type: leadType, form: formKey,
+        placement: dlg.dataset.ctaPlacement || ''
+      });
+    }
+    form.addEventListener('focus', onFieldTouch, true);
+    form.addEventListener('input', onFieldTouch, true);
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var errorEl = dlg.querySelector('[data-form-error]');
+      if (errorEl) errorEl.hidden = true;
+      var placement = dlg.dataset.ctaPlacement || '';
+      var goalParams = { page: location.pathname, lead_type: leadType, form: formKey, placement: placement };
+      sendLead(form, dlg.id, function () {
         form.hidden = true;
         var head = dlg.querySelector('[data-form-head]');
         if (head) head.hidden = true;
         dlg.querySelector('[data-form-thanks]').hidden = false;
-        if (window.ym) ym(112256802, 'reachGoal', 'form_submit');
+        trackGoal('lead_submit', goalParams);
+      }, function (errorType) {
+        trackGoal('lead_error', Object.assign({ error_type: errorType }, goalParams));
+        if (errorEl) errorEl.hidden = false;
       });
-    }
+    });
   });
 
   // 5. Лента отзывов (если есть на странице): стрелки листают ровно на одну
@@ -1315,7 +1448,7 @@ def build():
 {seo_head('', 'Развлекательный центр «Порхай» во Владивостоке', 'Проведение различных мероприятий: от дней рождений и выпускных до взрослых корпоративов и романтических свиданий, во Владивостоке')}
 <link rel="stylesheet" href="assets/style.css">
 </head>
-<body>
+<body data-lead-type="general">
 <script>document.documentElement.className+=' js'</script>
 
 {render_top_chrome()}
@@ -1328,7 +1461,7 @@ def build():
         <h1 class="hero__title" data-anim="fadeinright" data-anim-dur="1.7">Развлекательный центр для всей семьи</h1>
         <p class="hero__text" data-anim="fadeinright" data-anim-dur="1.7" data-anim-delay=".2">Проведение мероприятий <b>во&nbsp;Владивостоке</b>: от&nbsp;дней рождений и&nbsp;выпускных до&nbsp;взрослых корпоративов и&nbsp;романтических свиданий</p>
         <div class="hero__buttons" data-anim="zoomin" data-anim-dur="2.4" data-anim-delay=".4">
-          <a class="btn btn--yellow" href="#popup:bonus">Получите 3&nbsp;пиццы на&nbsp;праздник и&nbsp;второй час посещения бесплатно</a>
+          <a class="btn btn--yellow" href="#popup:bonus" data-analytics-placement="hero">Получите 3&nbsp;пиццы на&nbsp;праздник и&nbsp;второй час посещения бесплатно</a>
           <a class="btn btn--teal" href="/denrozhdeniya">Праздник</a>
         </div>
       </div>
@@ -1380,7 +1513,7 @@ def build():
       {render_packages_carousel()}
       <div class="cta-band cta-band--pair">
         <a class="btn btn--yellow" href="/denrozhdeniya">Все пакеты</a>
-        <a class="btn btn--yellow" href="#popup:main">Оставить заявку</a>
+        <a class="btn btn--yellow" href="#popup:main" data-analytics-placement="packages">Оставить заявку</a>
       </div>
     </div>
   </section>
@@ -1440,7 +1573,7 @@ def build():
     </div>
   </section>
 
-  <div class="cta-band"><a class="btn btn--yellow" href="#popup:main">Записаться</a></div>
+  <div class="cta-band"><a class="btn btn--yellow" href="#popup:main" data-analytics-placement="bottom">Записаться</a></div>
 
   {band()}
 
@@ -1546,7 +1679,7 @@ def build_privacy():
 <meta name="robots" content="noindex">
 <link rel="stylesheet" href="assets/style.css">
 </head>
-<body>
+<body data-lead-type="general">
 <script>document.documentElement.className+=' js'</script>
 
 {render_top_chrome()}
@@ -1578,45 +1711,122 @@ def build_privacy():
 <script>
 document.getElementById('header').classList.toggle('is-stuck', scrollY > 40);
 
-function sendLead(form, dlgId) {{
-  var data = new FormData(form);
+function trackGoal(name, params) {{
+  try {{ if (window.ym) ym(112256802, 'reachGoal', name, params || {{}}); }} catch (err) {{}}
+}}
+function getClientId(callback) {{
+  var done = false;
+  function finish(id) {{ if (done) return; done = true; callback(id || ''); }}
   try {{
+    if (window.ym) {{ ym(112256802, 'getClientID', finish); setTimeout(function () {{ finish(''); }}, 800); }}
+    else finish('');
+  }} catch (err) {{ finish(''); }}
+}}
+(function captureAttribution() {{
+  try {{
+    if (sessionStorage.getItem('attribution')) return;
+    var params = new URLSearchParams(location.search);
+    var attribution = {{}}, has = false;
+    ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'yclid'].forEach(function (k) {{
+      var v = params.get(k);
+      if (v) {{ attribution[k] = v; has = true; }}
+    }});
+    var ref = document.referrer;
+    if (ref && ref.indexOf(location.origin) !== 0) {{ attribution.referrer = ref; has = true; }}
+    if (has) sessionStorage.setItem('attribution', JSON.stringify(attribution));
+  }} catch (err) {{}}
+}})();
+function getAttribution() {{
+  try {{ return JSON.parse(sessionStorage.getItem('attribution') || '{{}}'); }} catch (err) {{ return {{}}; }}
+}}
+document.addEventListener('click', function (e) {{
+  var a = e.target.closest && e.target.closest('a[href]');
+  if (!a) return;
+  var href = a.getAttribute('href') || '';
+  var placement = a.dataset.analyticsPlacement || '';
+  if (href.indexOf('tel:') === 0) trackGoal('phone_click', {{ page: location.pathname, placement: placement }});
+  else if (href.indexOf('wa.me') !== -1 || href.indexOf('whatsapp.com') !== -1) trackGoal('whatsapp_click', {{ page: location.pathname, placement: placement }});
+  else if (href.indexOf('t.me') !== -1) trackGoal('telegram_click', {{ page: location.pathname, placement: placement }});
+}});
+
+function sendLead(form, dlgId, on2xx, onError) {{
+  var formKey = (dlgId || '').replace(/^popup-/, '');
+  var data = new FormData(form);
+  getClientId(function (clientId) {{
+    var a = getAttribution();
+    var payload = {{
+      name: data.get('name') || '',
+      phone: data.get('phone') || '',
+      marketing_consent: data.get('marketing') === 'on',
+      page: location.pathname,
+      form: formKey,
+      lead_type: (document.body.dataset.leadType || 'general'),
+      placement: (document.getElementById(dlgId) && document.getElementById(dlgId).dataset.ctaPlacement) || '',
+      metrica_client_id: clientId,
+      utm_source: a.utm_source || '', utm_medium: a.utm_medium || '', utm_campaign: a.utm_campaign || '',
+      utm_content: a.utm_content || '', utm_term: a.utm_term || '', yclid: a.yclid || '', referrer: a.referrer || ''
+    }};
     fetch('https://leads.xn--80asndg4a.xn--p1ai/lead', {{
       method: 'POST',
       headers: {{ 'Content-Type': 'application/json' }},
-      body: JSON.stringify({{
-        name: data.get('name') || '',
-        phone: data.get('phone') || '',
-        marketing_consent: data.get('marketing') === 'on',
-        page: location.pathname,
-        form: (dlgId || '').replace(/^popup-/, '')
-      }})
-    }})['catch'](function () {{}});
-  }} catch (err) {{}}
+      body: JSON.stringify(payload)
+    }}).then(function (res) {{
+      if (!res.ok) throw new Error('http_' + res.status);
+      on2xx();
+    }})['catch'](function (err) {{ onError((err && err.message) || 'network_error'); }});
+  }});
 }}
 
+var leadType = document.body.dataset.leadType || 'general';
 document.querySelectorAll('a[href^="#popup:"]').forEach(function (a) {{
   a.addEventListener('click', function (e) {{
     e.preventDefault();
-    var dlg = document.getElementById('popup-' + a.getAttribute('href').split(':')[1]);
-    if (dlg) dlg.showModal();
+    var key = a.getAttribute('href').split(':')[1];
+    var dlg = document.getElementById('popup-' + key);
+    if (!dlg) return;
+    var hasForm = !!dlg.querySelector('[data-form]');
+    var placement = a.dataset.analyticsPlacement || '';
+    if (hasForm) {{
+      dlg.dataset.ctaPlacement = placement;
+      dlg.dataset.formStarted = '';
+      trackGoal('cta_click', {{ page: location.pathname, lead_type: leadType, form: key, placement: placement, cta_text: (a.textContent || '').trim() }});
+    }}
+    dlg.showModal();
+    if (hasForm) trackGoal('form_open', {{ page: location.pathname, lead_type: leadType, form: key, placement: placement }});
   }});
 }});
 document.querySelectorAll('.popup').forEach(function (dlg) {{
   dlg.querySelector('[data-popup-close]').addEventListener('click', function () {{ dlg.close(); }});
   dlg.addEventListener('click', function (e) {{ if (e.target === dlg) dlg.close(); }});
   var form = dlg.querySelector('[data-form]');
-  if (form) {{
-    form.addEventListener('submit', function (e) {{
-      e.preventDefault();
-      sendLead(form, dlg.id);
+  if (!form) return;
+  var formKey = (dlg.id || '').replace(/^popup-/, '');
+  function onFieldTouch(e) {{
+    var name = e.target && e.target.name;
+    if (name !== 'name' && name !== 'phone') return;
+    if (dlg.dataset.formStarted) return;
+    dlg.dataset.formStarted = '1';
+    trackGoal('form_start', {{ page: location.pathname, lead_type: leadType, form: formKey, placement: dlg.dataset.ctaPlacement || '' }});
+  }}
+  form.addEventListener('focus', onFieldTouch, true);
+  form.addEventListener('input', onFieldTouch, true);
+  form.addEventListener('submit', function (e) {{
+    e.preventDefault();
+    var errorEl = dlg.querySelector('[data-form-error]');
+    if (errorEl) errorEl.hidden = true;
+    var placement = dlg.dataset.ctaPlacement || '';
+    var goalParams = {{ page: location.pathname, lead_type: leadType, form: formKey, placement: placement }};
+    sendLead(form, dlg.id, function () {{
       form.hidden = true;
       var head = dlg.querySelector('[data-form-head]');
       if (head) head.hidden = true;
       dlg.querySelector('[data-form-thanks]').hidden = false;
-      if (window.ym) ym(112256802, 'reachGoal', 'form_submit');
+      trackGoal('lead_submit', goalParams);
+    }}, function (errorType) {{
+      trackGoal('lead_error', Object.assign({{ error_type: errorType }}, goalParams));
+      if (errorEl) errorEl.hidden = false;
     }});
-  }}
+  }});
 }});
 addEventListener('scroll', function () {{
   document.getElementById('header').classList.toggle('is-stuck', scrollY > 40);
@@ -1940,7 +2150,7 @@ def build_oferta():
 <meta name="robots" content="noindex">
 <link rel="stylesheet" href="assets/style.css">
 </head>
-<body>
+<body data-lead-type="general">
 <script>document.documentElement.className+=' js'</script>
 
 {render_top_chrome()}
@@ -2235,7 +2445,7 @@ def build_oferta_vypusknye():
 <meta name="robots" content="noindex">
 <link rel="stylesheet" href="assets/style.css">
 </head>
-<body>
+<body data-lead-type="general">
 <script>document.documentElement.className+=' js'</script>
 
 {render_top_chrome()}
@@ -2349,7 +2559,7 @@ def build_pravila():
 {seo_head('/pravila', 'Правила посещения — «Порхай», Владивосток', 'Правила посещения развлекательного центра «Порхай»: безопасность, что взять с собой, парковка и видеонаблюдение.')}
 <link rel="stylesheet" href="assets/style.css">
 </head>
-<body>
+<body data-lead-type="general">
 <script>document.documentElement.className+=' js'</script>
 
 {render_top_chrome()}
@@ -2509,7 +2719,7 @@ def build_razovoe():
 {seo_head('/razovoe', 'Разовое посещение «Порхай» во Владивостоке', 'Разовое посещение центра «Порхай» во Владивостоке — 3 бассейна с шариками, 15 фотозон, ростовые фигуры и волшебная комната с фонариками.')}
 <link rel="stylesheet" href="assets/style.css">
 </head>
-<body>
+<body data-lead-type="visit">
 <script>document.documentElement.className+=' js'</script>
 
 {render_top_chrome()}
@@ -2527,7 +2737,7 @@ def build_razovoe():
 
   <p class="price-line">Стоимость от&nbsp;500&nbsp;₽/60&nbsp;минут</p>
 
-  <div class="cta-band"><a class="btn btn--yellow" href="#popup:razovoe" data-anim="zoomin" data-anim-dur="1">Записаться</a></div>
+  <div class="cta-band"><a class="btn btn--yellow" href="#popup:razovoe" data-analytics-placement="hero" data-anim="zoomin" data-anim-dur="1">Записаться</a></div>
 
   {band()}
 
@@ -2570,7 +2780,7 @@ def build_razovoe():
     </div>
   </section>
 
-  <div class="cta-band"><a class="btn btn--yellow" href="#popup:razovoe">Записаться</a></div>
+  <div class="cta-band"><a class="btn btn--yellow" href="#popup:razovoe" data-analytics-placement="pricing">Записаться</a></div>
 
   {band(flip=True)}
 
@@ -2584,7 +2794,7 @@ def build_razovoe():
     <div class="cover__inner">
       <h2 class="cover__title">Вы не заметите, как пролетит время</h2>
       <p class="cover__descr">У&nbsp;нас действительно много крутых локаций, чтобы&nbsp;за час сеанса вам не&nbsp;пришлось скучать!</p>
-      <a class="btn btn--yellow" href="#popup:razovoe">Записаться</a>
+      <a class="btn btn--yellow" href="#popup:razovoe" data-analytics-placement="cover">Записаться</a>
     </div>
   </section>
 </main>
@@ -2874,7 +3084,7 @@ def render_rental_page(slug):
 {seo_head('/' + slug, p['meta_title'], p['meta_descr'], image=IMG + p['cover'])}
 <link rel="stylesheet" href="assets/style.css">
 </head>
-<body>
+<body data-lead-type="{slug}">
 <script>document.documentElement.className+=' js'</script>
 
 {render_top_chrome()}
@@ -2899,7 +3109,7 @@ def render_rental_page(slug):
 
   {promo}
 
-  <div class="cta-band{' cta-band--tight' if promo else ''}"><a class="btn btn--yellow" href="#popup:{slug}" data-anim="zoomin" data-anim-dur="1">Записаться</a></div>
+  <div class="cta-band{' cta-band--tight' if promo else ''}"><a class="btn btn--yellow" href="#popup:{slug}" data-analytics-placement="hero" data-anim="zoomin" data-anim-dur="1">Записаться</a></div>
 
   {band(flip=True)}
 
@@ -2926,7 +3136,7 @@ def render_rental_page(slug):
 
   <p class="finetext">{p['footnote']}</p>
 
-  <div class="cta-band"><a class="btn btn--yellow" href="#popup:{slug}">Записаться</a></div>
+  <div class="cta-band"><a class="btn btn--yellow" href="#popup:{slug}" data-analytics-placement="pricing">Записаться</a></div>
 
   {band(flip=True)}
 
@@ -3194,7 +3404,7 @@ def build_denrozhdeniya():
         '<p class="plan__price">%s</p><p class="plan__meta">%s</p>'
         '<ul class="plan__list">%s</ul>'
         '<div class="plan__prices">%s</div>'
-        '<a class="btn btn--yellow" href="#popup:denrozhdeniya">Получить свободные даты</a></div>'
+        '<a class="btn btn--yellow" href="#popup:denrozhdeniya" data-analytics-placement="packages">Получить свободные даты</a></div>'
         % (pl['color'], ' plan--featured' if pl.get('badge') else '', pl['slug'],
            '<span class="plan__badge">%s</span>' % pl['badge'] if pl.get('badge') else '',
            pl['title'], pl['price'], pl['meta'],
@@ -3235,7 +3445,7 @@ def build_denrozhdeniya():
 {seo_head('/denrozhdeniya', 'День рождения «под ключ» в «Порхай», Владивосток', 'Мы собрали всё необходимое для вашего дня рождения, вам останется только наполнить праздник угощениями для гостей.')}
 <link rel="stylesheet" href="assets/style.css">
 </head>
-<body>
+<body data-lead-type="birthday">
 <script>document.documentElement.className+=' js'</script>
 
 {render_top_chrome()}
@@ -3277,7 +3487,7 @@ def build_denrozhdeniya():
     </div>
   </section>
 
-  <div class="cta-band" style="background:{DR_BG}"><a class="btn btn--yellow" href="#popup:denrozhdeniya">Записаться</a></div>
+  <div class="cta-band" style="background:{DR_BG}"><a class="btn btn--yellow" href="#popup:denrozhdeniya" data-analytics-placement="gallery">Записаться</a></div>
 
   {band()}
 
@@ -3443,7 +3653,7 @@ def build_vypusknye():
 {seo_head('/vypusknye', 'Выпускной «под ключ» в «Порхай», Владивосток', 'Мы подготовили для вас идеальный пакет для выпускного, чтобы ваш праздник прошёл легко, без суеты и лишний траты времени на организацию.')}
 <link rel="stylesheet" href="assets/style.css">
 </head>
-<body>
+<body data-lead-type="graduation">
 <script>document.documentElement.className+=' js'</script>
 
 {render_top_chrome()}
@@ -3472,7 +3682,7 @@ def build_vypusknye():
 
   {VP_PROMO}
 
-  <div class="cta-band cta-band--tight"><a class="btn btn--yellow" href="#popup:vypusknye" data-anim="zoomin" data-anim-dur="1">Записаться</a></div>
+  <div class="cta-band cta-band--tight"><a class="btn btn--yellow" href="#popup:vypusknye" data-analytics-placement="hero" data-anim="zoomin" data-anim-dur="1">Записаться</a></div>
 
   {band(flip=True)}
 
@@ -3483,7 +3693,7 @@ def build_vypusknye():
     </div>
   </section>
 
-  <div class="cta-band" style="background:{VP_BG}"><a class="btn btn--yellow" href="#popup:vypusknye">Записаться</a></div>
+  <div class="cta-band" style="background:{VP_BG}"><a class="btn btn--yellow" href="#popup:vypusknye" data-analytics-placement="gallery">Записаться</a></div>
 
   {band()}
 
@@ -3503,7 +3713,7 @@ def build_vypusknye():
     </div>
   </section>
 
-  <div class="cta-band" style="background:{VP_BG}"><a class="btn btn--yellow" href="#popup:vypusknye">Записаться</a></div>
+  <div class="cta-band" style="background:{VP_BG}"><a class="btn btn--yellow" href="#popup:vypusknye" data-analytics-placement="pricing">Записаться</a></div>
 
   {band()}
 
@@ -3669,7 +3879,7 @@ def build_korporativ():
 {seo_head('/korporativ', 'Корпоративные мероприятия в «Порхай», Владивосток', 'Организуем корпоративные мероприятия для сотрудников и их семей во Владивостоке — тимбилдинги, стратсессии и праздники на площадке до 50 человек.')}
 <link rel="stylesheet" href="assets/style.css">
 </head>
-<body>
+<body data-lead-type="corporate">
 <script>document.documentElement.className+=' js'</script>
 
 {render_top_chrome()}
@@ -3696,7 +3906,7 @@ def build_korporativ():
     </div>
   </section>
 
-  <div class="cta-band"><a class="btn btn--yellow" href="#popup:korporativ" data-anim="zoomin" data-anim-dur="1">Записаться</a></div>
+  <div class="cta-band"><a class="btn btn--yellow" href="#popup:korporativ" data-analytics-placement="hero" data-anim="zoomin" data-anim-dur="1">Записаться</a></div>
 
   {band(flip=True)}
 
@@ -3729,7 +3939,7 @@ def build_korporativ():
     </div>
   </section>
 
-  <div class="cta-band"><a class="btn btn--yellow" href="#popup:korporativ">Записаться</a></div>
+  <div class="cta-band"><a class="btn btn--yellow" href="#popup:korporativ" data-analytics-placement="bottom">Записаться</a></div>
 
   {band(flip=True)}
 
@@ -3919,7 +4129,7 @@ def build_dlyagrupp():
 {seo_head('/dlyagrupp', 'Для организованных групп — «Порхай», Владивосток', 'Школы, лагеря, секции и корпоративные клиенты — организуем разовый визит, визит с программой или праздник под ключ для группы от 15 человек во Владивостоке.')}
 <link rel="stylesheet" href="assets/style.css">
 </head>
-<body>
+<body data-lead-type="groups">
 <script>document.documentElement.className+=' js'</script>
 
 {render_top_chrome()}
@@ -3954,7 +4164,7 @@ def build_dlyagrupp():
     </div>
   </section>
 
-  <div class="cta-band"><a class="btn btn--yellow" href="#popup:dlyagrupp" data-anim="zoomin" data-anim-dur="1">Обсудить мероприятие</a></div>
+  <div class="cta-band"><a class="btn btn--yellow" href="#popup:dlyagrupp" data-analytics-placement="hero" data-anim="zoomin" data-anim-dur="1">Обсудить мероприятие</a></div>
 
   {band()}
 
@@ -4015,7 +4225,7 @@ def build_dlyagrupp():
     </div>
   </section>
 
-  <div class="cta-band"><a class="btn btn--yellow" href="#popup:dlyagrupp">Обсудить мероприятие</a></div>
+  <div class="cta-band"><a class="btn btn--yellow" href="#popup:dlyagrupp" data-analytics-placement="reviews">Обсудить мероприятие</a></div>
 
   {band()}
 
@@ -4177,7 +4387,7 @@ def build_torty():
 {seo_head('/torty', 'Торты на праздник в «Порхай», Владивосток', f'{len(CAKES)} готовых дизайнов тортов, начинки на выбор и десерты на праздник в «Порхай»: кейк-попсы и капкейки.')}
 <link rel="stylesheet" href="assets/style.css">
 </head>
-<body>
+<body data-lead-type="cakes">
 <script>document.documentElement.className+=' js'</script>
 
 {render_top_chrome()}
@@ -4188,7 +4398,7 @@ def build_torty():
       <div class="page-hero__uptitle" data-anim="fadeinup" data-anim-dur="1">«Порхай»</div>
       <h1 class="page-hero__title" data-anim="fadeinup" data-anim-dur="1">Торты и десерты</h1>
       <p class="page-hero__descr" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".1">Дизайн подбираем под тематику праздника — вот что мы уже готовили нашим гостям</p>
-      <a class="btn btn--yellow" href="#popup:torty" data-anim="zoomin" data-anim-dur="1">Заказать торт</a>
+      <a class="btn btn--yellow" href="#popup:torty" data-analytics-placement="hero" data-anim="zoomin" data-anim-dur="1">Заказать торт</a>
     </div>
   </section>
 
@@ -4220,7 +4430,7 @@ def build_torty():
     </div>
   </section>
 
-  <div class="cta-band cta-band--compact"><a class="btn btn--yellow" href="#popup:torty">Заказать торт</a></div>
+  <div class="cta-band cta-band--compact"><a class="btn btn--yellow" href="#popup:torty" data-analytics-placement="bottom">Заказать торт</a></div>
 
   {band(flip=True)}
 
@@ -4285,7 +4495,7 @@ def build_pinyaty():
 {seo_head('/pinyaty', 'Пиньяты на праздник в «Порхай», Владивосток', f'Пиньяты с наполнением на день рождения в «Порхай»: {len(PINYATY_GALLERY)} готовых дизайнов.')}
 <link rel="stylesheet" href="assets/style.css">
 </head>
-<body>
+<body data-lead-type="pinyatas">
 <script>document.documentElement.className+=' js'</script>
 
 {render_top_chrome()}
@@ -4296,7 +4506,7 @@ def build_pinyaty():
       <div class="page-hero__uptitle" data-anim="fadeinup" data-anim-dur="1">«Порхай»</div>
       <h1 class="page-hero__title" data-anim="fadeinup" data-anim-dur="1">Пиньяты</h1>
       <p class="page-hero__descr" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".1">С наполнением — на радость гостям праздника</p>
-      <a class="btn btn--yellow" href="#popup:pinyaty" data-anim="zoomin" data-anim-dur="1">Заказать пиньяту</a>
+      <a class="btn btn--yellow" href="#popup:pinyaty" data-analytics-placement="hero" data-anim="zoomin" data-anim-dur="1">Заказать пиньяту</a>
     </div>
   </section>
 
@@ -4308,7 +4518,7 @@ def build_pinyaty():
     </div>
   </section>
 
-  <div class="cta-band cta-band--compact"><a class="btn btn--yellow" href="#popup:pinyaty">Заказать пиньяту</a></div>
+  <div class="cta-band cta-band--compact"><a class="btn btn--yellow" href="#popup:pinyaty" data-analytics-placement="bottom">Заказать пиньяту</a></div>
 
   {band(flip=True)}
 
@@ -4362,7 +4572,7 @@ def build_partner():
 {seo_head('/partner', 'Скидки от партнёров «Порхай» во Владивостоке', 'Скидки от партнёров развлекательного центра «Порхай» при аренде залов во Владивостоке.')}
 <link rel="stylesheet" href="assets/style.css">
 </head>
-<body>
+<body data-lead-type="general">
 <script>document.documentElement.className+=' js'</script>
 
 {render_top_chrome()}
@@ -4592,7 +4802,7 @@ def build_podarok():
 <meta name="robots" content="noindex, nofollow">
 <link rel="stylesheet" href="assets/style.css">
 </head>
-<body>
+<body data-lead-type="general">
 <script>document.documentElement.className+=' js'</script>
 
 <main class="gift">
@@ -4672,7 +4882,7 @@ def build_not_found():
 <meta name="robots" content="noindex">
 <link rel="stylesheet" href="assets/style.css">
 </head>
-<body>
+<body data-lead-type="general">
 <script>document.documentElement.className+=' js'</script>
 
 {render_top_chrome()}
