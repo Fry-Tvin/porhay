@@ -32,6 +32,7 @@ jobs:
         run: |
           mkdir -p _site
           cp porhai-new/*.html _site/
+          cp porhai-new/sitemap.xml porhai-new/robots.txt _site/
           cp -r porhai-new/assets _site/assets
           cp CNAME _site/CNAME
 
