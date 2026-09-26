@@ -1180,6 +1180,19 @@ form`. Fire-and-forget, «Спасибо» не зависит от ответа
 своя многошаговая форма со своим `fetch` на тот же URL (`phone, message,
 form: 'bonus-picker', source`, honeypot `website`).
 
+**26.09.2026 — сквозная аналитика.** Сайт теперь шлёт в `POST /lead`
+ещё `lead_type, placement, metrica_client_id, utm_source, utm_medium,
+utm_campaign, utm_content, utm_term, yclid, referrer`. Бот их читает и
+раскладывает: `metrica_client_id`/`utm_*`/`yclid`/`referrer` — в штатные
+поля сквозной аналитики amoCRM (`tracking_data`, id в `amo.py` →
+`TRACKING_FIELD_IDS`; заводить свои поля не пришлось, у аккаунта они
+уже были); `lead_type`/`placement` (это наши метки, не analytics) —
+отдельным примечанием к сделке. В Telegram вместо полусотни строк —
+одна `Источник: {utm_source}/{utm_medium}, кампания {utm_campaign}`
+(только если `utm_source` непустой). Проверено сквозным тестом на
+`177.1.195.147`, сделка удалена вручную из CRM (API лидов не даёт
+`DELETE` — 405).
+
 **История граблей, чтобы не повторять:**
 - До 15.09.2026 `sendLead` жила только незакоммиченной в воркт­ри
   `lead-bot-crm-integration` — на проде ни одна форма ничего не слала,
