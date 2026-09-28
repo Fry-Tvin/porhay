@@ -85,13 +85,18 @@ YANDEX_METRIKA = """<!-- Yandex.Metrika counter -->
 <noscript><div><img src="https://mc.yandex.ru/watch/112256802" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 <!-- /Yandex.Metrika counter -->"""
 
-# Акция «Неоновое ленточное шоу в подарок», продлена до 30.09.2026
-# (заказчик 03.09.2026 — раньше было до 31.08, срок истёк, просто продлить).
-# Группа B по духу (новый элемент, но в фирменном стиле), не из спеки.
-# Единственное место, где ставим этот бейдж — именно в этих местах просил
-# заказчик: секция «Праздники под ключ» на главной и страница White Room.
-PROMO_NEON = ('<p class="promo-badge">Неоновое ленточное шоу в подарок при '
-              'аренде White&nbsp;Room от&nbsp;3 часов — до&nbsp;30 сентября</p>')
+# Акция «3 пиццы в подарок на день рождения в октябре», с 01.10.2026 —
+# заказчик 28.09.2026 попросил сменить акцию «Неоновое ленточное шоу»
+# (истекала 30.09.2026, см. git-историю PROMO_NEON) на эту, ровно в тех же
+# двух местах: секция «Праздники под ключ» на главной и страница White Room.
+# Звёздочка поясняется отдельной строкой ниже (.promo-badge__note) —
+# «только новые бронирования», подтверждено заказчиком 28.09.2026.
+PROMO_OCT_PIZZA = (
+    '<p class="promo-badge">Дарим три пиццы на&nbsp;празднование дня '
+    'рождения в&nbsp;октябре*</p>'
+    '<p class="promo-badge__note">* Акция действует только '
+    'на&nbsp;новые бронирования</p>'
+)
 
 # --- Кляксы ---------------------------------------------------------------
 # Две «фигмовские» ссылки в оригинале битые; локальные копии тех же файлов
@@ -1521,7 +1526,7 @@ def build():
       <div class="section__head">
         <h2 class="section__title" data-anim="fadeinup" data-anim-dur="1">Праздники «под ключ»</h2>
         <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">Аниматор/шоу-программа и&nbsp;фотограф включены в&nbsp;стоимость</p>
-        {PROMO_NEON}
+        {PROMO_OCT_PIZZA}
       </div>
       {render_packages_carousel()}
       <div class="cta-band cta-band--pair">
@@ -1611,7 +1616,7 @@ def build():
 </html>
 """
     path = os.path.join(HERE, 'index.html')
-    with open(path, 'w', encoding='utf-8') as f:
+    with open(path, 'w', encoding='utf-8', newline='\n') as f:
         f.write(html)
     print('index.html собран:', len(html), 'байт')
 
@@ -1877,7 +1882,7 @@ document.getElementById('cookie-accept').addEventListener('click', function () {
 </html>
 """
     path = os.path.join(HERE, 'privacy.html')
-    with open(path, 'w', encoding='utf-8') as f:
+    with open(path, 'w', encoding='utf-8', newline='\n') as f:
         f.write(html)
     print('privacy.html собран:', len(html), 'байт')
 
@@ -2190,7 +2195,7 @@ def build_oferta():
 </html>
 """
     path = os.path.join(HERE, 'oferta.html')
-    with open(path, 'w', encoding='utf-8') as f:
+    with open(path, 'w', encoding='utf-8', newline='\n') as f:
         f.write(html)
     print('oferta.html собран:', len(html), 'байт')
 
@@ -2485,7 +2490,7 @@ def build_oferta_vypusknye():
 </html>
 """
     path = os.path.join(HERE, 'oferta-vypusknye.html')
-    with open(path, 'w', encoding='utf-8') as f:
+    with open(path, 'w', encoding='utf-8', newline='\n') as f:
         f.write(html)
     print('oferta-vypusknye.html собран:', len(html), 'байт')
 
@@ -2599,7 +2604,7 @@ def build_pravila():
 </html>
 """
     path = os.path.join(HERE, 'pravila.html')
-    with open(path, 'w', encoding='utf-8') as f:
+    with open(path, 'w', encoding='utf-8', newline='\n') as f:
         f.write(html)
     print('pravila.html собран:', len(html), 'байт')
 
@@ -2827,7 +2832,7 @@ def build_razovoe():
 </html>
 """
     path = os.path.join(HERE, 'razovoe.html')
-    with open(path, 'w', encoding='utf-8') as f:
+    with open(path, 'w', encoding='utf-8', newline='\n') as f:
         f.write(html)
     print('razovoe.html собран:', len(html), 'байт')
 
@@ -3073,7 +3078,7 @@ def render_rental_page(slug):
     popups = render_form_popup('header') + render_form_popup(slug)
     faq_ld = faq_jsonld()
     note_class = 'finetext finetext--note' if p.get('note_plum') else 'finetext'
-    promo = PROMO_NEON if slug == 'whiteroom' else ''
+    promo = PROMO_OCT_PIZZA if slug == 'whiteroom' else ''
     # White Room: строка цены над неоновой плашкой убрана 24.08.2026 — вместе
     # с промо-плашкой они наезжали на кнопку «Записаться» ниже (слишком
     # тесно друг к другу).
@@ -3203,7 +3208,7 @@ def render_rental_page(slug):
 </html>
 """
     path = os.path.join(HERE, f'{slug}.html')
-    with open(path, 'w', encoding='utf-8') as f:
+    with open(path, 'w', encoding='utf-8', newline='\n') as f:
         f.write(html)
     print(f'{slug}.html собран:', len(html), 'байт')
 
@@ -3558,7 +3563,7 @@ def build_denrozhdeniya():
 </html>
 """
     path = os.path.join(HERE, 'denrozhdeniya.html')
-    with open(path, 'w', encoding='utf-8') as f:
+    with open(path, 'w', encoding='utf-8', newline='\n') as f:
         f.write(html)
     print('denrozhdeniya.html собран:', len(html), 'байт')
 
@@ -3777,7 +3782,7 @@ def build_vypusknye():
 </html>
 """
     path = os.path.join(HERE, 'vypusknye.html')
-    with open(path, 'w', encoding='utf-8') as f:
+    with open(path, 'w', encoding='utf-8', newline='\n') as f:
         f.write(html)
     print('vypusknye.html собран:', len(html), 'байт')
 
@@ -4001,7 +4006,7 @@ def build_korporativ():
 </html>
 """
     path = os.path.join(HERE, 'korporativ.html')
-    with open(path, 'w', encoding='utf-8') as f:
+    with open(path, 'w', encoding='utf-8', newline='\n') as f:
         f.write(html)
     print('korporativ.html собран:', len(html), 'байт')
 
@@ -4275,7 +4280,7 @@ def build_dlyagrupp():
 </html>
 """
     path = os.path.join(HERE, 'dlyagrupp.html')
-    with open(path, 'w', encoding='utf-8') as f:
+    with open(path, 'w', encoding='utf-8', newline='\n') as f:
         f.write(html)
     print('dlyagrupp.html собран:', len(html), 'байт')
 
@@ -4464,7 +4469,7 @@ def build_torty():
 </html>
 """
     path = os.path.join(HERE, 'torty.html')
-    with open(path, 'w', encoding='utf-8') as f:
+    with open(path, 'w', encoding='utf-8', newline='\n') as f:
         f.write(html)
     print('torty.html собран:', len(html), 'байт')
 
@@ -4552,7 +4557,7 @@ def build_pinyaty():
 </html>
 """
     path = os.path.join(HERE, 'pinyaty.html')
-    with open(path, 'w', encoding='utf-8') as f:
+    with open(path, 'w', encoding='utf-8', newline='\n') as f:
         f.write(html)
     print('pinyaty.html собран:', len(html), 'байт')
 
@@ -4614,7 +4619,7 @@ def build_partner():
 </html>
 """
     path = os.path.join(HERE, 'partner.html')
-    with open(path, 'w', encoding='utf-8') as f:
+    with open(path, 'w', encoding='utf-8', newline='\n') as f:
         f.write(html)
     print('partner.html собран:', len(html), 'байт')
 
@@ -4896,7 +4901,7 @@ def build_podarok():
 </html>
 """
     path = os.path.join(HERE, 'podarok.html')
-    with open(path, 'w', encoding='utf-8') as f:
+    with open(path, 'w', encoding='utf-8', newline='\n') as f:
         f.write(html)
     print('podarok.html собран:', len(html), 'байт')
 
@@ -4948,7 +4953,7 @@ def build_not_found():
 </html>
 """
     path = os.path.join(HERE, '404.html')
-    with open(path, 'w', encoding='utf-8') as f:
+    with open(path, 'w', encoding='utf-8', newline='\n') as f:
         f.write(html)
     print('404.html собран:', len(html), 'байт')
 
@@ -4976,7 +4981,7 @@ def build_sitemap():
            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
            + urls + '</urlset>\n')
     path = os.path.join(HERE, 'sitemap.xml')
-    with open(path, 'w', encoding='utf-8') as f:
+    with open(path, 'w', encoding='utf-8', newline='\n') as f:
         f.write(xml)
     print('sitemap.xml собран:', len(SITEMAP_PAGES), 'адресов')
 
@@ -4996,7 +5001,7 @@ def build_robots():
         'Sitemap: %s/sitemap.xml\n' % SITE_URL
     )
     path = os.path.join(HERE, 'robots.txt')
-    with open(path, 'w', encoding='utf-8') as f:
+    with open(path, 'w', encoding='utf-8', newline='\n') as f:
         f.write(txt)
     print('robots.txt собран')
 
@@ -5031,7 +5036,7 @@ def fix_cross_page_anchors():
 
         new = re.sub(r'href="#([A-Za-z][\w-]*)"', to_home, html)
         if new != html:
-            with open(path, 'w', encoding='utf-8') as f:
+            with open(path, 'w', encoding='utf-8', newline='\n') as f:
                 f.write(new)
             fixed += 1
     print('ссылки на чужие секции исправлены на страницах:', fixed)

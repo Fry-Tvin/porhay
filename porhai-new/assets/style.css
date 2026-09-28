@@ -345,6 +345,18 @@ ul { margin: 0; padding: 0; list-style: none; }
   text-align: center;
 }
 
+/* Мелкая сноска под акционной плашкой (звёздочка-условие) — приглушённый
+   текст без рамок, тот же приём, что и .legal__meta/.footer__requisites. */
+.promo-badge__note {
+  display: block;
+  margin-top: 8px;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--ink);
+  opacity: .65;
+}
+
 .cards {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1270,6 +1282,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   .burger { display: block; margin-left: auto; }
 
   .promo-badge { font-size: 14px; padding: 10px 20px; }
+  .promo-badge__note { font-size: 12px; }
 
   /* Шапка на мобильной прозрачная и лежит поверх первого экрана,
      как в оригинале: логотип заходит на картинку. В отличие от десктопа,
