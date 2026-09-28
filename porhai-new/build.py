@@ -3078,7 +3078,11 @@ def render_rental_page(slug):
     popups = render_form_popup('header') + render_form_popup(slug)
     faq_ld = faq_jsonld()
     note_class = 'finetext finetext--note' if p.get('note_plum') else 'finetext'
-    promo = PROMO_OCT_PIZZA if slug == 'whiteroom' else ''
+    # Акция про пиццы — не привязана к конкретному залу (в отличие от
+    # прежнего неонового шоу, которое было только у White Room), поэтому
+    # заказчик 28.09.2026 попросил показывать её на всех трёх страницах
+    # аренды залов, не только на White Room.
+    promo = PROMO_OCT_PIZZA if slug in ('whiteroom', 'loftbox', 'combo') else ''
     # White Room: строка цены над неоновой плашкой убрана 24.08.2026 — вместе
     # с промо-плашкой они наезжали на кнопку «Записаться» ниже (слишком
     # тесно друг к другу).
@@ -3484,6 +3488,7 @@ def build_denrozhdeniya():
   <section class="section">
     <div class="stage">
       <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Пакеты «День рождения»</h2>
+      {PROMO_OCT_PIZZA}
       {render_compare_table(('Мини', 'Под ключ', 'Вип', 'Супер Вип'), DR_COMPARE, DR_COMPARE_REC, DR_COMPARE_COMMON)}
       <p class="ct__links"><a href="/torty">Все дизайны тортов →</a> <a href="/pinyaty">Все пиньяты →</a></p>
       <div class="plans__grid">{plans}</div>
