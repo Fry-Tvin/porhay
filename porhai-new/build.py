@@ -44,6 +44,11 @@ SITE_URL = 'https://xn--80asndg4a.xn--p1ai'
 SEO_IMAGE = IMG + 'tild3463-6130-4836-a539-636430646232__vector.webp'
 
 
+FAVICON_LINKS = """<link rel="icon" type="image/x-icon" href="/assets/icons/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/icons/favicon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">"""
+
 def seo_head(path, title, descr, image=None):
     """canonical + Open Graph/Twitter — вызывается на каждой индексируемой
     странице. title/descr берутся из уже согласованных <title>/description,
@@ -577,10 +582,10 @@ PHONE_HREF = 'tel:+79510000499'
 HOURS = 'ПН-ВС 10.00-21.00'
 ADDRESS = 'ул. Державина, 23, Владивосток'
 
-# 4-й элемент — viewBox: у трёх исходных иконок из экспорта (0..100),
-# у MAX — тот же контур, что уже используется на /podarok (MAX_ICON,
-# исходно нарисован в 0..24), проще оставить в своей системе координат,
-# чем пересчитывать точки под чужую.
+# Официальный знак MAX без надписи: https://go.max.ru/brandbook
+MAX_MARK = 'M38.0679 0.196289C58.7196 0.196289 74.9143 16.9481 74.9143 37.6106C74.9143 58.2731 58.2054 74.6177 38.2661 74.6177C31.1893 74.6177 27.7607 73.6213 22.2375 69.7106C21.8571 69.4427 21.3375 69.5124 21.0161 69.8552C16.7679 74.3874 5.8875 77.5695 5.38929 71.382C5.38929 60.5927 0 53.5856 0 37.407C0 16.1659 17.4161 0.196289 38.0679 0.196289ZM38.6464 18.6088C28.8482 18.0945 21.1982 24.8981 19.5107 35.5374C18.1125 44.3499 20.5875 55.0909 22.7089 55.632C23.6089 55.8624 25.7679 54.207 27.3429 52.7231C27.6375 52.4445 28.0875 52.3963 28.4304 52.6106C30.8839 54.1106 33.6589 55.2356 36.7179 55.3963C46.7786 55.9213 55.6929 48.0463 56.2232 37.9856C56.7482 27.9249 48.7071 19.1284 38.6464 18.6034V18.6088Z'
+
+# Все кнопки контактов используют одинаковый круг 100×100.
 SOCIALS = [
     ('instagram', 'https://instagram.com/porhay_vladivostok',
      '<path fill-rule="evenodd" clip-rule="evenodd" d="M50 100C77.6142 100 100 77.6142 100 50C100 22.3858 77.6142 0 50 0C22.3858 0 0 22.3858 0 50C0 77.6142 22.3858 100 50 100ZM25 39.3918C25 31.4558 31.4566 25 39.3918 25H60.6082C68.5442 25 75 31.4566 75 39.3918V60.8028C75 68.738 68.5442 75.1946 60.6082 75.1946H39.3918C31.4558 75.1946 25 68.738 25 60.8028V39.3918ZM36.9883 50.0054C36.9883 42.8847 42.8438 37.0922 50.0397 37.0922C57.2356 37.0922 63.0911 42.8847 63.0911 50.0054C63.0911 57.1252 57.2356 62.9177 50.0397 62.9177C42.843 62.9177 36.9883 57.1252 36.9883 50.0054ZM41.7422 50.0054C41.7422 54.5033 45.4641 58.1638 50.0397 58.1638C54.6153 58.1638 58.3372 54.5041 58.3372 50.0054C58.3372 45.5066 54.6145 41.8469 50.0397 41.8469C45.4641 41.8469 41.7422 45.5066 41.7422 50.0054ZM63.3248 39.6355C65.0208 39.6355 66.3956 38.2606 66.3956 36.5646C66.3956 34.8687 65.0208 33.4938 63.3248 33.4938C61.6288 33.4938 60.2539 34.8687 60.2539 36.5646C60.2539 38.2606 61.6288 39.6355 63.3248 39.6355Z" fill="#38a2a5"/>',
@@ -592,8 +597,9 @@ SOCIALS = [
      '<path fill-rule="evenodd" clip-rule="evenodd" d="M50 100C77.6142 100 100 77.6142 100 50C100 22.3858 77.6142 0 50 0C22.3858 0 0 22.3858 0 50C0 77.6142 22.3858 100 50 100ZM69.7626 28.9928C64.6172 23.841 57.7739 21.0027 50.4832 21C35.4616 21 23.2346 33.2252 23.2292 48.2522C23.2274 53.0557 24.4823 57.7446 26.8668 61.8769L23 76L37.4477 72.2105C41.4282 74.3822 45.9107 75.5262 50.4714 75.528H50.4823C65.5029 75.528 77.7299 63.301 77.7363 48.2749C77.7408 40.9915 74.9089 34.1446 69.7626 28.9928ZM62.9086 53.9588C62.2274 53.6178 58.8799 51.9708 58.2551 51.7435C57.6313 51.5161 57.1766 51.4024 56.7228 52.0845C56.269 52.7666 54.964 54.2998 54.5666 54.7545C54.1692 55.2092 53.7718 55.2656 53.0915 54.9246C52.9802 54.8688 52.8283 54.803 52.6409 54.7217C51.6819 54.3057 49.7905 53.4855 47.6151 51.5443C45.5907 49.7382 44.2239 47.5084 43.8265 46.8272C43.4291 46.1452 43.7837 45.7769 44.1248 45.4376C44.3292 45.2338 44.564 44.9478 44.7987 44.662C44.9157 44.5194 45.0328 44.3768 45.146 44.2445C45.4345 43.9075 45.56 43.6516 45.7302 43.3049C45.7607 43.2427 45.7926 43.1776 45.8272 43.1087C46.0545 42.654 45.9409 42.2565 45.7708 41.9155C45.6572 41.6877 45.0118 40.1167 44.4265 38.6923C44.1355 37.984 43.8594 37.3119 43.671 36.8592C43.1828 35.687 42.6883 35.69 42.2913 35.6924C42.2386 35.6928 42.1876 35.6931 42.1386 35.6906C41.7421 35.6706 41.2874 35.667 40.8336 35.667C40.3798 35.667 39.6423 35.837 39.0175 36.5191C38.9773 36.5631 38.9323 36.6111 38.8834 36.6633C38.1738 37.4209 36.634 39.0648 36.634 42.2002C36.634 45.544 39.062 48.7748 39.4124 49.2411L39.415 49.2444C39.4371 49.274 39.4767 49.3309 39.5333 49.4121C40.3462 50.5782 44.6615 56.7691 51.0481 59.5271C52.6732 60.2291 53.9409 60.6475 54.9303 60.9612C56.5618 61.4796 58.046 61.4068 59.22 61.2313C60.5286 61.0358 63.2487 59.5844 63.8161 57.9938C64.3836 56.4033 64.3836 55.0392 64.2136 54.7554C64.0764 54.5258 63.7545 54.3701 63.2776 54.1395C63.1633 54.0843 63.0401 54.0247 62.9086 53.9588Z" fill="#38a2a5" />',
      '0 0 100 100'),
     ('MAX', 'https://max.ru/u/f9LHodD0cOLqrvIA72DMUOdZ1jWjZtmxu15O2okC2Dm2gS5lLfRvIFPf-x4',
-     '<path fill-rule="evenodd" clip-rule="evenodd" fill="#38a2a5" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm1.5 6.5h-3L8 13h2.5l-3 5.5h.5l6-7.5H11.5z"/>',
-     '0 0 24 24'),
+     '<circle cx="50" cy="50" r="50" fill="#38a2a5"/>'
+     f'<path d="{MAX_MARK}" transform="translate(24 24) scale(0.693333)" fill="white"/>',
+     '0 0 100 100' ),
 ]
 
 # Подвал (rec561493036). В оригинале «Политика конфиденциальности» — просто
@@ -1458,6 +1464,7 @@ def build():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+{FAVICON_LINKS}
 {YANDEX_METRIKA}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -1690,6 +1697,7 @@ def build_privacy():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+{FAVICON_LINKS}
 {YANDEX_METRIKA}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -2161,6 +2169,7 @@ def build_oferta():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+{FAVICON_LINKS}
 {YANDEX_METRIKA}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -2456,6 +2465,7 @@ def build_oferta_vypusknye():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+{FAVICON_LINKS}
 {YANDEX_METRIKA}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -2570,6 +2580,7 @@ def build_pravila():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+{FAVICON_LINKS}
 {YANDEX_METRIKA}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -2730,6 +2741,7 @@ def build_razovoe():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+{FAVICON_LINKS}
 {YANDEX_METRIKA}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -3099,6 +3111,7 @@ def render_rental_page(slug):
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+{FAVICON_LINKS}
 {YANDEX_METRIKA}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -3460,6 +3473,7 @@ def build_denrozhdeniya():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+{FAVICON_LINKS}
 {YANDEX_METRIKA}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -3669,6 +3683,7 @@ def build_vypusknye():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+{FAVICON_LINKS}
 {YANDEX_METRIKA}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -3895,6 +3910,7 @@ def build_korporativ():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+{FAVICON_LINKS}
 {YANDEX_METRIKA}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -4145,6 +4161,7 @@ def build_dlyagrupp():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+{FAVICON_LINKS}
 {YANDEX_METRIKA}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -4403,6 +4420,7 @@ def build_torty():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+{FAVICON_LINKS}
 {YANDEX_METRIKA}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -4511,6 +4529,7 @@ def build_pinyaty():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+{FAVICON_LINKS}
 {YANDEX_METRIKA}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -4588,6 +4607,7 @@ def build_partner():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+{FAVICON_LINKS}
 {YANDEX_METRIKA}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -4786,8 +4806,7 @@ TG_ICON = ('<path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12
            '-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332'
            '-1.386 4.025-1.627 4.476-1.635z"/>')
 
-MAX_ICON = ('<path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm1.5 '
-            '6.5h-3L8 13h2.5l-3 5.5h.5l6-7.5H11.5z"/>')
+MAX_ICON = f'<path d="{MAX_MARK}" transform="scale(0.32)"/>'
 
 PODAROK_ACTIONS = [
     ('wa', 'WhatsApp', 'https://wa.me/79510000499?text=' + PODAROK_HELLO, WA_ICON),
@@ -4820,6 +4839,7 @@ def build_podarok():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+{FAVICON_LINKS}
 {YANDEX_METRIKA}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -4922,6 +4942,7 @@ def build_not_found():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+{FAVICON_LINKS}
 {YANDEX_METRIKA}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
