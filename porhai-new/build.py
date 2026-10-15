@@ -1556,33 +1556,35 @@ def build():
 
   <section class="section section--graduation" id="vypusknye" aria-labelledby="graduation-title">
     <div class="stage">
-      <div class="graduation-preview">
-        <img class="graduation-preview__photo" src="{IMG}{VP_GALLERY[0]}" alt="Дети играют на празднике в «Порхай»" loading="lazy" width="1280" height="853">
-        <div class="graduation-preview__content">
-          <p class="graduation-preview__eyebrow">Для детских садов и&nbsp;школ</p>
+      <div class="home-feature home-feature--graduation">
+        <img class="home-feature__photo" src="{IMG}{VP_GALLERY[0]}" alt="Дети играют на празднике в «Порхай»" loading="lazy" width="1280" height="853">
+        <div class="home-feature__content">
+          <p class="home-feature__eyebrow">Для детских садов и&nbsp;школ</p>
           <h2 class="section__title" id="graduation-title">Выпускные 2027<br>«под ключ»</h2>
-          <p class="graduation-preview__description">Аниматоры и&nbsp;диджей, три шоу, бассейны и&nbsp;14&nbsp;фотозон&nbsp;— праздник, который дети запомнят надолго.</p>
-          <p class="graduation-preview__details">4&nbsp;часа праздника · до&nbsp;50&nbsp;гостей</p>
-          <p class="graduation-preview__price">от&nbsp;1&nbsp;590&nbsp;₽<span> за человека</span></p>
-          <a class="btn btn--yellow graduation-preview__button" href="/vypusknye" data-analytics-placement="graduation-preview">Программа и&nbsp;стоимость</a>
+          <p class="home-feature__description">Аниматоры и&nbsp;диджей, три шоу, бассейны и&nbsp;14&nbsp;фотозон&nbsp;— праздник, который дети запомнят надолго.</p>
+          <p class="home-feature__details">4&nbsp;часа праздника · до&nbsp;50&nbsp;гостей</p>
+          <p class="home-feature__price">от&nbsp;1&nbsp;590&nbsp;₽<span> за человека</span></p>
+          <a class="btn btn--yellow home-feature__button" href="/vypusknye" data-analytics-placement="graduation-preview">Программа и&nbsp;стоимость</a>
         </div>
       </div>
     </div>
   </section>
 
-  {band(flip=True)}
-
-  <section class="section section--groups section--mint" id="dlyagrupp">
+  <section class="section section--groups-preview" id="dlyagrupp" aria-labelledby="groups-preview-title">
     <div class="stage">
-      <h2 class="section__title" data-anim="fadeinup" data-anim-dur="1">Предложения для организованных групп</h2>
-      <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">Мафия, крио-кухня, шоу-программы и мастер-классы — для школ, лагерей, секций и компаний от 15 человек</p>
-      <div class="teasers__grid teasers__grid--one" style="margin-top:32px">
-        {render_teaser('tild3034-6462-4234-a366-343963363266__photo_2022-04-02_09-.webp', '/dlyagrupp', 'Все предложения для групп', '7 программ и специальные условия')}
+      <div class="home-feature home-feature--groups">
+        <img class="home-feature__photo home-feature__photo--groups" src="{IMG}tild3034-6462-4234-a366-343963363266__photo_2022-04-02_09-.webp" alt="Участники игры в мафию в «Порхай»" loading="lazy" width="780" height="1170">
+        <div class="home-feature__content">
+          <p class="home-feature__eyebrow">Для школ, лагерей и&nbsp;секций</p>
+          <h2 class="section__title" id="groups-preview-title">Программы<br>для групп</h2>
+          <p class="home-feature__description">Мафия, крио-кухня, шоу-программы и&nbsp;мастер-классы&nbsp;— выберите формат, который увлечёт всю компанию.</p>
+          <p class="home-feature__details">Специальные условия для групп от&nbsp;15&nbsp;человек</p>
+          <p class="home-feature__price">7&nbsp;программ<span> на выбор</span></p>
+          <a class="btn btn--yellow home-feature__button" href="/dlyagrupp" data-analytics-placement="groups-preview">Все программы для групп</a>
+        </div>
       </div>
     </div>
   </section>
-
-  {band()}
 
   <section class="section" id="otziv">
     <div class="stage">
