@@ -2168,3 +2168,40 @@ ul { margin: 0; padding: 0; list-style: none; }
   * { animation: none !important; transition: none !important; }
   [data-anim] { opacity: 1; transform: none; }
 }
+
+/* Выпускные на главной: самостоятельный переход к программе перед группами. */
+.section--graduation { padding: 42px 0 100px; }
+.graduation-preview {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 52px;
+  padding: 48px;
+  background: #dfddf5;
+  border-radius: 35px;
+}
+.graduation-preview__photo { display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; object-position: 47% center; border-radius: 26px; }
+.graduation-preview__eyebrow { margin-bottom: 14px; font-size: 16px; line-height: 1.5; }
+.graduation-preview .section__title { font-size: 44px; line-height: 1.18; }
+.graduation-preview__description { margin-top: 22px; font-size: 18px; line-height: 1.55; }
+.graduation-preview__details { margin-top: 24px; font-size: 16px; line-height: 1.5; }
+.graduation-preview__price { margin-top: 14px; font-size: 32px; line-height: 1.3; font-weight: 700; }
+.graduation-preview__price span { font-size: 16px; font-weight: 400; white-space: nowrap; }
+.graduation-preview__button { margin-top: 26px; }
+@media (max-width: 959px) {
+  .graduation-preview { gap: 28px; padding: 28px; }
+  .graduation-preview .section__title { font-size: 34px; }
+  .graduation-preview__description { font-size: 16px; }
+}
+@media (max-width: 639px) {
+  .section--graduation { padding: 24px 0 64px; }
+  .graduation-preview { grid-template-columns: minmax(0, 1fr); gap: 24px; padding: 20px; border-radius: 28px; }
+  .graduation-preview__photo { aspect-ratio: 4 / 3; border-radius: 20px; }
+  .graduation-preview__eyebrow { font-size: 14px; }
+  .graduation-preview .section__title { font-size: 32px; }
+  .graduation-preview__description { margin-top: 18px; }
+  .graduation-preview__details { margin-top: 20px; font-size: 14px; }
+  .graduation-preview__price { font-size: 28px; }
+  .graduation-preview__price span { font-size: 14px; }
+  .graduation-preview__button { width: 100%; min-width: 0; padding: 0 12px; font-size: 15px; }
+}

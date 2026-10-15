@@ -264,6 +264,7 @@ MOBILE_MENU = [
     ('Аренда залов', None, [
         ('White Room', '/whiteroom'), ('Loft Box', '/loftbox'), ('Комбо+', '/combo')]),
     ('Праздник <span class="mobile-menu__accent">под ключ</span>', '/denrozhdeniya', None),
+    ('Выпускные', '/vypusknye', None),
     ('Для групп', '/dlyagrupp', None),
     ('Отзывы', '#otziv', None),
     ('Скидки от партнёров', '/partner', None),
@@ -1550,6 +1551,22 @@ def build():
         <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">Без организации мероприятия и&nbsp;шоу-программы</p>
       </div>
       {zaly}
+    </div>
+  </section>
+
+  <section class="section section--graduation" id="vypusknye" aria-labelledby="graduation-title">
+    <div class="stage">
+      <div class="graduation-preview">
+        <img class="graduation-preview__photo" src="{IMG}{VP_GALLERY[0]}" alt="Дети играют на празднике в «Порхай»" loading="lazy" width="1280" height="853">
+        <div class="graduation-preview__content">
+          <p class="graduation-preview__eyebrow">Для детских садов и&nbsp;школ</p>
+          <h2 class="section__title" id="graduation-title">Выпускные 2027<br>«под ключ»</h2>
+          <p class="graduation-preview__description">Аниматоры и&nbsp;диджей, три шоу, бассейны и&nbsp;14&nbsp;фотозон&nbsp;— праздник, который дети запомнят надолго.</p>
+          <p class="graduation-preview__details">4&nbsp;часа праздника · до&nbsp;50&nbsp;гостей</p>
+          <p class="graduation-preview__price">от&nbsp;1&nbsp;590&nbsp;₽<span> за человека</span></p>
+          <a class="btn btn--yellow graduation-preview__button" href="/vypusknye" data-analytics-placement="graduation-preview">Программа и&nbsp;стоимость</a>
+        </div>
+      </div>
     </div>
   </section>
 
