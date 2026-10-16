@@ -299,10 +299,21 @@
   // 3. Дрейф по прокрутке: шарики и чёрточки уезжают вправо и проворачиваются,
   //    пока проходят через экран, затем возвращаются.
   var drift = [].slice.call(document.querySelectorAll('[data-drift]'));
+  var homeDividers = [].slice.call(document.querySelectorAll('.home-divider'));
   var queued = false;
   function paint() {
     queued = false;
     var vh = innerHeight;
+    homeDividers.forEach(function (band) {
+      var rect = band.getBoundingClientRect();
+      if (rect.bottom < -100 || rect.top > vh + 100) return;
+      var progress = Math.max(0, Math.min(1, (vh - rect.top) / (vh + rect.height)));
+      var wave = progress * 2 - 1;
+      band.querySelectorAll('[data-band-confetti]').forEach(function (line, index) {
+        var direction = index % 2 ? -1 : 1;
+        line.style.transform = 'translateY(' + (wave * 10 * direction).toFixed(2) + 'px) rotate(' + (wave * 18 * direction).toFixed(2) + 'deg)';
+      });
+    });
     for (var i = 0; i < drift.length; i++) {
       var el = drift[i], r = el.getBoundingClientRect();
       if (r.bottom < -240 || r.top > vh + 240) continue;
@@ -435,6 +446,14 @@
     };
     var packPrev = box.querySelector('.packages__arrow--prev');
     var packNext = box.querySelector('.packages__arrow--next');
+    var updatePackArrows = function () {
+      var max = packTrack.scrollWidth - packTrack.clientWidth;
+      if (packPrev) packPrev.disabled = packTrack.scrollLeft <= 1;
+      if (packNext) packNext.disabled = packTrack.scrollLeft >= max - 1;
+    };
+    packTrack.addEventListener('scroll', updatePackArrows, { passive: true });
+    addEventListener('resize', updatePackArrows, { passive: true });
+    updatePackArrows();
     if (packPrev) packPrev.addEventListener('click', function () {
       packTrack.scrollBy({ left: -packStep(), behavior: 'smooth' });
     });

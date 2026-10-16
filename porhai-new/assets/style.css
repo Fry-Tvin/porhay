@@ -2211,3 +2211,83 @@ ul { margin: 0; padding: 0; list-style: none; }
   .home-feature__price span { font-size: 13px; }
   .home-feature__button { width: 100%; min-width: 0; padding: 0 10px; font-size: 14px; }
 }
+
+/* Главная: горизонтальные ленты не перехватывают вертикальный свайп страницы. */
+.packages__track {
+  min-width: 0;
+  align-items: stretch;
+  overflow-y: hidden;
+  padding: 16px 14px;
+  scroll-padding-inline: 14px;
+  overscroll-behavior-x: contain;
+  touch-action: pan-x pan-y pinch-zoom;
+}
+.packages__track img { -webkit-user-drag: none; user-select: none; }
+.carousel-hint { display: none; }
+.home-page #pod-kluch { padding-bottom: 24px; }
+.home-page #pod-kluch .cta-band--pair { padding-bottom: 8px; }
+.home-page #zaly { padding-top: 40px; padding-bottom: 32px; }
+.home-page #otziv { padding-top: 36px; }
+.home-page .section--groups-preview { padding-bottom: 24px; }
+.home-page #zaly .tariff { opacity: 1; transform: none; }
+
+/* Сплошная нижняя поверхность и неподвижные крупные шары закрывают весь стык.
+   При скролле двигаются только цветные линии, а не маска границы секций. */
+.home-divider {
+  position: relative;
+  height: 88px;
+  background: var(--divider-before);
+  pointer-events: none;
+  overflow: clip;
+  isolation: isolate;
+}
+.home-divider__shape { position: absolute; inset: -1px 0; width: 100%; height: calc(100% + 2px); fill: var(--divider-after); display: block; }
+.home-divider__shape--mobile { display: none; }
+.home-divider__line { position: absolute; width: 16px; z-index: 1; }
+.home-divider__line img { display: block; width: 100%; height: auto; rotate: var(--line-turn); }
+.home-page #partners { padding: 48px 0 56px; }
+.partner-preview { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; max-width: 960px; margin: 36px auto 0; }
+.partner-preview__item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 24px 16px; min-height: 170px; border-radius: 24px; background: var(--white); text-align: center; }
+.partner-preview__item img { display: block; width: 96px; height: 96px; object-fit: contain; }
+.partner-preview__item span { font-size: 16px; line-height: 1.4; font-weight: 700; }
+.partner-preview__item:hover { box-shadow: 0 4px 18px rgba(56,162,165,.16); }
+.partner-preview__actions { display: flex; flex-direction: column; align-items: center; gap: 28px; margin-top: 32px; }
+.partner-preview__more { color: var(--ink); text-decoration: underline; text-underline-offset: 4px; font-size: 16px; text-align: center; }
+.home-page #faq { padding-top: 36px; }
+@media (max-width: 1000px) {
+  .carousel-hint { display: block; margin: 10px 0 0; font-size: 13px; line-height: 1.5; text-align: center; color: var(--ink); }
+  .home-page #pod-kluch { padding-bottom: 24px; }
+  .home-page #pod-kluch .cta-band--pair { gap: 14px; padding-top: 24px; padding-bottom: 0; }
+  .home-page #zaly { padding-top: 32px; padding-bottom: 24px; }
+  .home-page #zaly .packages { margin-top: 24px; }
+  .home-page #zaly .tariff { flex: 0 0 min(280px, calc(100% - 28px)); padding: 164px 18px 20px; }
+  .home-page #zaly .tariff__photo--big { top: 14px; left: 7%; width: 43%; }
+  .home-page #zaly .tariff__photo--small { top: 54px; left: 50%; width: 34%; }
+  .home-page #zaly .tariff__title { font-size: 22px; }
+  .home-page #zaly .tariff__desc { font-size: 16px; line-height: 1.35; }
+  .home-page #zaly .tariff__note { font-size: 15px; line-height: 1.4; }
+  .home-page #zaly .tariff__price { font-size: 16px; font-weight: 700; }
+  .home-page #zaly .tariff__more { font-size: 16px; }
+  .home-page #otziv { padding-top: 32px; }
+  .home-page .section--groups-preview { padding-bottom: 20px; }
+  .home-divider { height: 72px; }
+  .home-divider__shape--desktop { display: none; }
+  .home-divider__shape--mobile { display: block; }
+  .home-page #partners { padding: 36px 0 40px; }
+  .partner-preview { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 28px; }
+  .partner-preview__item { min-height: 146px; gap: 10px; padding: 16px 10px; border-radius: 20px; }
+  .partner-preview__item img { width: 80px; height: 80px; }
+  .partner-preview__item span { font-size: 13px; }
+  .partner-preview__actions { margin-top: 28px; gap: 24px; }
+  .partner-preview__more { font-size: 15px; }
+  .home-page #faq { padding-top: 32px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-divider__line { transform: none !important; }
+}
+
+@media (min-width: 1265px) {
+  .home-page #zaly .packages__track .tariff { flex-basis: calc((100% - 48px) / 3); }
+}
+
+.packages__arrow:disabled { opacity: .35; cursor: default; }

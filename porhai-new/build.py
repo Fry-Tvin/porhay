@@ -244,6 +244,28 @@ def band(flip=False):
     return ''.join(out)
 
 
+def home_band(before, after):
+    """Непрерывный стык главной: крупные статичные шары, движутся только линии."""
+    colors = {'mint': '#DFFFFE', 'white': '#FFFFFF'}
+    def silhouette(width, step, radius, height):
+        circles = ''.join('<circle cx="%d" cy="%d" r="%d"/>' %
+                          (x, radius + (8 if n % 2 else 0), radius)
+                          for n, x in enumerate(range(0, width + 1, step)))
+        return ('<svg class="home-divider__shape home-divider__shape--%s" '
+                'viewBox="0 0 %d %d" preserveAspectRatio="none" aria-hidden="true">'
+                '<rect x="0" y="70" width="%d" height="%d"/>%s</svg>' %
+                ('mobile' if width == 390 else 'desktop', width, height, width, height, circles))
+    lines = ''.join('<span class="home-divider__line" style="left:%s%%;top:%dpx;--line-turn:%ddeg" '
+                    'data-band-confetti><img src="%s%s" alt="" width="16" height="28"></span>' %
+                    (x, y, turn, IMG, BIT[key])
+                    for x, y, turn, key in [(12, 20, -16, 'd4abbe9e'),
+                    (37, 30, 20, '24e3675d'), (63, 14, -28, 'ceeef3f3'),
+                    (87, 28, 16, '13fdaa4f')])
+    return ('<div class="home-divider" style="--divider-before:%s;--divider-after:%s" aria-hidden="true">'
+            '%s%s%s</div>' % (colors[before], colors[after],
+            silhouette(1440, 180, 110, 110), silhouette(390, 130, 90, 100), lines))
+
+
 # --- Данные страницы ------------------------------------------------------
 NAV = [
     ('Разовое посещение', '/razovoe'),
@@ -1188,10 +1210,21 @@ PAGE_SCRIPT = """<script>
   // 3. Дрейф по прокрутке: шарики и чёрточки уезжают вправо и проворачиваются,
   //    пока проходят через экран, затем возвращаются.
   var drift = [].slice.call(document.querySelectorAll('[data-drift]'));
+  var homeDividers = [].slice.call(document.querySelectorAll('.home-divider'));
   var queued = false;
   function paint() {
     queued = false;
     var vh = innerHeight;
+    homeDividers.forEach(function (band) {
+      var rect = band.getBoundingClientRect();
+      if (rect.bottom < -100 || rect.top > vh + 100) return;
+      var progress = Math.max(0, Math.min(1, (vh - rect.top) / (vh + rect.height)));
+      var wave = progress * 2 - 1;
+      band.querySelectorAll('[data-band-confetti]').forEach(function (line, index) {
+        var direction = index % 2 ? -1 : 1;
+        line.style.transform = 'translateY(' + (wave * 10 * direction).toFixed(2) + 'px) rotate(' + (wave * 18 * direction).toFixed(2) + 'deg)';
+      });
+    });
     for (var i = 0; i < drift.length; i++) {
       var el = drift[i], r = el.getBoundingClientRect();
       if (r.bottom < -240 || r.top > vh + 240) continue;
@@ -1324,6 +1357,14 @@ PAGE_SCRIPT = """<script>
     };
     var packPrev = box.querySelector('.packages__arrow--prev');
     var packNext = box.querySelector('.packages__arrow--next');
+    var updatePackArrows = function () {
+      var max = packTrack.scrollWidth - packTrack.clientWidth;
+      if (packPrev) packPrev.disabled = packTrack.scrollLeft <= 1;
+      if (packNext) packNext.disabled = packTrack.scrollLeft >= max - 1;
+    };
+    packTrack.addEventListener('scroll', updatePackArrows, { passive: true });
+    addEventListener('resize', updatePackArrows, { passive: true });
+    updatePackArrows();
     if (packPrev) packPrev.addEventListener('click', function () {
       packTrack.scrollBy({ left: -packStep(), behavior: 'smooth' });
     });
@@ -1457,10 +1498,10 @@ def build():
     faq_ld = faq_jsonld()
 
     partners = ''.join(
-        '<div class="partners__item">%s</div>' % (
-            '<img src="%s%s" alt="%s" loading="lazy" width="160">' % (IMG, img, escape(PARTNER_NAME.get(img, name or ''))) if img
-            else '<span class="partners__name">%s</span>' % name)
-        for img, name in PARTNERS)
+        '<a class="partner-preview__item" href="/partner">'
+        '<img src="%s%s" alt="" loading="lazy" width="96" height="96">'
+        '<span>%s</span></a>' % (IMG, img, escape(PARTNER_NAME.get(img, name or '')))
+        for img, name in PARTNERS if img)
 
     html = f"""<!DOCTYPE html>
 <html lang="ru">
@@ -1474,7 +1515,7 @@ def build():
 {seo_head('', 'Развлекательный центр «Порхай» во Владивостоке', 'Проведение различных мероприятий: от дней рождений и выпускных до взрослых корпоративов и романтических свиданий, во Владивостоке')}
 <link rel="stylesheet" href="assets/style.css">
 </head>
-<body data-lead-type="general">
+<body class="home-page" data-lead-type="general">
 <script>document.documentElement.className+=' js'</script>
 
 {render_top_chrome()}
@@ -1500,7 +1541,7 @@ def build():
     </div>
   </section>
 
-  {band()}
+  {home_band('mint', 'white')}
 
   <section class="section">
     <div class="stage">
@@ -1516,7 +1557,7 @@ def build():
     </div>
   </section>
 
-  {band(flip=True)}
+  {home_band('white', 'mint')}
 
   <section class="section section--mint section--steps">
     <div class="stage">
@@ -1527,7 +1568,7 @@ def build():
     </div>
   </section>
 
-  {band()}
+  {home_band('mint', 'white')}
 
   <section class="section section--tariffs section--keys" id="pod-kluch">
     <div class="stage">
@@ -1605,25 +1646,27 @@ def build():
     </div>
   </section>
 
-  {band(flip=True)}
+  {home_band('white', 'mint')}
 
   <section class="section section--partners section--mint" id="partners">
     <div class="stage">
       <div class="section__head">
-        <h2 class="section__title" data-anim="fadeinup" data-anim-dur="1">Скидки от наших партнёров</h2>
-        <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">При заказе аренды зала</p>
+        <h2 class="section__title">Скидки от партнёров</h2>
+        <p class="section__lead">Дополните праздник и&nbsp;получите скидки на&nbsp;услуги партнёров при аренде зала.</p>
       </div>
-      <div class="partners">{partners}</div>
+      <div class="partner-preview">{partners}</div>
+      <div class="partner-preview__actions">
+        <a class="partner-preview__more" href="/partner">Посмотреть предложения и&nbsp;условия</a>
+        <a class="btn btn--yellow" href="#popup:main" data-analytics-placement="partners">Записаться</a>
+      </div>
     </div>
   </section>
 
-  <div class="cta-band"><a class="btn btn--yellow" href="#popup:main" data-analytics-placement="bottom">Записаться</a></div>
-
-  {band()}
+  {home_band('mint', 'white')}
 
   {render_faq_section()}
 
-  {band(flip=True)}
+  {home_band('white', 'mint')}
 
   {render_contact_section()}
 </main>
@@ -4744,9 +4787,9 @@ def render_packages_carousel():
     return (
         '<div class="packages">'
         '<button class="packages__arrow packages__arrow--prev" type="button" aria-label="Предыдущий пакет">%s</button>'
-        '<div class="packages__track" data-peek>%s</div>'
+        '<div class="packages__track">%s</div>'
         '<button class="packages__arrow packages__arrow--next" type="button" aria-label="Следующий пакет">%s</button>'
-        '</div>' % (SLIDER_ARROW, cards, SLIDER_ARROW))
+        '</div><p class="carousel-hint">Листайте вбок, чтобы посмотреть все варианты</p>' % (SLIDER_ARROW, cards, SLIDER_ARROW))
 
 
 def render_zaly_carousel():
@@ -4755,12 +4798,13 @@ def render_zaly_carousel():
     (.packages), что и у карусели пакетов «под ключ» — заказчик попросил
     24.08.2026 привести секцию к тому же интерактиву."""
     cards = render_tariff_cards(TARIFFS)
+    cards = re.sub(r' data-(?:anim(?:-dur|-delay)?|swing)="[^"]*"', '', cards)
     return (
         '<div class="packages">'
         '<button class="packages__arrow packages__arrow--prev" type="button" aria-label="Предыдущий зал">%s</button>'
-        '<div class="packages__track" data-peek>%s</div>'
+        '<div class="packages__track">%s</div>'
         '<button class="packages__arrow packages__arrow--next" type="button" aria-label="Следующий зал">%s</button>'
-        '</div>' % (SLIDER_ARROW, cards, SLIDER_ARROW))
+        '</div><p class="carousel-hint">Листайте вбок, чтобы посмотреть все варианты</p>' % (SLIDER_ARROW, cards, SLIDER_ARROW))
 
 
 # --- Подарочная страница (/podarok) -----------------------------------
