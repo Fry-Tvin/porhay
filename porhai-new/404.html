@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+<meta charset="utf-8">
 <link rel="icon" type="image/x-icon" href="/assets/icons/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/assets/icons/favicon-192.png">
@@ -18,11 +19,10 @@
 </script>
 <noscript><div><img src="https://mc.yandex.ru/watch/112256802" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 <!-- /Yandex.Metrika counter -->
-<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ошибка 404 — Порхай</title>
 <meta name="robots" content="noindex">
-<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/style.css?v=0d1a02d1c8ad">
 </head>
 <body data-lead-type="general">
 <script>document.documentElement.className+=' js'</script>
@@ -464,28 +464,45 @@
     });
   });
 
-  // 5b. Лента-слайдер фото (если есть на странице): те же стрелки, тот же приём.
-  //     В оригинале слайдер сам листает фото каждые ~5с (замерено на живой
-  //     странице: 4.97с и 4.84с между переключениями) — воспроизводим тем же
-  //     интервалом. Кольцо останавливается на последнем кадре и едет назад
-  //     в начало, а не наоборот — так делает и оригинал.
-  var slider = document.querySelector('.slider__track');
-  if (slider) {
+  // 5b. Галерея листается автоматически только в видимой области.
+  // Фото ниже экрана остаются native-lazy; взаимодействие временно останавливает таймер.
+  document.querySelectorAll('.slider').forEach(function (box) {
+    var slider = box.querySelector('.slider__track');
+    if (!slider) return;
+    var visible = false;
+    var lastInteraction = 0;
     function sliderNext() {
       var atEnd = slider.scrollLeft + slider.clientWidth >= slider.scrollWidth - 2;
-      slider.scrollTo({ left: atEnd ? 0 : slider.scrollLeft + slider.clientWidth, behavior: 'smooth' });
+      slider.scrollTo({ left: atEnd ? 0 : slider.scrollLeft + slider.clientWidth,
+                        behavior: reduce ? 'auto' : 'smooth' });
     }
-    document.querySelector('.slider__arrow--prev').addEventListener('click', function () {
-      slider.scrollBy({ left: -slider.clientWidth, behavior: 'smooth' });
+    function interacted() { lastInteraction = Date.now(); }
+    box.querySelector('.slider__arrow--prev').addEventListener('click', function () {
+      interacted();
+      slider.scrollBy({ left: -slider.clientWidth, behavior: reduce ? 'auto' : 'smooth' });
     });
-    document.querySelector('.slider__arrow--next').addEventListener('click', sliderNext);
-
+    box.querySelector('.slider__arrow--next').addEventListener('click', function () {
+      interacted();
+      sliderNext();
+    });
+    box.addEventListener('pointerdown', interacted, { passive: true });
+    box.addEventListener('focusin', interacted);
+    box.addEventListener('mouseenter', interacted);
+    if (window.IntersectionObserver) {
+      new IntersectionObserver(function (entries) {
+        visible = entries[0].isIntersecting;
+      }, { threshold: .1 }).observe(box);
+    }
     if (!reduce) {
-      var sliderTimer = setInterval(function () {
-        if (!document.hidden) sliderNext();
+      setInterval(function () {
+        if (!window.IntersectionObserver) {
+          var rect = box.getBoundingClientRect();
+          visible = rect.bottom > 0 && rect.top < innerHeight;
+        }
+        if (visible && !document.hidden && Date.now() - lastInteraction > 8000) sliderNext();
       }, 5000);
     }
-  }
+  });
 
   // 5c. Видео о центре: до клика на странице только наша картинка-обложка,
   //     плеер RuTube (его скрипты и куки) подставляется одним iframe'ом

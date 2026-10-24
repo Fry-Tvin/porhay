@@ -11,6 +11,7 @@
 import os
 import json
 import glob
+import hashlib
 import re
 from html import escape
 from urllib.parse import quote
@@ -28,6 +29,10 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 # Картинки берём из assets/img — их готовит optimize_images.py:
 # растр пережат в WebP, SVG скопированы как есть.
 IMG = 'assets/img/'
+
+# Новый HTML должен получать соответствующий CSS даже при старом браузерном кеше.
+with open(os.path.join(HERE, 'assets', 'style.css'), 'rb') as stylesheet:
+    STYLE_HREF = 'assets/style.css?v=' + hashlib.sha256(stylesheet.read()).hexdigest()[:12]
 
 # --- SEO: канонические адреса, Open Graph, sitemap.xml, robots.txt --------
 # Диагностика 25.09.2026: у сайта не было ни canonical, ни og:*-тегов, ни
@@ -48,6 +53,21 @@ HOME_SEO_TITLE = 'Порхай — детский развлекательный
 HOME_SEO_DESCRIPTION = ('«Порхай» — детский развлекательный центр во Владивостоке. '
                         'Дни рождения и выпускные под ключ, аниматоры и шоу-программы. '
                         '3 сухих бассейна, фотозоны. Державина, 23.')
+
+
+SERVICE_DESCRIPTIONS = {
+    'denrozhdeniya': 'Детский день рождения под ключ во Владивостоке: аренда зала, аниматоры, бассейны и шоу-программы. Посмотрите пакеты праздников в центре «Порхай».',
+    'vypusknye': 'Выпускные 2027 для детских садов и школ во Владивостоке. Программа под ключ в «Порхай»: аниматоры, шоу, бассейны и фотозоны. Условия и бронирование.',
+    'whiteroom': 'Аренда White Room во Владивостоке: светлый зал и глубокий сухой бассейн для вашего праздника. Стоимость, вместимость и условия в центре «Порхай».',
+    'loftbox': 'Аренда Loft Box во Владивостоке: банкетный зал, средний и маленький бассейны, фотозоны. Посмотрите стоимость и условия праздника в «Порхай».',
+    'combo': 'Аренда всей площадки «Порхай» во Владивостоке для компании до 50 гостей. Залы, бассейны и фотозоны. Стоимость и условия формата «Комбо+».',
+}
+GALLERY_MANIFEST_PATH = os.path.join(HERE, 'assets', 'gallery', 'manifest.json')
+if os.path.exists(GALLERY_MANIFEST_PATH):
+    with open(GALLERY_MANIFEST_PATH, encoding='utf-8') as gallery_file:
+        GALLERY_MANIFEST = json.load(gallery_file)
+else:
+    GALLERY_MANIFEST = {}
 
 
 FAVICON_LINKS = """<link rel="icon" type="image/x-icon" href="/assets/icons/favicon.ico">
@@ -1379,28 +1399,45 @@ PAGE_SCRIPT = """<script>
     });
   });
 
-  // 5b. Лента-слайдер фото (если есть на странице): те же стрелки, тот же приём.
-  //     В оригинале слайдер сам листает фото каждые ~5с (замерено на живой
-  //     странице: 4.97с и 4.84с между переключениями) — воспроизводим тем же
-  //     интервалом. Кольцо останавливается на последнем кадре и едет назад
-  //     в начало, а не наоборот — так делает и оригинал.
-  var slider = document.querySelector('.slider__track');
-  if (slider) {
+  // 5b. Галерея листается автоматически только в видимой области.
+  // Фото ниже экрана остаются native-lazy; взаимодействие временно останавливает таймер.
+  document.querySelectorAll('.slider').forEach(function (box) {
+    var slider = box.querySelector('.slider__track');
+    if (!slider) return;
+    var visible = false;
+    var lastInteraction = 0;
     function sliderNext() {
       var atEnd = slider.scrollLeft + slider.clientWidth >= slider.scrollWidth - 2;
-      slider.scrollTo({ left: atEnd ? 0 : slider.scrollLeft + slider.clientWidth, behavior: 'smooth' });
+      slider.scrollTo({ left: atEnd ? 0 : slider.scrollLeft + slider.clientWidth,
+                        behavior: reduce ? 'auto' : 'smooth' });
     }
-    document.querySelector('.slider__arrow--prev').addEventListener('click', function () {
-      slider.scrollBy({ left: -slider.clientWidth, behavior: 'smooth' });
+    function interacted() { lastInteraction = Date.now(); }
+    box.querySelector('.slider__arrow--prev').addEventListener('click', function () {
+      interacted();
+      slider.scrollBy({ left: -slider.clientWidth, behavior: reduce ? 'auto' : 'smooth' });
     });
-    document.querySelector('.slider__arrow--next').addEventListener('click', sliderNext);
-
+    box.querySelector('.slider__arrow--next').addEventListener('click', function () {
+      interacted();
+      sliderNext();
+    });
+    box.addEventListener('pointerdown', interacted, { passive: true });
+    box.addEventListener('focusin', interacted);
+    box.addEventListener('mouseenter', interacted);
+    if (window.IntersectionObserver) {
+      new IntersectionObserver(function (entries) {
+        visible = entries[0].isIntersecting;
+      }, { threshold: .1 }).observe(box);
+    }
     if (!reduce) {
-      var sliderTimer = setInterval(function () {
-        if (!document.hidden) sliderNext();
+      setInterval(function () {
+        if (!window.IntersectionObserver) {
+          var rect = box.getBoundingClientRect();
+          visible = rect.bottom > 0 && rect.top < innerHeight;
+        }
+        if (visible && !document.hidden && Date.now() - lastInteraction > 8000) sliderNext();
       }, 5000);
     }
-  }
+  });
 
   // 5c. Видео о центре: до клика на странице только наша картинка-обложка,
   //     плеер RuTube (его скрипты и куки) подставляется одним iframe'ом
@@ -1512,14 +1549,14 @@ def build():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+<meta charset="utf-8">
 {FAVICON_LINKS}
 {YANDEX_METRIKA}
-<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{HOME_SEO_TITLE}</title>
 <meta name="description" content="{HOME_SEO_DESCRIPTION}">
 {seo_head('', HOME_SEO_TITLE, HOME_SEO_DESCRIPTION)}
-<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="{STYLE_HREF}">
 </head>
 <body class="home-page" data-lead-type="general">
 <script>document.documentElement.className+=' js'</script>
@@ -1610,7 +1647,7 @@ def build():
           <h2 class="section__title" id="graduation-title">Выпускные 2027<br>«под ключ»</h2>
           <p class="home-feature__description">Аниматоры и&nbsp;диджей, три шоу, бассейны и&nbsp;14&nbsp;фотозон&nbsp;— праздник, который дети запомнят надолго.</p>
           <p class="home-feature__details">4&nbsp;часа праздника · до&nbsp;50&nbsp;гостей</p>
-          <p class="home-feature__price">от&nbsp;1&nbsp;590&nbsp;₽<span> за человека</span></p>
+          <p class="home-feature__price">от&nbsp;{VP_MIN_PRICE_HTML}<span> за человека</span></p>
           <a class="btn btn--yellow home-feature__button" href="/vypusknye" data-analytics-placement="graduation-preview">Программа и&nbsp;стоимость</a>
         </div>
       </div>
@@ -1765,13 +1802,13 @@ def build_privacy():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+<meta charset="utf-8">
 {FAVICON_LINKS}
 {YANDEX_METRIKA}
-<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Политика конфиденциальности — Порхай</title>
 <meta name="robots" content="noindex">
-<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="{STYLE_HREF}">
 </head>
 <body data-lead-type="general">
 <script>document.documentElement.className+=' js'</script>
@@ -2237,14 +2274,14 @@ def build_oferta():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+<meta charset="utf-8">
 {FAVICON_LINKS}
 {YANDEX_METRIKA}
-<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Публичная оферта — Порхай</title>
 <meta name="description" content="Публичная оферта на аренду части нежилого помещения развлекательного центра «Порхай», г. Владивосток, ул. Державина 23.">
 <meta name="robots" content="noindex">
-<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="{STYLE_HREF}">
 </head>
 <body data-lead-type="general">
 <script>document.documentElement.className+=' js'</script>
@@ -2533,14 +2570,14 @@ def build_oferta_vypusknye():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+<meta charset="utf-8">
 {FAVICON_LINKS}
 {YANDEX_METRIKA}
-<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Публичная оферта на выпускной — Порхай</title>
 <meta name="description" content="Публичная оферта на организацию и проведение выпускного мероприятия в развлекательном центре «Порхай», г. Владивосток, ул. Державина 23.">
 <meta name="robots" content="noindex">
-<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="{STYLE_HREF}">
 </head>
 <body data-lead-type="general">
 <script>document.documentElement.className+=' js'</script>
@@ -2648,14 +2685,14 @@ def build_pravila():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+<meta charset="utf-8">
 {FAVICON_LINKS}
 {YANDEX_METRIKA}
-<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Правила посещения — «Порхай», Владивосток</title>
 <meta name="description" content="Правила посещения развлекательного центра «Порхай»: безопасность, что взять с собой, парковка и видеонаблюдение.">
 {seo_head('/pravila', 'Правила посещения — «Порхай», Владивосток', 'Правила посещения развлекательного центра «Порхай»: безопасность, что взять с собой, парковка и видеонаблюдение.')}
-<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="{STYLE_HREF}">
 </head>
 <body data-lead-type="general">
 <script>document.documentElement.className+=' js'</script>
@@ -2779,16 +2816,26 @@ def render_checklist(items):
 
 
 def render_slider(images, alt=''):
-    slides = ''.join(
-        '<div class="slider__slide" style="background-image:url(%s%s)" role="img" aria-label="%s"></div>'
-        % (IMG, img, alt) for img in images)
+    """Содержательные фотографии с адаптивными источниками и native lazy loading."""
+    slides = []
+    for index, img in enumerate(images, 1):
+        info = GALLERY_MANIFEST.get(img, {})
+        src = info.get('src', IMG + img)
+        variants = info.get('variants', [])
+        srcset = ' srcset="%s" sizes="(max-width: 1000px) calc(100vw - 40px), (max-width: 1224px) calc(100vw - 64px), 1160px"' % ', '.join(
+            '%s %dw' % (variant['src'], variant['width']) for variant in variants) if variants else ''
+        label = '%s — фото %d' % (alt, index) if alt else 'Фото %d' % index
+        slides.append('<div class="slider__slide"><img class="slider__image" '
+                      'src="%s"%s alt="%s" width="%d" height="%d" '
+                      'loading="lazy" decoding="async" data-gallery-source="%s"></div>' %
+                      (src, srcset, escape(label), info.get('width', 1280),
+                       info.get('height', 853), escape(img)))
     return (
         '<div class="slider">'
         '<button class="slider__arrow slider__arrow--prev" type="button" aria-label="Предыдущее фото">%s</button>'
-        '<div class="slider__track" data-peek>%s</div>'
+        '<div class="slider__track">%s</div>'
         '<button class="slider__arrow slider__arrow--next" type="button" aria-label="Следующее фото">%s</button>'
-        '</div>' % (SLIDER_ARROW, slides, SLIDER_ARROW)
-    )
+        '</div>' % (SLIDER_ARROW, ''.join(slides), SLIDER_ARROW))
 
 
 def build_razovoe():
@@ -2809,14 +2856,14 @@ def build_razovoe():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+<meta charset="utf-8">
 {FAVICON_LINKS}
 {YANDEX_METRIKA}
-<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Разовое посещение «Порхай» во Владивостоке</title>
 <meta name="description" content="Разовое посещение центра «Порхай» во Владивостоке — 3 бассейна с шариками, 15 фотозон, ростовые фигуры и волшебная комната с фонариками.">
 {seo_head('/razovoe', 'Разовое посещение «Порхай» во Владивостоке', 'Разовое посещение центра «Порхай» во Владивостоке — 3 бассейна с шариками, 15 фотозон, ростовые фигуры и волшебная комната с фонариками.')}
-<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="{STYLE_HREF}">
 </head>
 <body data-lead-type="visit">
 <script>document.documentElement.className+=' js'</script>
@@ -2934,7 +2981,7 @@ RENTAL_TEASERS = [
 RENTAL_PAGES = {
     'whiteroom': dict(
         meta_title='Аренда зала White Room в «Порхай», Владивосток',
-        meta_descr='Стильная, светлая, просторная комната, которую вы можете арендовать под свой праздник и отметить любое мероприятие только в кругу близких.',
+        meta_descr=SERVICE_DESCRIPTIONS['whiteroom'],
         cover='tild3461-3239-4265-b438-393435616565__iii_3488_1.webp',
         video='659a38eb7447d3e037c32ae68ff2ca4a',
         avatar='tild3161-3162-4730-a239-353134636136__frame_15.svg',
@@ -2997,7 +3044,7 @@ RENTAL_PAGES = {
     ),
     'loftbox': dict(
         meta_title='Аренда зала Loft Box в «Порхай», Владивосток',
-        meta_descr='Отдельный банкетный зал + средний и маленький бассейны + все фотозоны музея.',
+        meta_descr=SERVICE_DESCRIPTIONS['loftbox'],
         # Было старое фото бассейна «Попкорн» — заменено на «Пляж» 24.08.2026.
         cover='photo_1_2026-08-21_17-28-51.webp',
         video='3bfdf180eaa5041f3fb39437f8c796f3',
@@ -3048,7 +3095,7 @@ RENTAL_PAGES = {
     ),
     'combo': dict(
         meta_title='Аренда зала Комбо+ в «Порхай», Владивосток',
-        meta_descr='Для больших компаний свыше 25 человек — АБСОЛЮТНО ВЕСЬ ЦЕНТР (335 м²).',
+        meta_descr=SERVICE_DESCRIPTIONS['combo'],
         # Было старое фото бассейна «Попкорн» — заменено на «Пляж» 24.08.2026.
         cover='photo_3_2026-08-21_17-28-51.webp',
         video='6b212385382c75550c54ea99dc1d0d99',
@@ -3179,14 +3226,14 @@ def render_rental_page(slug):
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+<meta charset="utf-8">
 {FAVICON_LINKS}
 {YANDEX_METRIKA}
-<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{p['meta_title']}</title>
 <meta name="description" content="{p['meta_descr']}">
 {seo_head('/' + slug, p['meta_title'], p['meta_descr'], image=IMG + p['cover'])}
-<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="{STYLE_HREF}">
 </head>
 <body data-lead-type="{slug}">
 <script>document.documentElement.className+=' js'</script>
@@ -3541,14 +3588,14 @@ def build_denrozhdeniya():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+<meta charset="utf-8">
 {FAVICON_LINKS}
 {YANDEX_METRIKA}
-<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>День рождения «под ключ» в «Порхай», Владивосток</title>
-<meta name="description" content="Мы собрали всё необходимое для вашего дня рождения, вам останется только наполнить праздник угощениями для гостей.">
-{seo_head('/denrozhdeniya', 'День рождения «под ключ» в «Порхай», Владивосток', 'Мы собрали всё необходимое для вашего дня рождения, вам останется только наполнить праздник угощениями для гостей.')}
-<link rel="stylesheet" href="assets/style.css">
+<title>Детский день рождения под ключ во Владивостоке — Порхай</title>
+<meta name="description" content="{SERVICE_DESCRIPTIONS['denrozhdeniya']}">
+{seo_head('/denrozhdeniya', 'Детский день рождения под ключ во Владивостоке — Порхай', SERVICE_DESCRIPTIONS['denrozhdeniya'])}
+<link rel="stylesheet" href="{STYLE_HREF}">
 </head>
 <body data-lead-type="birthday">
 <script>document.documentElement.className+=' js'</script>
@@ -3717,13 +3764,30 @@ VP_GALLERY = [
 # внутри будни/выходные, теперь наоборот — у будней два разных времени с
 # разной ценой, а у выходных одна цена на оба слота (показываем двумя
 # строками, как у будней: одной строкой подпись не влезала в колонку).
+VP_CAPACITY = 50
+VP_TARIFFS = [
+    dict(note='Будни', items=[('10:00 — 14:00', 79500), ('16:00 — 21:00', 88500)]),
+    dict(note='Выходные', items=[('10:00 — 14:00', 93000), ('16:00 — 21:00', 93000)]),
+]
+
+
+def rubles(amount):
+    value = ('%.2f' % amount).rstrip('0').rstrip('.') if amount % 1 else str(int(amount))
+    integer, _, fraction = value.partition('.')
+    grouped = format(int(integer), ',').replace(',', ' ')
+    return grouped + (',' + fraction if fraction else '') + ' ₽'
+
+
+VP_MIN_PER_GUEST = min(total for group in VP_TARIFFS for _, total in group['items']) / VP_CAPACITY
+VP_MIN_PRICE_TEXT = rubles(VP_MIN_PER_GUEST)
+VP_MIN_PRICE_HTML = VP_MIN_PRICE_TEXT.replace(' ', '&nbsp;')
 VP_PRICE_GROUPS = [
-    dict(note='Будни',
-         items=[('10:00 — 14:00', '79 500 ₽', 'При 50 людях — 1590 ₽/чел, при 30&nbsp;— 2650 ₽/чел'),
-                ('16:00 — 21:00', '88 500 ₽', 'При 50 людях — 1750 ₽/чел, при 30&nbsp;— 2950 ₽/чел')]),
-    dict(note='Выходные',
-         items=[('10:00 — 14:00', '93 000 ₽', 'При 50 людях — 1860 ₽/чел, при 30&nbsp;— 3100 ₽/чел'),
-                ('16:00 — 21:00', '93 000 ₽', 'При 50 людях — 1860 ₽/чел, при 30&nbsp;— 3100 ₽/чел')]),
+    dict(note=group['note'], items=[
+        (slot, rubles(total), 'При %d людях — %s/чел, при 30&nbsp;— %s/чел' %
+         (VP_CAPACITY, rubles(total / VP_CAPACITY).replace(' ', '&nbsp;'),
+          rubles(total / 30).replace(' ', '&nbsp;')))
+        for slot, total in group['items']])
+    for group in VP_TARIFFS
 ]
 
 
@@ -3751,14 +3815,14 @@ def build_vypusknye():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+<meta charset="utf-8">
 {FAVICON_LINKS}
 {YANDEX_METRIKA}
-<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Выпускной «под ключ» в «Порхай», Владивосток</title>
-<meta name="description" content="Мы подготовили для вас идеальный пакет для выпускного, чтобы ваш праздник прошёл легко, без суеты и лишний траты времени на организацию.">
-{seo_head('/vypusknye', 'Выпускной «под ключ» в «Порхай», Владивосток', 'Мы подготовили для вас идеальный пакет для выпускного, чтобы ваш праздник прошёл легко, без суеты и лишний траты времени на организацию.')}
-<link rel="stylesheet" href="assets/style.css">
+<title>Выпускные 2027 под ключ во Владивостоке — Порхай</title>
+<meta name="description" content="{SERVICE_DESCRIPTIONS['vypusknye']}">
+{seo_head('/vypusknye', 'Выпускные 2027 под ключ во Владивостоке — Порхай', SERVICE_DESCRIPTIONS['vypusknye'])}
+<link rel="stylesheet" href="{STYLE_HREF}">
 </head>
 <body data-lead-type="graduation">
 <script>document.documentElement.className+=' js'</script>
@@ -3785,7 +3849,7 @@ def build_vypusknye():
     </div>
   </section>
 
-  <p class="price-line">Стоимость от&nbsp;1590&nbsp;₽/чел.</p>
+  <p class="price-line">Стоимость от&nbsp;{VP_MIN_PRICE_HTML}/чел.</p>
 
   {VP_PROMO}
 
@@ -3978,14 +4042,14 @@ def build_korporativ():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+<meta charset="utf-8">
 {FAVICON_LINKS}
 {YANDEX_METRIKA}
-<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Корпоративные мероприятия в «Порхай», Владивосток</title>
 <meta name="description" content="Организуем корпоративные мероприятия для сотрудников и их семей во Владивостоке — тимбилдинги, стратсессии и праздники на площадке до 50 человек.">
 {seo_head('/korporativ', 'Корпоративные мероприятия в «Порхай», Владивосток', 'Организуем корпоративные мероприятия для сотрудников и их семей во Владивостоке — тимбилдинги, стратсессии и праздники на площадке до 50 человек.')}
-<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="{STYLE_HREF}">
 </head>
 <body data-lead-type="corporate">
 <script>document.documentElement.className+=' js'</script>
@@ -4171,9 +4235,9 @@ GF_FORMATS = [
     dict(title='Визит с программой', price='750 ₽/чел', meta='новый формат · от 20 человек', color='cream',
          href='#popup:dlyagrupp',
          features=['Посещение + аниматор + 1 час шоу', 'Идеально для групп от 20 человек']),
-    dict(title='Праздник под ключ', price='от 11 500 ₽', meta='полная организация', color='peach',
+    dict(title='Праздник под ключ', price='По запросу', meta='под формат вашей группы', color='peach',
          href='#popup:dlyagrupp',
-         features=['Аниматор, декор, мастер-класс, торт, фотограф', 'Вы просто приходите и наслаждаетесь']),
+         features=['Аренда зала и программа под формат вашей группы', 'Состав и стоимость согласуем индивидуально']),
     dict(title='Партнёрские условия', price='Индивидуально', meta='для регулярных групп', color='pink',
          href='#popup:dlyagrupp',
          features=['Для лагерей, школ и постоянных клиентов', 'Специальные тарифы, приоритетное бронирование']),
@@ -4229,14 +4293,14 @@ def build_dlyagrupp():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+<meta charset="utf-8">
 {FAVICON_LINKS}
 {YANDEX_METRIKA}
-<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Для организованных групп — «Порхай», Владивосток</title>
 <meta name="description" content="Школы, лагеря, секции и корпоративные клиенты — организуем разовый визит, визит с программой или праздник под ключ для группы от 15 человек во Владивостоке.">
 {seo_head('/dlyagrupp', 'Для организованных групп — «Порхай», Владивосток', 'Школы, лагеря, секции и корпоративные клиенты — организуем разовый визит, визит с программой или праздник под ключ для группы от 15 человек во Владивостоке.')}
-<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="{STYLE_HREF}">
 </head>
 <body data-lead-type="groups">
 <script>document.documentElement.className+=' js'</script>
@@ -4488,14 +4552,14 @@ def build_torty():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+<meta charset="utf-8">
 {FAVICON_LINKS}
 {YANDEX_METRIKA}
-<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Торты на праздник в «Порхай», Владивосток</title>
 <meta name="description" content="{len(CAKES)} готовых дизайнов тортов, начинки на выбор и десерты на праздник в «Порхай»: кейк-попсы и капкейки.">
 {seo_head('/torty', 'Торты на праздник в «Порхай», Владивосток', f'{len(CAKES)} готовых дизайнов тортов, начинки на выбор и десерты на праздник в «Порхай»: кейк-попсы и капкейки.')}
-<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="{STYLE_HREF}">
 </head>
 <body data-lead-type="cakes">
 <script>document.documentElement.className+=' js'</script>
@@ -4597,14 +4661,14 @@ def build_pinyaty():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+<meta charset="utf-8">
 {FAVICON_LINKS}
 {YANDEX_METRIKA}
-<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Пиньяты на праздник в «Порхай», Владивосток</title>
 <meta name="description" content="Пиньяты с наполнением на день рождения в «Порхай»: {len(PINYATY_GALLERY)} готовых дизайнов.">
 {seo_head('/pinyaty', 'Пиньяты на праздник в «Порхай», Владивосток', f'Пиньяты с наполнением на день рождения в «Порхай»: {len(PINYATY_GALLERY)} готовых дизайнов.')}
-<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="{STYLE_HREF}">
 </head>
 <body data-lead-type="pinyatas">
 <script>document.documentElement.className+=' js'</script>
@@ -4675,14 +4739,14 @@ def build_partner():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+<meta charset="utf-8">
 {FAVICON_LINKS}
 {YANDEX_METRIKA}
-<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Скидки от партнёров «Порхай» во Владивостоке</title>
 <meta name="description" content="Скидки от партнёров развлекательного центра «Порхай» при аренде залов во Владивостоке.">
 {seo_head('/partner', 'Скидки от партнёров «Порхай» во Владивостоке', 'Скидки от партнёров развлекательного центра «Порхай» при аренде залов во Владивостоке.')}
-<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="{STYLE_HREF}">
 </head>
 <body data-lead-type="general">
 <script>document.documentElement.className+=' js'</script>
@@ -4732,7 +4796,7 @@ def build_partner():
 # и минимальная цена со своей страницы, корпоратив — без фиксированной
 # цены, как и в оригинале (считается индивидуально).
 PACKAGES_VYPUSKNYE = dict(
-    title='Выпускной', price='от 1090 ₽', meta='за человека · 50 гостей · 4 часа',
+    title='Выпускной', price='от ' + VP_MIN_PRICE_TEXT, meta='за человека · 50 гостей · 4 часа',
     color='mint', href='/vypusknye',
     features=[t for _, t in VP_CHECKLIST])
 
@@ -4747,13 +4811,13 @@ PACKAGES_KORPORATIV = dict(
 def all_packages():
     """Шесть пакетов одним списком: 4 дня рождения + выпускной + корпоратив.
     Заказчик 24.08.2026: клик по любому пакету на главной должен вести на
-    /denrozhdeniya, сразу пролистанную к этому пакету — там теперь общая
-    точка входа для всех шести (у выпускного/корпоратива на ней тизеры
-    с якорями, полный контент — на их собственных страницах)."""
+    /denrozhdeniya, сразу пролистанную к этому пакету.
+    После SEO-аудита выпускной ведёт непосредственно на /vypusknye;
+    дни рождения сохраняют якоря на конкретные пакеты."""
     out = []
     for pl in DR_PLANS:
         out.append(dict(pl, href='/denrozhdeniya#plan-%s' % pl['slug'], group='День рождения'))
-    out.append(dict(PACKAGES_VYPUSKNYE, href='/denrozhdeniya#plan-vypusknoy', group='Выпускной'))
+    out.append(dict(PACKAGES_VYPUSKNYE, group='Выпускной'))
     out.append(dict(PACKAGES_KORPORATIV, href='/denrozhdeniya#plan-korporativ', group='Корпоратив'))
     return out
 
@@ -4908,13 +4972,13 @@ def build_podarok():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+<meta charset="utf-8">
 {FAVICON_LINKS}
 {YANDEX_METRIKA}
-<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Подарок — второй час посещения бесплатно «Порхай»</title>
 <meta name="robots" content="noindex, nofollow">
-<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="{STYLE_HREF}">
 </head>
 <body data-lead-type="general">
 <script>document.documentElement.className+=' js'</script>
@@ -5011,13 +5075,13 @@ def build_not_found():
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
+<meta charset="utf-8">
 {FAVICON_LINKS}
 {YANDEX_METRIKA}
-<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ошибка 404 — Порхай</title>
 <meta name="robots" content="noindex">
-<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="{STYLE_HREF}">
 </head>
 <body data-lead-type="general">
 <script>document.documentElement.className+=' js'</script>
@@ -5082,19 +5146,8 @@ def build_sitemap():
 
 
 def build_robots():
-    """robots.txt — открыт для всех, явно закрыты служебные noindex-страницы
-    (не обязательно для индексации, раз там уже есть meta robots, но экономит
-    краулерам заход) и указывает на sitemap.xml."""
-    txt = (
-        'User-agent: *\n'
-        'Disallow: /privacy.html\n'
-        'Disallow: /oferta.html\n'
-        'Disallow: /oferta-vypusknye.html\n'
-        'Disallow: /podarok.html\n'
-        'Disallow: /bonus.html\n'
-        '\n'
-        'Sitemap: %s/sitemap.xml\n' % SITE_URL
-    )
+    """Служебные страницы исключаются своим noindex, доступным роботу при обходе."""
+    txt = 'User-agent: *\nAllow: /\n\nSitemap: %s/sitemap.xml\n' % SITE_URL
     path = os.path.join(HERE, 'robots.txt')
     with open(path, 'w', encoding='utf-8', newline='\n') as f:
         f.write(txt)
