@@ -43,6 +43,12 @@ SITE_URL = 'https://xn--80asndg4a.xn--p1ai'
 # в проекте пока нет.
 SEO_IMAGE = IMG + 'tild3463-6130-4836-a539-636430646232__vector.webp'
 
+# Один источник для поискового описания главной и Open Graph.
+HOME_SEO_TITLE = 'Порхай — детский развлекательный центр во Владивостоке'
+HOME_SEO_DESCRIPTION = ('«Порхай» — детский развлекательный центр во Владивостоке. '
+                        'Дни рождения и выпускные под ключ, аниматоры и шоу-программы. '
+                        '3 сухих бассейна, фотозоны. Державина, 23.')
+
 
 FAVICON_LINKS = """<link rel="icon" type="image/x-icon" href="/assets/icons/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32.png">
@@ -1510,9 +1516,9 @@ def build():
 {YANDEX_METRIKA}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Развлекательный центр «Порхай» во Владивостоке</title>
-<meta name="description" content="Проведение различных мероприятий: от дней рождений и выпускных до взрослых корпоративов и романтических свиданий, во Владивостоке">
-{seo_head('', 'Развлекательный центр «Порхай» во Владивостоке', 'Проведение различных мероприятий: от дней рождений и выпускных до взрослых корпоративов и романтических свиданий, во Владивостоке')}
+<title>{HOME_SEO_TITLE}</title>
+<meta name="description" content="{HOME_SEO_DESCRIPTION}">
+{seo_head('', HOME_SEO_TITLE, HOME_SEO_DESCRIPTION)}
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body class="home-page" data-lead-type="general">
@@ -1526,7 +1532,7 @@ def build():
       <div class="hero__content">
         <img class="hero__flag" src="{IMG}tild3236-6461-4137-a165-663934353632__b8bca4c5-59d4-4e8a-a.svg" alt="" width="154" height="113" data-anim="zoomin" data-anim-dur="1" data-anim-delay=".6">
         <h1 class="hero__title" data-anim="fadeinright" data-anim-dur="1.7">Развлекательный центр для всей семьи</h1>
-        <p class="hero__text" data-anim="fadeinright" data-anim-dur="1.7" data-anim-delay=".2">Проведение мероприятий <b>во&nbsp;Владивостоке</b>: от&nbsp;дней рождений и&nbsp;выпускных до&nbsp;взрослых корпоративов и&nbsp;романтических свиданий</p>
+        <p class="hero__text" data-anim="fadeinright" data-anim-dur="1.7" data-anim-delay=".2">Дни рождения и&nbsp;выпускные под&nbsp;ключ <b>во&nbsp;Владивостоке</b>. Аниматоры и&nbsp;шоу-программы, 3&nbsp;сухих бассейна и&nbsp;фотозоны.</p>
         <div class="hero__buttons" data-anim="zoomin" data-anim-dur="2.4" data-anim-delay=".4">
           <a class="btn btn--yellow" href="#popup:bonus" data-analytics-placement="hero">Получите 3&nbsp;пиццы на&nbsp;праздник и&nbsp;второй час посещения бесплатно</a>
           <a class="btn btn--teal" href="/denrozhdeniya">Праздник</a>
