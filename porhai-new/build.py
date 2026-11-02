@@ -116,15 +116,11 @@ YANDEX_METRIKA = """<!-- Yandex.Metrika counter -->
 <noscript><div><img src="https://mc.yandex.ru/watch/112256802" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 <!-- /Yandex.Metrika counter -->"""
 
-# Акция «Пиньята в подарок на день рождения в октябре», с 01.10.2026 —
-# заказчик 02.10.2026 попросил заменить текст уже опубликованной акции
-# «3 пиццы» (которая сама сменила «Неоновое ленточное шоу», см.
-# git-историю PROMO_NEON) на эту — только текст, место и условия те же.
-# Звёздочка поясняется отдельной строкой ниже (.promo-badge__note) —
-# «только новые бронирования», подтверждено заказчиком 28.09.2026.
-PROMO_OCT_PIZZA = (
+# Акция «Пиньята в подарок на день рождения в ноябре».
+# Продлена заказчиком 02.11.2026; подарок и условия сохранены.
+PROMO_PINATA = (
     '<p class="promo-badge">Дарим пиньяту на&nbsp;празднование дня '
-    'рождения в&nbsp;октябре*</p>'
+    'рождения в&nbsp;ноябре*</p>'
     '<p class="promo-badge__note">* Акция действует только '
     'на&nbsp;новые бронирования</p>'
 )
@@ -1618,7 +1614,7 @@ def build():
       <div class="section__head">
         <h2 class="section__title" data-anim="fadeinup" data-anim-dur="1">Праздники «под ключ»</h2>
         <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">Аниматор/шоу-программа и&nbsp;фотограф включены в&nbsp;стоимость</p>
-        {PROMO_OCT_PIZZA}
+        {PROMO_PINATA}
       </div>
       {render_packages_carousel()}
       <div class="cta-band cta-band--pair">
@@ -3209,7 +3205,7 @@ def render_rental_page(slug):
     # прежнего неонового шоу, которое было только у White Room), поэтому
     # заказчик 28.09.2026 попросил показывать её на всех трёх страницах
     # аренды залов, не только на White Room.
-    promo = PROMO_OCT_PIZZA if slug in ('whiteroom', 'loftbox', 'combo') else ''
+    promo = PROMO_PINATA if slug in ('whiteroom', 'loftbox', 'combo') else ''
     # White Room: строка цены над неоновой плашкой убрана 24.08.2026 — вместе
     # с промо-плашкой они наезжали на кнопку «Записаться» ниже (слишком
     # тесно друг к другу).
@@ -3617,7 +3613,7 @@ def build_denrozhdeniya():
   <section class="section">
     <div class="stage">
       <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Пакеты «День рождения»</h2>
-      {PROMO_OCT_PIZZA}
+      {PROMO_PINATA}
       {render_compare_table(('Мини', 'Под ключ', 'Вип', 'Супер Вип'), DR_COMPARE, DR_COMPARE_REC, DR_COMPARE_COMMON)}
       <p class="ct__links"><a href="/torty">Все дизайны тортов →</a> <a href="/pinyaty">Все пиньяты →</a></p>
       <div class="plans__grid">{plans}</div>
