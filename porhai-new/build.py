@@ -3610,7 +3610,7 @@ def build_denrozhdeniya():
     </div>
   </section>
 
-  <section class="section">
+  <section class="section" id="pakety">
     <div class="stage">
       <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Пакеты «День рождения»</h2>
       {PROMO_PINATA}
@@ -3629,7 +3629,7 @@ def build_denrozhdeniya():
 
   {band(flip=True)}
 
-  <section class="section" style="background:{DR_BG}">
+  <section class="section" id="foto" style="background:{DR_BG}">
     <div class="stage">
       <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Яркие эмоции и&nbsp;крутые фото&nbsp;— гарантированы!</h2>
       {gallery}
