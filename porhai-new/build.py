@@ -3592,13 +3592,13 @@ def build_denrozhdeniya():
 
     why = ''.join(
         '<div class="features__item"><img src="%s%s" alt="%s" width="140" height="140">'
-        '<h3>%s</h3></div>' % (IMG, img, alt_text(title), title) for img, title in DR_WHY)
+        '<h3>%s</h3></div>' % (IMG, img, alt_text(title), title) for (img, _), title in zip((DR_WHY[i] for i in (0, 1, 2, 5)), ('Фотозоны и бассейны', 'Помощь с оформлением', 'Программа для детей', 'Подготовка зала и уборка')))
 
     plans = ''.join(
         '<div class="plan plan--%s%s" id="plan-%s">%s<h3 class="plan__title">%s</h3>'
         '<p class="plan__price">%s</p><p class="plan__meta">%s</p>'
-        '<ul class="plan__list">%s</ul>'
-        '<div class="plan__prices">%s</div>'
+        '<details class="birthday-includes"><summary>Что входит</summary><ul class="plan__list">%s</ul></details>'
+        '<details class="plan__prices"><summary>Цены по времени</summary>%s</details>'
         '<a class="btn btn--yellow" href="#popup:denrozhdeniya" data-analytics-placement="package_%s" data-package="%s" data-package-label="%s">Узнать свободные даты</a></div>'
         % (pl['color'], ' plan--featured' if pl.get('badge') else '', pl['slug'],
            '<span class="plan__badge">%s</span>' % pl['badge'] if pl.get('badge') else '',
@@ -3647,21 +3647,20 @@ def build_denrozhdeniya():
 <body class="birthday-page" data-lead-type="birthday">
 <script>document.documentElement.className+=' js'</script>
 
-{render_top_chrome()}
+{render_top_chrome().replace('Мы используем файлы cookie, чтобы сайт работал корректно. ', 'Используем cookie. ').replace('Продолжая пользоваться сайтом, вы соглашаетесь с ', 'Подробнее в ').replace('>Хорошо</button>', '>Ок</button>')}
 
 <main>
   <section class="birthday-hero">
     <div class="stage birthday-hero__grid">
       <div>
         <h1>Детский день рождения под ключ во Владивостоке</h1>
-        <p>Зал, аниматор, сухие бассейны и шоу. Вам останется только принести угощения.</p>
+        <p>Зал, аниматор, бассейны с шариками и шоу.</p>
         <ul class="birthday-facts"><li>{DR_PLANS[0]['price']} · «Мини», будни 10:00–13:00</li><li>до 50 гостей</li><li>ул. Державина, 23</li></ul>
-        {PROMO_PINATA}
         <div class="birthday-actions" id="birthday-actions">
           {cta.format('hero')}
           <a class="btn birthday-wa" href="{wa}" data-analytics-placement="hero">Написать в WhatsApp</a>
         </div>
-        <p class="birthday-cta-note">Пришлём даты и цены в WhatsApp в течение 20 минут, с 10:00 до 21:00.</p>
+        <p class="birthday-cta-note">Ответим в WhatsApp за 20 минут (10:00–21:00).</p>
         <p><a href="https://2gis.ru/vladivostok/firm/70000001052379765/tab/reviews">★ 4,9 из 5 в 2ГИС · Читать отзывы</a></p>
       </div>
       <img class="birthday-hero__photo" src="{IMG}{DR_COVER}" alt="День рождения в «Порхай»" fetchpriority="high">
@@ -3670,7 +3669,7 @@ def build_denrozhdeniya():
 
   <section class="section" id="foto" style="background:{DR_BG}">
     <div class="stage">
-      <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Яркие эмоции и&nbsp;крутые фото&nbsp;— гарантированы!</h2>
+      <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Как проходят праздники</h2>
       {gallery}
     </div>
   </section>
@@ -3678,9 +3677,11 @@ def build_denrozhdeniya():
   <section class="section" id="pakety">
     <div class="stage">
       <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Пакеты «День рождения»</h2>
-      <div class="birthday-compare">{render_compare_table(('Мини', 'Под ключ', 'Вип', 'Супер Вип'), DR_COMPARE, DR_COMPARE_REC, DR_COMPARE_COMMON)}</div>
+
       <p class="ct__links"><a href="/torty">Все дизайны тортов →</a> <a href="/pinyaty">Все пиньяты →</a></p>
+      {PROMO_PINATA}
       <div class="plans__grid">{plans}</div>
+      <details class="birthday-compare"><summary>Сравнить все пакеты</summary>{render_compare_table(('Мини', 'Под ключ', 'Вип', 'Супер Вип'), DR_COMPARE, DR_COMPARE_REC, DR_COMPARE_COMMON)}</details>
     </div>
   </section>
 
@@ -3693,15 +3694,15 @@ def build_denrozhdeniya():
 
   <section class="section" style="background:{DR_BG}" id="otziv">
     <div class="stage">
-      <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Отзывы ❤️</h2>
+      <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Отзывы родителей</h2>
       <p class="ct__links"><a href="https://yandex.ru/maps/org/porkhay/234292709609/reviews/">Отзывы на Яндекс Картах →</a> <a href="https://2gis.ru/vladivostok/firm/70000001052379765/tab/reviews">2ГИС: ★ 4,9 из 5 · 693 оценки →</a></p>
-      <details class="birthday-reviews"><summary>Ещё отзывы</summary>
+      <div class="birthday-reviews">
       <div class="reviews">
         <button class="reviews__arrow reviews__arrow--prev" type="button" aria-label="Предыдущий отзыв">{SLIDER_ARROW}</button>
         <div class="reviews__track" data-peek>{reviews}</div>
         <button class="reviews__arrow reviews__arrow--next" type="button" aria-label="Следующий отзыв">{SLIDER_ARROW}</button>
       </div>
-      </details>
+      </div>
     </div>
   </section>
 
@@ -3711,12 +3712,23 @@ def build_denrozhdeniya():
 
   {band(flip=True)}
 
-  {render_contact_section()}
-  <div class="stage birthday-directions">
-    <p><strong>Как добраться:</strong> парковка со стороны дороги, вход — с противоположной стороны здания.</p>
-    <p><a href="https://drive.google.com/drive/folders/1cXJymcUVttq_-u-T4l0OmK4wHH4b4iZc?usp=drive_link" target="_blank" rel="noopener noreferrer">Видео: как добраться →</a></p>
-  </div>
-  <div class="cta-band">{cta.format('footer')}</div>
+  <section class="section birthday-directions-section" id="kontakt">
+    <div class="stage birthday-directions">
+      <div>
+        <h2>Как добраться</h2>
+        <p><strong>Владивосток, ул. Державина, 23</strong></p>
+        <p>Парковка со стороны дороги.<br>Вход — с противоположной стороны здания.</p>
+        <p><a href="https://drive.google.com/drive/folders/1cXJymcUVttq_-u-T4l0OmK4wHH4b4iZc?usp=drive_link" target="_blank" rel="noopener noreferrer">Посмотреть видео маршрута →</a></p>
+      </div>
+      <div>
+        <h2>Связаться с нами</h2>
+        <p><a href="{PHONE_HREF}" data-analytics-placement="footer">{PHONE}</a> · {HOURS}</p>
+        <p><a href="{wa}" data-analytics-placement="footer">WhatsApp</a> · <a href="https://t.me/porhay_vladivostok" data-analytics-placement="footer">Telegram</a></p>
+        {cta.format('footer')}
+      </div>
+      <p class="birthday-map-links"><a href="https://yandex.ru/maps/org/porkhay/234292709609/">Открыть в Яндекс Картах</a> · <a href="https://2gis.ru/vladivostok/firm/70000001052379765">Открыть в 2ГИС</a></p>
+    </div>
+  </section>
   <div class="stage"><p>Также проводим <a id="plan-vypusknoy" href="/vypusknye">выпускные</a> и <a id="plan-korporativ" href="/korporativ">корпоративы</a>. <a href="/partner">Скидки от партнёров</a>.</p></div>
 </main>
 
@@ -3729,10 +3741,6 @@ def build_denrozhdeniya():
 
 {popups}
 
-<div class="birthday-sticky" hidden aria-label="Запись на день рождения">
-  {cta.format('sticky')}
-  <a class="btn birthday-wa" href="{wa}" data-analytics-placement="sticky" aria-label="Написать в WhatsApp">WhatsApp</a>
-</div>
 {PAGE_SCRIPT}
 </body>
 </html>
