@@ -3621,7 +3621,10 @@ def build_denrozhdeniya():
                 'Оставьте номер — пришлём свободные даты и цены в WhatsApp в течение 20 минут (10:00–21:00)')
                 .replace('data-popup-close>Назад', 'data-popup-close aria-label="Закрыть">×')
                 .replace('</h3>', '</h3><p data-package-summary hidden></p>', 1)
-                .replace('>Отправить</button>', '>Получить свободные даты</button>')
+                .replace('name="name" autocomplete="name" required', 'name="name" autocomplete="name"')
+                .replace('>Ваше имя</span>', '>Ваше имя (необязательно)</span>')
+                .replace('<label class="form__consent"><input type="checkbox" name="marketing"><span>Хочу получать новости, акции и приглашения на праздники</span></label>', '')
+                .replace('>Отправить</button>', '>Запросить даты</button>')
                 .replace('</form>', f'<a href="{wa}" data-analytics-placement="form">Или напишите нам в WhatsApp</a></form>')
                 .replace('>Спасибо!</p>', '>Заявка принята!</p>')
                 .replace('Мы свяжемся с вами в ближайшее время.',
@@ -3652,12 +3655,14 @@ def build_denrozhdeniya():
       <div>
         <h1>Детский день рождения под ключ во Владивостоке</h1>
         <p>Зал, аниматор, сухие бассейны и шоу. Вам останется только принести угощения.</p>
-        <ul class="birthday-facts"><li>{DR_PLANS[0]['price']}</li><li>до 50 гостей</li><li>ул. Державина, 23</li></ul>
+        <ul class="birthday-facts"><li>{DR_PLANS[0]['price']} · «Мини», будни 10:00–13:00</li><li>до 50 гостей</li><li>ул. Державина, 23</li></ul>
         {PROMO_PINATA}
         <div class="birthday-actions" id="birthday-actions">
           {cta.format('hero')}
           <a class="btn birthday-wa" href="{wa}" data-analytics-placement="hero">Написать в WhatsApp</a>
         </div>
+        <p class="birthday-cta-note">Пришлём даты и цены в WhatsApp в течение 20 минут, с 10:00 до 21:00.</p>
+        <p><a href="https://2gis.ru/vladivostok/firm/70000001052379765/tab/reviews">★ 4,9 из 5 в 2ГИС · Читать отзывы</a></p>
       </div>
       <img class="birthday-hero__photo" src="{IMG}{DR_COVER}" alt="День рождения в «Порхай»" fetchpriority="high">
     </div>
