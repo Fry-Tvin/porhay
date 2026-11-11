@@ -2296,3 +2296,31 @@ ul { margin: 0; padding: 0; list-style: none; }
 .slider__track { overflow-y: hidden; overscroll-behavior-x: contain; touch-action: pan-x pan-y pinch-zoom; }
 .slider__slide { position: relative; overflow: hidden; }
 .slider__image { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+
+/* Birthday landing page */
+.birthday-hero { background:#dffffe; padding:clamp(20px,4vw,58px) 0; }
+.birthday-hero__grid { display:grid; grid-template-columns:1fr 1fr; align-items:center; gap:32px; }
+.birthday-hero h1 { margin:0 0 10px; font-size:clamp(28px,4vw,52px); line-height:1.1; }
+.birthday-hero p { margin:8px 0; }
+.birthday-hero__photo { width:100%; height:clamp(220px,47vh,440px); object-fit:cover; border-radius:22px; }
+.birthday-facts { display:flex; gap:6px; flex-wrap:wrap; padding:0; list-style:none; margin:12px 0; }
+.birthday-facts li { padding:5px 9px; background:white; border-radius:20px; font-weight:700; font-size:14px; }
+.birthday-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+.birthday-wa { border:1px solid #287f82; background:white; color:#235c60; }
+.birthday-sticky { display:none; }
+.birthday-page #cookie-banner { padding:6px 10px; font-size:12px; }
+.birthday-page #cookie-accept { padding:5px 12px; min-height:0; }
+@media (max-width:767px) {
+  .birthday-hero__grid { grid-template-columns:1fr; gap:12px; }
+  .birthday-hero__photo { height:clamp(140px,28vh,230px); }
+  .birthday-actions .btn { width:100%; min-height:44px; padding:8px 12px; }
+  .birthday-sticky:not([hidden]) { position:fixed; inset:auto 0 0; z-index:90; display:flex; justify-content:center; gap:8px; padding:6px 10px max(6px,env(safe-area-inset-bottom)); background:#dffffe; box-shadow:0 -2px 12px #0002; }
+  .birthday-sticky .btn { min-height:42px; padding:8px 12px; }
+  .birthday-page:has(#cookie-banner:not([hidden])) .birthday-sticky { bottom:56px; }
+  .birthday-page:has(dialog[open]) .birthday-sticky,
+  .birthday-page:has(.birthday-sticky:not([hidden])) .float { display:none; }
+  .birthday-compare { display:none; }
+  .birthday-page .plans__grid { display:flex; overflow-x:auto; scroll-snap-type:x mandatory; align-items:flex-start; gap:10px; }
+  .birthday-page .plan { flex:0 0 88%; scroll-snap-align:start; }
+  .birthday-page .plan--featured { order:-1; }
+}

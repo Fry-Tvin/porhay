@@ -997,43 +997,82 @@ PAGE_SCRIPT = """<script>
     } catch (err) {}
   }
 
-  // 0b. ClientID Метрики — нужен для сквозной аналитики в amoCRM. Не должен
-  //     задерживать отправку заявки: если за 800мс не ответил (ym не успел
-  //     загрузиться, блокировщик и т.п.) — уходит пустой, заявка не ждёт.
+  // Read the counter early; a blocked counter must not block submissions.
+  function cacheClientId(id) {
+    try { if (id) localStorage.setItem('porhay_cid', id); } catch (err) {}
+  }
+  try { if (window.ym) ym(112256802, 'getClientID', cacheClientId); } catch (err) {}
   function getClientId(callback) {
+    var id = '';
+    try { id = localStorage.getItem('porhay_cid') || ''; } catch (err) {}
+    if (!id) {
+      var cookie = document.cookie.match(/(?:^|;\\s*)_ym_uid=([^;]+)/);
+      if (cookie) id = cookie[1];
+    }
+    if (id) { callback(id); return; }
     var done = false;
-    function finish(id) { if (done) return; done = true; callback(id || ''); }
+    function finish(id) {
+      cacheClientId(id);
+      if (done) return;
+      done = true;
+      callback(id || '');
+    }
     try {
       if (window.ym) {
         ym(112256802, 'getClientID', finish);
         setTimeout(function () { finish(''); }, 800);
-      } else {
-        finish('');
-      }
+      } else finish('');
     } catch (err) { finish(''); }
   }
 
-  // 0c. UTM/источник перехода — фиксируем один раз за сессию (на самом первом
-  //     просмотре), храним в sessionStorage, чтобы переход по страницам сайта
-  //     без UTM в адресе не терял исходный источник до самой отправки заявки.
   var UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'yclid'];
+  var ATTRIBUTION_KEY = 'porhay_attribution';
+  var DAY_MS = 86400000;
+  function getAttribution() {
+    try {
+      var data = JSON.parse(localStorage.getItem(ATTRIBUTION_KEY) || 'null');
+      if (data && Number.isFinite(data.ts) && Date.now() - data.ts <= 90 * DAY_MS) return data;
+      if (data) localStorage.removeItem(ATTRIBUTION_KEY);
+    } catch (err) {}
+    return {};
+  }
   (function captureAttribution() {
     try {
-      if (sessionStorage.getItem('attribution')) return;
       var params = new URLSearchParams(location.search);
-      var attribution = {};
-      var has = false;
+      var data = {};
       UTM_KEYS.forEach(function (k) {
-        var v = params.get(k);
-        if (v) { attribution[k] = v; has = true; }
+        var value = params.get(k);
+        if (value) data[k] = value;
       });
+      var tagged = Object.keys(data).length > 0;
       var ref = document.referrer;
-      if (ref && ref.indexOf(location.origin) !== 0) { attribution.referrer = ref; has = true; }
-      if (has) sessionStorage.setItem('attribution', JSON.stringify(attribution));
+      if (ref && new URL(ref).origin !== location.origin) data.referrer = ref;
+      var previous = getAttribution();
+      if (!tagged && (!data.referrer || previous.ts)) return;
+      data.landing_page = location.pathname;
+      data.ts = Date.now();
+      localStorage.setItem(ATTRIBUTION_KEY, JSON.stringify(data));
     } catch (err) {}
   })();
-  function getAttribution() {
-    try { return JSON.parse(sessionStorage.getItem('attribution') || '{}'); } catch (err) { return {}; }
+
+  function birthdayWhatsApp(link, packageLabel) {
+    var source = getAttribution();
+    var message = 'Здравствуйте! Хочу узнать свободные даты на день рождения';
+    if (packageLabel) message += ' — ' + packageLabel.split(',')[0].replace(/^Пакет /, 'пакет ');
+    if (source.yclid || /^(ya|yandex)$/i.test(source.utm_source || '') && (source.utm_source === 'ya' || source.utm_medium === 'cpc')) message += ' (Я)';
+    link.href = 'https://wa.me/79510000499?text=' + encodeURIComponent(message);
+  }
+  if (document.body.classList.contains('birthday-page')) {
+    document.querySelectorAll('a[href*="wa.me/79510000499"]').forEach(function (link) {
+      birthdayWhatsApp(link, '');
+    });
+    var birthdayActions = document.getElementById('birthday-actions');
+    var birthdaySticky = document.querySelector('.birthday-sticky');
+    if (birthdayActions && birthdaySticky && 'IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) {
+        birthdaySticky.hidden = entries[0].isIntersecting || entries[0].boundingClientRect.bottom >= 0;
+      }).observe(birthdayActions);
+    }
   }
 
   // 0d. Клики по телефону/WhatsApp/Telegram — по всей странице, делегированием,
@@ -1290,6 +1329,15 @@ PAGE_SCRIPT = """<script>
       var placement = a.dataset.analyticsPlacement || '';
       if (hasForm) {
         dlg.dataset.ctaPlacement = placement;
+        dlg.dataset.package = a.dataset.package || '';
+        var summary = dlg.querySelector('[data-package-summary]');
+        if (summary) {
+          summary.textContent = a.dataset.packageLabel || '';
+          summary.hidden = !summary.textContent;
+          dlg.querySelectorAll('a[href*="wa.me"]').forEach(function (link) {
+            birthdayWhatsApp(link, a.dataset.packageLabel || '');
+          });
+        }
         dlg.dataset.formStarted = '';
         trackGoal('cta_click', {
           page: location.pathname, lead_type: leadType, form: key,
@@ -1474,9 +1522,9 @@ PAGE_SCRIPT = """<script>
 
   // 7. Баннер согласия на cookie: показываем, если согласия ещё не было.
   var cookieBanner = document.getElementById('cookie-banner');
-  if (!localStorage.getItem('cookie-consent')) cookieBanner.hidden = false;
+  try { if (!localStorage.getItem('cookie-consent')) cookieBanner.hidden = false; } catch (err) { cookieBanner.hidden = false; }
   document.getElementById('cookie-accept').addEventListener('click', function () {
-    localStorage.setItem('cookie-consent', '1');
+    try { localStorage.setItem('cookie-consent', '1'); } catch (err) {}
     cookieBanner.hidden = true;
   });
 })();
@@ -3412,7 +3460,7 @@ DR_PLANS = [
     dict(title='Под ключ', price='от 24 500 ₽', meta='20 гостей · 3 часа',
          color='cream', badge='Популярный выбор', slug='pod-kluch',
          features=DR_MINI_FEATURES + ['Серебряное шоу', 'Блеск-тату'],
-         price_rows=[('Будний день', '24 500 ₽/27 500 ₽'), ('Выходной день', '31 500 ₽/33 500 ₽')]),
+         price_rows=[('Будни, 10:00–13:00', '24 500 ₽'), ('Другие будние сеансы', '27 500 ₽'), ('Выходные, 10:00–13:00', '31 500 ₽'), ('Другие сеансы в выходные', '33 500 ₽')]),
     dict(title='Вип', price='от 41 000 ₽', meta='20 гостей · 3 часа',
          color='peach', slug='vip',
          # Как и в «Под ключ», но без надписи из шаров (в оригинале её нет
@@ -3420,7 +3468,7 @@ DR_PLANS = [
          features=[f for f in DR_MINI_FEATURES if f != 'Надпись из шаров «С днём рождения»']
                    + ['Серебряное шоу', 'Блеск-тату', 'Торт с дизайном на выбор, 2 кг',
                       'Фонтан из 6 шаров и цифра', 'Фотограф 1 час', 'Пиньята с наполнением'],
-         price_rows=[('Будний день', '41 000 ₽/44 000 ₽'), ('Выходной день', '46 000 ₽/50 000 ₽')]),
+         price_rows=[('Будни, 10:00–13:00', '41 000 ₽'), ('Другие будние сеансы', '44 000 ₽'), ('Выходные, 10:00–13:00', '46 000 ₽'), ('Другие сеансы в выходные', '50 000 ₽')]),
     dict(title='Супер Вип', price='от 81 500 ₽', meta='50 гостей · 4 часа, вся площадка',
          color='pink', slug='super-vip',
          features=['Аренда зала 4 часа, вся площадка', 'Аниматор 1,5 часа + шоу',
@@ -3551,34 +3599,34 @@ def build_denrozhdeniya():
         '<p class="plan__price">%s</p><p class="plan__meta">%s</p>'
         '<ul class="plan__list">%s</ul>'
         '<div class="plan__prices">%s</div>'
-        '<a class="btn btn--yellow" href="#popup:denrozhdeniya" data-analytics-placement="packages">Получить свободные даты</a></div>'
+        '<a class="btn btn--yellow" href="#popup:denrozhdeniya" data-analytics-placement="package_%s" data-package="%s" data-package-label="%s">Узнать свободные даты</a></div>'
         % (pl['color'], ' plan--featured' if pl.get('badge') else '', pl['slug'],
            '<span class="plan__badge">%s</span>' % pl['badge'] if pl.get('badge') else '',
            pl['title'], pl['price'], pl['meta'],
            ''.join('<li>%s</li>' % f for f in pl['features']),
-           ''.join('<p class="plan__price-row"><span>%s</span><span>%s</span></p>' % r for r in pl['price_rows']))
+           ''.join('<p class="plan__price-row"><span>%s</span><span>%s</span></p>' % r for r in pl['price_rows']),
+           pl['slug'].replace('pod-kluch', 'pod-klyuch').replace('-', '_'),
+           pl['slug'].replace('pod-kluch', 'pod-klyuch').replace('-', '_'),
+           escape('Пакет «%s», %s' % (pl['title'], pl['price']), quote=True))
         for pl in DR_PLANS)
-
-    # Выпускной и корпоратив не хранят полный состав пакетов здесь — это
-    # тизеры на их собственные страницы, тот же компонент, что и на
-    # страницах аренды залов (RENTAL_TEASERS), но только эти два пункта.
-    # id на карточке — точка, куда со слайдера пакетов на главной ведёт
-    # якорь (см. all_packages()/render_packages_carousel()).
-    dr_teasers = ''.join(
-        render_teaser(img, href, title, item_id='plan-%s' % slug)
-        for (img, href, title), slug in zip(RENTAL_TEASERS[1:], ('vypusknoy', 'korporativ')))
-
-    partners = ''.join(
-        '<div class="partners__item">%s</div>' % (
-            '<img src="%s%s" alt="%s" loading="lazy" width="160">' % (IMG, img, escape(PARTNER_NAME.get(img, name or ''))) if img
-            else '<span class="partners__name">%s</span>' % name)
-        for img, name in PARTNERS)
 
     reviews = ''.join(
         '<img src="%s%s" alt="Скриншот отзыва клиента о «Порхай», %d" loading="lazy" width="260">' % (IMG, img, n)
         for n, img in enumerate(REVIEWS, 1))
 
-    popups = render_form_popup('header') + render_form_popup('denrozhdeniya')
+    wa = 'https://wa.me/79510000499'
+    cta = '<a class="btn btn--yellow" href="#popup:denrozhdeniya" data-analytics-placement="{}">Узнать свободные даты</a>'
+    def birthday_popup(key):
+        return (render_form_popup(key, 'Узнайте свободные даты',
+                'Оставьте номер — пришлём свободные даты и цены в WhatsApp в течение 20 минут (10:00–21:00)')
+                .replace('data-popup-close>Назад', 'data-popup-close aria-label="Закрыть">×')
+                .replace('</h3>', '</h3><p data-package-summary hidden></p>', 1)
+                .replace('>Отправить</button>', '>Получить свободные даты</button>')
+                .replace('</form>', f'<a href="{wa}" data-analytics-placement="form">Или напишите нам в WhatsApp</a></form>')
+                .replace('>Спасибо!</p>', '>Заявка принята!</p>')
+                .replace('Мы свяжемся с вами в ближайшее время.',
+                         f'Напишем вам в WhatsApp в течение 20 минут (10:00–21:00). Хотите быстрее — напишите нам сами.</p><a href="{wa}" data-analytics-placement="thanks">WhatsApp</a> · <a href="tel:+79510000499" data-analytics-placement="thanks">+7 951 000-04-99</a><p hidden>'))
+    popups = birthday_popup('header') + birthday_popup('denrozhdeniya')
     faq_ld = faq_jsonld()
 
     html = f"""<!DOCTYPE html>
@@ -3593,41 +3641,27 @@ def build_denrozhdeniya():
 {seo_head('/denrozhdeniya', 'Детский день рождения под ключ во Владивостоке — Порхай', SERVICE_DESCRIPTIONS['denrozhdeniya'])}
 <link rel="stylesheet" href="{STYLE_HREF}">
 </head>
-<body data-lead-type="birthday">
+<body class="birthday-page" data-lead-type="birthday">
 <script>document.documentElement.className+=' js'</script>
 
 {render_top_chrome()}
 
 <main>
-  <section class="split-hero" style="background:{DR_BG}">
-    <div class="stage">
-      <div class="split-hero__photo" style="background-image:url({IMG}{DR_COVER})"></div>
-      <div class="split-hero__text">
-        <h1 class="split-hero__title">День рождения в&nbsp;«Порхай!»</h1>
-        <span class="split-hero__line"></span>
-        <p class="split-hero__descr">Мы собрали всё необходимое для вашего дня рождения, вам останется только наполнить праздник угощениями для гостей</p>
+  <section class="birthday-hero">
+    <div class="stage birthday-hero__grid">
+      <div>
+        <h1>Детский день рождения под ключ во Владивостоке</h1>
+        <p>Зал, аниматор, сухие бассейны и шоу. Вам останется только принести угощения.</p>
+        <ul class="birthday-facts"><li>{DR_PLANS[0]['price']}</li><li>до 50 гостей</li><li>ул. Державина, 23</li></ul>
+        {PROMO_PINATA}
+        <div class="birthday-actions" id="birthday-actions">
+          {cta.format('hero')}
+          <a class="btn birthday-wa" href="{wa}" data-analytics-placement="hero">Написать в WhatsApp</a>
+        </div>
       </div>
+      <img class="birthday-hero__photo" src="{IMG}{DR_COVER}" alt="День рождения в «Порхай»" fetchpriority="high">
     </div>
   </section>
-
-  <section class="section" id="pakety">
-    <div class="stage">
-      <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Пакеты «День рождения»</h2>
-      {PROMO_PINATA}
-      {render_compare_table(('Мини', 'Под ключ', 'Вип', 'Супер Вип'), DR_COMPARE, DR_COMPARE_REC, DR_COMPARE_COMMON)}
-      <p class="ct__links"><a href="/torty">Все дизайны тортов →</a> <a href="/pinyaty">Все пиньяты →</a></p>
-      <div class="plans__grid">{plans}</div>
-    </div>
-  </section>
-
-  <section class="teasers">
-    <div class="stage">
-      <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Выпускной и&nbsp;корпоратив</h2>
-      <div class="teasers__grid">{dr_teasers}</div>
-    </div>
-  </section>
-
-  {band(flip=True)}
 
   <section class="section" id="foto" style="background:{DR_BG}">
     <div class="stage">
@@ -3636,9 +3670,14 @@ def build_denrozhdeniya():
     </div>
   </section>
 
-  <div class="cta-band" style="background:{DR_BG}"><a class="btn btn--yellow" href="#popup:denrozhdeniya" data-analytics-placement="gallery">Записаться</a></div>
-
-  {band()}
+  <section class="section" id="pakety">
+    <div class="stage">
+      <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Пакеты «День рождения»</h2>
+      <div class="birthday-compare">{render_compare_table(('Мини', 'Под ключ', 'Вип', 'Супер Вип'), DR_COMPARE, DR_COMPARE_REC, DR_COMPARE_COMMON)}</div>
+      <p class="ct__links"><a href="/torty">Все дизайны тортов →</a> <a href="/pinyaty">Все пиньяты →</a></p>
+      <div class="plans__grid">{plans}</div>
+    </div>
+  </section>
 
   <section class="features">
     <div class="stage">
@@ -3647,26 +3686,17 @@ def build_denrozhdeniya():
     </div>
   </section>
 
-  <section class="section section--partners">
-    <div class="stage">
-      <div class="section__head">
-        <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Скидки от наших партнёров</h2>
-        <p class="section__lead" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".15">При заказе аренды зала</p>
-      </div>
-      <div class="partners">{partners}</div>
-    </div>
-  </section>
-
-  {band(flip=True)}
-
   <section class="section" style="background:{DR_BG}" id="otziv">
     <div class="stage">
       <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Отзывы ❤️</h2>
+      <p class="ct__links"><a href="https://yandex.ru/maps/org/porkhay/234292709609/reviews/">Отзывы на Яндекс Картах →</a> <a href="https://2gis.ru/vladivostok/firm/70000001052379765/tab/reviews">2ГИС: ★ 4,9 из 5 · 693 оценки →</a></p>
+      <details class="birthday-reviews"><summary>Ещё отзывы</summary>
       <div class="reviews">
         <button class="reviews__arrow reviews__arrow--prev" type="button" aria-label="Предыдущий отзыв">{SLIDER_ARROW}</button>
         <div class="reviews__track" data-peek>{reviews}</div>
         <button class="reviews__arrow reviews__arrow--next" type="button" aria-label="Следующий отзыв">{SLIDER_ARROW}</button>
       </div>
+      </details>
     </div>
   </section>
 
@@ -3677,6 +3707,12 @@ def build_denrozhdeniya():
   {band(flip=True)}
 
   {render_contact_section()}
+  <div class="stage birthday-directions">
+    <p><strong>Как добраться:</strong> парковка со стороны дороги, вход — с противоположной стороны здания.</p>
+    <p><a href="https://drive.google.com/drive/folders/1cXJymcUVttq_-u-T4l0OmK4wHH4b4iZc?usp=drive_link" target="_blank" rel="noopener noreferrer">Видео: как добраться →</a></p>
+  </div>
+  <div class="cta-band">{cta.format('footer')}</div>
+  <div class="stage"><p>Также проводим <a id="plan-vypusknoy" href="/vypusknye">выпускные</a> и <a id="plan-korporativ" href="/korporativ">корпоративы</a>. <a href="/partner">Скидки от партнёров</a>.</p></div>
 </main>
 
 {render_footer()}
@@ -3688,6 +3724,10 @@ def build_denrozhdeniya():
 
 {popups}
 
+<div class="birthday-sticky" hidden aria-label="Запись на день рождения">
+  {cta.format('sticky')}
+  <a class="btn birthday-wa" href="{wa}" data-analytics-placement="sticky" aria-label="Написать в WhatsApp">WhatsApp</a>
+</div>
 {PAGE_SCRIPT}
 </body>
 </html>

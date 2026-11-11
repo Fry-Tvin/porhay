@@ -31,7 +31,7 @@
 <meta property="og:description" content="«Порхай» — детский развлекательный центр во Владивостоке. Дни рождения и выпускные под ключ, аниматоры и шоу-программы. 3 сухих бассейна, фотозоны. Державина, 23.">
 <meta property="og:image" content="https://xn--80asndg4a.xn--p1ai/assets/img/tild3463-6130-4836-a539-636430646232__vector.webp">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="stylesheet" href="assets/style.css?v=0d1a02d1c8ad">
+<link rel="stylesheet" href="assets/style.css?v=2640067624fc">
 </head>
 <body class="home-page" data-lead-type="general">
 <script>document.documentElement.className+=' js'</script>
@@ -216,43 +216,82 @@
     } catch (err) {}
   }
 
-  // 0b. ClientID Метрики — нужен для сквозной аналитики в amoCRM. Не должен
-  //     задерживать отправку заявки: если за 800мс не ответил (ym не успел
-  //     загрузиться, блокировщик и т.п.) — уходит пустой, заявка не ждёт.
+  // Read the counter early; a blocked counter must not block submissions.
+  function cacheClientId(id) {
+    try { if (id) localStorage.setItem('porhay_cid', id); } catch (err) {}
+  }
+  try { if (window.ym) ym(112256802, 'getClientID', cacheClientId); } catch (err) {}
   function getClientId(callback) {
+    var id = '';
+    try { id = localStorage.getItem('porhay_cid') || ''; } catch (err) {}
+    if (!id) {
+      var cookie = document.cookie.match(/(?:^|;\s*)_ym_uid=([^;]+)/);
+      if (cookie) id = cookie[1];
+    }
+    if (id) { callback(id); return; }
     var done = false;
-    function finish(id) { if (done) return; done = true; callback(id || ''); }
+    function finish(id) {
+      cacheClientId(id);
+      if (done) return;
+      done = true;
+      callback(id || '');
+    }
     try {
       if (window.ym) {
         ym(112256802, 'getClientID', finish);
         setTimeout(function () { finish(''); }, 800);
-      } else {
-        finish('');
-      }
+      } else finish('');
     } catch (err) { finish(''); }
   }
 
-  // 0c. UTM/источник перехода — фиксируем один раз за сессию (на самом первом
-  //     просмотре), храним в sessionStorage, чтобы переход по страницам сайта
-  //     без UTM в адресе не терял исходный источник до самой отправки заявки.
   var UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'yclid'];
+  var ATTRIBUTION_KEY = 'porhay_attribution';
+  var DAY_MS = 86400000;
+  function getAttribution() {
+    try {
+      var data = JSON.parse(localStorage.getItem(ATTRIBUTION_KEY) || 'null');
+      if (data && Number.isFinite(data.ts) && Date.now() - data.ts <= 90 * DAY_MS) return data;
+      if (data) localStorage.removeItem(ATTRIBUTION_KEY);
+    } catch (err) {}
+    return {};
+  }
   (function captureAttribution() {
     try {
-      if (sessionStorage.getItem('attribution')) return;
       var params = new URLSearchParams(location.search);
-      var attribution = {};
-      var has = false;
+      var data = {};
       UTM_KEYS.forEach(function (k) {
-        var v = params.get(k);
-        if (v) { attribution[k] = v; has = true; }
+        var value = params.get(k);
+        if (value) data[k] = value;
       });
+      var tagged = Object.keys(data).length > 0;
       var ref = document.referrer;
-      if (ref && ref.indexOf(location.origin) !== 0) { attribution.referrer = ref; has = true; }
-      if (has) sessionStorage.setItem('attribution', JSON.stringify(attribution));
+      if (ref && new URL(ref).origin !== location.origin) data.referrer = ref;
+      var previous = getAttribution();
+      if (!tagged && (!data.referrer || previous.ts)) return;
+      data.landing_page = location.pathname;
+      data.ts = Date.now();
+      localStorage.setItem(ATTRIBUTION_KEY, JSON.stringify(data));
     } catch (err) {}
   })();
-  function getAttribution() {
-    try { return JSON.parse(sessionStorage.getItem('attribution') || '{}'); } catch (err) { return {}; }
+
+  function birthdayWhatsApp(link, packageLabel) {
+    var source = getAttribution();
+    var message = 'Здравствуйте! Хочу узнать свободные даты на день рождения';
+    if (packageLabel) message += ' — ' + packageLabel.split(',')[0].replace(/^Пакет /, 'пакет ');
+    if (source.yclid || /^(ya|yandex)$/i.test(source.utm_source || '') && (source.utm_source === 'ya' || source.utm_medium === 'cpc')) message += ' (Я)';
+    link.href = 'https://wa.me/79510000499?text=' + encodeURIComponent(message);
+  }
+  if (document.body.classList.contains('birthday-page')) {
+    document.querySelectorAll('a[href*="wa.me/79510000499"]').forEach(function (link) {
+      birthdayWhatsApp(link, '');
+    });
+    var birthdayActions = document.getElementById('birthday-actions');
+    var birthdaySticky = document.querySelector('.birthday-sticky');
+    if (birthdayActions && birthdaySticky && 'IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) {
+        birthdaySticky.hidden = entries[0].isIntersecting || entries[0].boundingClientRect.bottom >= 0;
+      }).observe(birthdayActions);
+    }
   }
 
   // 0d. Клики по телефону/WhatsApp/Telegram — по всей странице, делегированием,
@@ -509,6 +548,15 @@
       var placement = a.dataset.analyticsPlacement || '';
       if (hasForm) {
         dlg.dataset.ctaPlacement = placement;
+        dlg.dataset.package = a.dataset.package || '';
+        var summary = dlg.querySelector('[data-package-summary]');
+        if (summary) {
+          summary.textContent = a.dataset.packageLabel || '';
+          summary.hidden = !summary.textContent;
+          dlg.querySelectorAll('a[href*="wa.me"]').forEach(function (link) {
+            birthdayWhatsApp(link, a.dataset.packageLabel || '');
+          });
+        }
         dlg.dataset.formStarted = '';
         trackGoal('cta_click', {
           page: location.pathname, lead_type: leadType, form: key,
@@ -693,9 +741,9 @@
 
   // 7. Баннер согласия на cookie: показываем, если согласия ещё не было.
   var cookieBanner = document.getElementById('cookie-banner');
-  if (!localStorage.getItem('cookie-consent')) cookieBanner.hidden = false;
+  try { if (!localStorage.getItem('cookie-consent')) cookieBanner.hidden = false; } catch (err) { cookieBanner.hidden = false; }
   document.getElementById('cookie-accept').addEventListener('click', function () {
-    localStorage.setItem('cookie-consent', '1');
+    try { localStorage.setItem('cookie-consent', '1'); } catch (err) {}
     cookieBanner.hidden = true;
   });
 })();
