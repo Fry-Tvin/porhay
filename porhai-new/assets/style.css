@@ -2453,3 +2453,22 @@ ul { margin: 0; padding: 0; list-style: none; }
  .birthday-page .birthday-hero h1 { padding-inline-end:18px; }
  .birthday-page .birthday-hero h1::after { width:17px; height:17px; }
 }
+
+.birthday-page main > .section,.birthday-page main > .features { padding-block:26px; }
+.birthday-page #foto,.birthday-page #pakety { padding-block:18px; }
+.birthday-page #otziv { padding-bottom:12px; }
+.birthday-page #faq { padding-top:14px; }
+.birthday-page .section-title { margin-bottom:16px; }
+.birthday-page #foto .section-title { margin-bottom:18px; }
+.birthday-page .birthday-plan[open] .birthday-plan__body { display:block; height:auto; max-height:none; overflow:visible; color:#4a4a4a; }
+.birthday-page .birthday-plan .plan__list { display:block; margin:6px 0 12px; }
+@media(max-width:767px) {
+ .birthday-page .birthday-hero { padding-block:84px 10px; }
+ .birthday-hero__grid { gap:8px; grid-template-columns:minmax(0,1.3fr) minmax(0,1fr); }
+ .birthday-page .birthday-hero h1 { font-size:clamp(19px,5.9vw,27px); }
+ .birthday-page .birthday-hero h1::after { right:5px; top:-3px; }
+ .birthday-page .birthday-hero__photo { height:clamp(150px,49vw,235px); }
+ .birthday-page .birthday-actions { gap:4px; margin-top:4px; }
+ .birthday-page .birthday-actions .btn { min-height:44px; height:auto; padding:8px 14px; }
+ .birthday-page .birthday-actions > a:not(.btn) { padding:4px 0; }
+}
