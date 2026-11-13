@@ -3588,21 +3588,36 @@ DR_PROGRAMS = [
 
 
 def build_denrozhdeniya():
-    gallery = render_slider(DR_GALLERY, 'День рождения «под ключ» в «Порхай»')
+    def birthday_carousel(track, label, count):
+        return (f'<div class="bd-carousel" aria-label="{label}" role="group">{track}'
+                '<div class="bd-carousel__controls">'
+                '<button type="button" data-slide="-1" aria-label="Назад">←</button>'
+                ''
+                '<button type="button" data-slide="1" aria-label="Вперёд">→</button></div></div>')
+    photos = render_slider(DR_GALLERY, 'День рождения в «Порхай»')
+    photos = photos.split('<div class="slider__track">', 1)[1].rsplit('<button', 1)[0]
+    gallery = birthday_carousel('<div class="bd-carousel__track" tabindex="0" aria-label="Фото праздников">' + photos, 'Фото праздников', len(DR_GALLERY))
 
+    icons = (
+        '<path d="M3 7h4l2-3h6l2 3h4v13H3z"/><circle cx="12" cy="13" r="4"/>',
+        '<path d="M2 5q10 9 20 0M5 8l2 9 5-5 5 5 2-9"/>',
+        '<path d="M4 21l4-13 9 9zM15 4l2 3m3 0 2 2m-3 4 3 1"/>',
+        '<path d="M14 12l5-9 2 1-5 9M8 11l8 4-3 7-10-5zM8 15l-2 4m6-2-2 4"/>',
+    )
     why = ''.join(
-        '<div class="features__item"><img src="%s%s" alt="%s" width="140" height="140">'
-        '<h3>%s</h3></div>' % (IMG, img, alt_text(title), title) for (img, _), title in zip((DR_WHY[i] for i in (0, 1, 2, 5)), ('Фотозоны и бассейны', 'Помощь с оформлением', 'Программа для детей', 'Подготовка зала и уборка')))
+        '<div class="features__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+        'stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">%s</svg>'
+        '<h3>%s</h3></div>' % (icon, title)
+        for icon, title in zip(icons, ('Фотозоны и бассейны', 'Помощь с оформлением', 'Программа для детей', 'Подготовка зала и уборка')))
 
+    plan_photos = dict(zip((pl['slug'] for pl in DR_PLANS), DR_GALLERY[:4]))
     plans = ''.join(
-        '<div class="plan plan--%s%s" id="plan-%s">%s<h3 class="plan__title">%s</h3>'
-        '<p class="plan__price">%s</p><p class="plan__meta">%s</p>'
+        '<details class="plan birthday-plan" id="plan-%s"><summary><img src="%s" alt="" loading="lazy"><span><strong>%s</strong><span class="plan__price">%s</span></span><span class="bd-arrow" aria-hidden="true">➜</span></summary><div class="birthday-plan__body">'
+        '<p class="plan__meta">%s</p>'
         '<details class="birthday-includes"><summary>Что входит</summary><ul class="plan__list">%s</ul></details>'
         '<details class="plan__prices"><summary>Цены по времени</summary>%s</details>'
-        '<a class="btn btn--yellow" href="#popup:denrozhdeniya" data-analytics-placement="package_%s" data-package="%s" data-package-label="%s">Узнать свободные даты</a></div>'
-        % (pl['color'], ' plan--featured' if pl.get('badge') else '', pl['slug'],
-           '<span class="plan__badge">%s</span>' % pl['badge'] if pl.get('badge') else '',
-           pl['title'], pl['price'], pl['meta'],
+        '<a class="btn btn--yellow" href="#popup:denrozhdeniya" data-analytics-placement="package_%s" data-package="%s" data-package-label="%s">Узнать свободные даты</a></div></details>'
+        % (pl['slug'], IMG + plan_photos[pl['slug']], pl['title'], pl['price'], pl['meta'],
            ''.join('<li>%s</li>' % f for f in pl['features']),
            ''.join('<p class="plan__price-row"><span>%s</span><span>%s</span></p>' % r for r in pl['price_rows']),
            pl['slug'].replace('pod-kluch', 'pod-klyuch').replace('-', '_'),
@@ -3652,18 +3667,16 @@ def build_denrozhdeniya():
 <main>
   <section class="birthday-hero">
     <div class="stage birthday-hero__grid">
-      <div>
-        <h1>Детский день рождения под ключ во Владивостоке</h1>
-        <p>Зал, аниматор, бассейны с шариками и шоу.</p>
-        <ul class="birthday-facts"><li>{DR_PLANS[0]['price']} · «Мини», будни 10:00–13:00</li><li>до 50 гостей</li><li>ул. Державина, 23</li></ul>
-        <div class="birthday-actions" id="birthday-actions">
-          {cta.format('hero')}
-          <a class="btn birthday-wa" href="{wa}" data-analytics-placement="hero">Написать в WhatsApp</a>
-        </div>
-        <p class="birthday-cta-note">Ответим в WhatsApp за 20 минут (10:00–21:00).</p>
-        <p><a href="https://2gis.ru/vladivostok/firm/70000001052379765/tab/reviews">★ 4,9 из 5 в 2ГИС · Читать отзывы</a></p>
+      <div class="birthday-hero__copy">
+        <h1>Детский день рождения под ключ <span>во Владивостоке</span></h1>
+        <p>Зал, аниматор и шоу</p>
+        <p class="birthday-hero__price">{DR_PLANS[0]['price']}</p>
       </div>
       <img class="birthday-hero__photo" src="{IMG}{DR_COVER}" alt="День рождения в «Порхай»" fetchpriority="high">
+      <div class="birthday-actions" id="birthday-actions">
+        {cta.format('hero')}
+        <a href="{wa}" data-analytics-placement="hero">Написать в WhatsApp</a>
+      </div>
     </div>
   </section>
 
@@ -3676,7 +3689,7 @@ def build_denrozhdeniya():
 
   <section class="section" id="pakety">
     <div class="stage">
-      <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Пакеты «День рождения»</h2>
+      <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Пакеты на день рождения</h2>
 
       <p class="ct__links"><a href="/torty">Все дизайны тортов →</a> <a href="/pinyaty">Все пиньяты →</a></p>
       {PROMO_PINATA}
@@ -3695,22 +3708,14 @@ def build_denrozhdeniya():
   <section class="section" style="background:{DR_BG}" id="otziv">
     <div class="stage">
       <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Отзывы родителей</h2>
-      <p class="ct__links"><a href="https://yandex.ru/maps/org/porkhay/234292709609/reviews/">Отзывы на Яндекс Картах →</a> <a href="https://2gis.ru/vladivostok/firm/70000001052379765/tab/reviews">2ГИС: ★ 4,9 из 5 · 693 оценки →</a></p>
-      <div class="birthday-reviews">
-      <div class="reviews">
-        <button class="reviews__arrow reviews__arrow--prev" type="button" aria-label="Предыдущий отзыв">{SLIDER_ARROW}</button>
-        <div class="reviews__track" data-peek>{reviews}</div>
-        <button class="reviews__arrow reviews__arrow--next" type="button" aria-label="Следующий отзыв">{SLIDER_ARROW}</button>
-      </div>
-      </div>
+      <div class="birthday-rating"><img src="{IMG}{DR_GALLERY[0]}" alt="" loading="lazy"><div><strong><span>4,9</span> в 2ГИС</strong><a class="btn btn--yellow" href="https://2gis.ru/vladivostok/firm/70000001052379765/tab/reviews">Читать отзывы в 2ГИС →</a></div></div>
+      <div class="birthday-reviews">{birthday_carousel('<div class="bd-carousel__track bd-carousel__track--reviews" tabindex="0" aria-label="Отзывы родителей">' + reviews + '</div>', 'Отзывы родителей', len(REVIEWS))}</div>
     </div>
   </section>
 
-  {band()}
 
   {render_faq_section()}
 
-  {band(flip=True)}
 
   <section class="section birthday-directions-section" id="kontakt">
     <div class="stage birthday-directions">
@@ -3722,14 +3727,17 @@ def build_denrozhdeniya():
       </div>
       <div>
         <h2>Связаться с нами</h2>
-        <p><a href="{PHONE_HREF}" data-analytics-placement="footer">{PHONE}</a> · {HOURS}</p>
-        <p><a href="{wa}" data-analytics-placement="footer">WhatsApp</a> · <a href="https://t.me/porhay_vladivostok" data-analytics-placement="footer">Telegram</a></p>
+        <div class="bd-contact-links">
+          <a href="{PHONE_HREF}" data-analytics-placement="footer">☎ {PHONE}</a>
+          <a href="{wa}" data-analytics-placement="footer">WhatsApp →</a>
+          <a href="https://t.me/porhay_vladivostok" data-analytics-placement="footer">Telegram →</a>
+        </div>
         {cta.format('footer')}
       </div>
       <p class="birthday-map-links"><a href="https://yandex.ru/maps/org/porkhay/234292709609/">Открыть в Яндекс Картах</a> · <a href="https://2gis.ru/vladivostok/firm/70000001052379765">Открыть в 2ГИС</a></p>
     </div>
   </section>
-  <div class="stage"><p>Также проводим <a id="plan-vypusknoy" href="/vypusknye">выпускные</a> и <a id="plan-korporativ" href="/korporativ">корпоративы</a>. <a href="/partner">Скидки от партнёров</a>.</p></div>
+
 </main>
 
 {render_footer()}
@@ -3742,6 +3750,34 @@ def build_denrozhdeniya():
 {popups}
 
 {PAGE_SCRIPT}
+<script>
+document.querySelectorAll('.bd-carousel').forEach(function (box) {{
+  var track = box.querySelector('.bd-carousel__track');
+  var cards = Array.from(track.children);
+  var buttons = box.querySelectorAll('button');
+  function left(card) {{ return card.offsetLeft - cards[0].offsetLeft; }}
+  function current() {{
+    return cards.reduce(function (best, card, i) {{
+      return Math.abs(left(card) - track.scrollLeft) < Math.abs(left(cards[best]) - track.scrollLeft) ? i : best;
+    }}, 0);
+  }}
+  function update() {{
+    var index = current();
+    buttons[0].disabled = index === 0;
+    buttons[1].disabled = index === cards.length - 1;
+  }}
+  function move(step) {{
+    var i = Math.max(0, Math.min(cards.length - 1, current() + step));
+    track.scrollTo({{left:left(cards[i]), behavior:matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'}});
+  }}
+  buttons.forEach(function (button) {{ button.addEventListener('click', function () {{ move(Number(button.dataset.slide)); }}); }});
+  track.addEventListener('keydown', function (e) {{
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {{ e.preventDefault(); move(e.key === 'ArrowLeft' ? -1 : 1); }}
+  }});
+  track.addEventListener('scroll', update, {{passive:true}});
+  update();
+}});
+</script>
 </body>
 </html>
 """
