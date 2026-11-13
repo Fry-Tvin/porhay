@@ -3615,7 +3615,7 @@ def build_denrozhdeniya():
         '<details class="plan birthday-plan" id="plan-%s"><summary><img src="%s" alt="" loading="lazy"><span><strong>%s</strong><span class="plan__price">%s</span></span><span class="bd-arrow" aria-hidden="true">➜</span></summary><div class="birthday-plan__body">'
         '<p class="plan__meta">%s</p>'
         '<div class="birthday-includes"><strong>Что входит</strong><ul class="plan__list">%s</ul></div>'
-        '<details class="plan__prices"><summary>Цены по времени</summary>%s</details>'
+        '<div class="plan__prices"><strong>Цены по времени</strong>%s</div>'
         '<a class="btn btn--yellow" href="#popup:denrozhdeniya" data-analytics-placement="package_%s" data-package="%s" data-package-label="%s">Узнать свободные даты</a></div></details>'
         % (pl['slug'], IMG + plan_photos[pl['slug']], pl['title'], pl['price'], pl['meta'],
            ''.join('<li>%s</li>' % f for f in pl['features']),
