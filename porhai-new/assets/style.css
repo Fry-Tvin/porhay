@@ -2472,3 +2472,28 @@ ul { margin: 0; padding: 0; list-style: none; }
  .birthday-page .birthday-actions .btn { min-height:44px; height:auto; padding:8px 14px; }
  .birthday-page .birthday-actions > a:not(.btn) { padding:4px 0; }
 }
+
+/* Consistent spacing: close annotations, moderate section boundaries. */
+.promo-badge__note { margin:6px auto 0!important; padding:0; max-width:52ch; }
+.promo-badge + .promo-badge__note { margin-top:6px!important; }
+.hero .promo-badge__note { margin-top:8px!important; }
+body:not(.birthday-page) main > .section:not(.legal) { padding-block:48px; }
+body:not(.birthday-page) main > .features { padding-block:40px; }
+body:not(.birthday-page) .cta-band { padding-bottom:40px; }
+.home-page main > .section { padding-block:36px; }
+.home-page main > .section--steps { padding-block:32px; }
+.home-page .home-divider { height:56px; }
+.home-page #pod-kluch { padding-bottom:24px; }
+.home-page #zaly { padding-top:32px; padding-bottom:24px; }
+.home-page #zaly .packages { margin-top:24px; }
+@media(max-width:767px) {
+ body:not(.birthday-page) main > .section:not(.legal) { padding-block:28px; }
+ body:not(.birthday-page) main > .features { padding-block:28px; }
+ .home-page main > .section,.home-page main > .section--steps { padding-block:24px; }
+ .home-page .home-divider { height:40px; }
+ .home-page #pod-kluch { padding-bottom:24px; }
+ .home-page #zaly { padding-top:32px; padding-bottom:24px; }
+}
+
+.home-page .hero__buttons { row-gap:8px; }
+.home-page .hero__buttons .promo-badge__note { flex-basis:100%; margin:0!important; }
