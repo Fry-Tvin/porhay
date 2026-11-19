@@ -1075,6 +1075,17 @@ PAGE_SCRIPT = """<script>
     }
   }
 
+  var oldLines = Array.from(document.querySelectorAll('.original-divider [data-original-motion]'));
+  function updateOldLines() {
+    oldLines.forEach(function(line) {
+      var d = Math.max(0, innerHeight-line.closest('.original-divider').getBoundingClientRect().top);
+      var p = d < 200 ? d/200 : Math.max(0,1-(d-200)/210);
+      var v = line.dataset.originalMotion.split(',').map(Number);
+      line.style.transform = reduce ? '' : 'translate('+v[0]*p+'px,'+v[1]*p+'px) rotate('+v[2]*p+'deg)';
+    });
+  }
+  addEventListener('scroll',function(){requestAnimationFrame(updateOldLines);},{passive:true});
+  updateOldLines();
   // 0d. Клики по телефону/WhatsApp/Telegram — по всей странице, делегированием,
   //     чтобы не перечислять их поштучно (шапка, контакты, плавающая кнопка,
   //     подвал — где угодно). placement берётся с самой ссылки, если задан.
@@ -1629,7 +1640,7 @@ def build():
     </div>
   </section>
 
-  {home_band('mint', 'white')}
+  {json.load(open(os.path.join(HERE, 'original-dividers.json'), encoding='utf8'))[0]}
 
   <section class="section">
     <div class="stage">
@@ -1645,7 +1656,7 @@ def build():
     </div>
   </section>
 
-  {home_band('white', 'mint')}
+  {json.load(open(os.path.join(HERE, 'original-dividers.json'), encoding='utf8'))[1]}
 
   <section class="section section--mint section--steps">
     <div class="stage">

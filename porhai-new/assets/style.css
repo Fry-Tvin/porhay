@@ -2506,3 +2506,10 @@ body:not(.birthday-page) .cta-band { padding-bottom:40px; }
  .home-page #zaly .packages { margin-top:24px; }
  .home-page .cards { gap:28px; }
 }
+
+.original-divider { position:relative; height:27px; z-index:2; pointer-events:none; }
+.original-divider .t396__artboard { position:relative; }
+.original-divider .tn-elem { position:absolute; box-sizing:border-box; }
+.original-divider .tn-atom { width:100%; height:100%; }
+.original-divider img { display:block; width:100%; }
+.home-page main { overflow:clip; }
