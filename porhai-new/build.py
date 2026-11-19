@@ -118,11 +118,11 @@ YANDEX_METRIKA = """<!-- Yandex.Metrika counter -->
 
 # Акция «Пиньята в подарок на день рождения в ноябре».
 # Продлена заказчиком 02.11.2026; подарок и условия сохранены.
+PROMO_NOTE = '<p class="promo-badge__note">*Детали акции уточняйте у администратора</p>'
 PROMO_PINATA = (
     '<p class="promo-badge">Дарим пиньяту на&nbsp;празднование дня '
     'рождения в&nbsp;ноябре*</p>'
-    '<p class="promo-badge__note">* Акция действует только '
-    'на&nbsp;новые бронирования</p>'
+    + PROMO_NOTE
 )
 
 # --- Кляксы ---------------------------------------------------------------
@@ -1570,7 +1570,7 @@ def build():
 
     popups = (render_form_popup('header') + render_form_popup('main')
               + render_form_popup('bonus', title='Второй час посещения бесплатно + 3 пиццы',
-                                   subtitle='Оставьте контакты — расскажем об условиях акции и подберём дату'))
+                                   subtitle='*Детали акции уточняйте у администратора'))
 
     reviews = ''.join(
         '<img src="%s%s" alt="Скриншот отзыва клиента о «Порхай», %d" loading="lazy" width="260">' % (IMG, img, n)
@@ -1616,6 +1616,7 @@ def build():
         <p class="hero__text" data-anim="fadeinright" data-anim-dur="1.7" data-anim-delay=".2">Дни рождения и&nbsp;выпускные под&nbsp;ключ <b>во&nbsp;Владивостоке</b>. Аниматоры и&nbsp;шоу-программы, 3&nbsp;сухих бассейна и&nbsp;фотозоны.</p>
         <div class="hero__buttons" data-anim="zoomin" data-anim-dur="2.4" data-anim-delay=".4">
           <a class="btn btn--yellow" href="#popup:bonus" data-analytics-placement="hero">Получите 3&nbsp;пиццы на&nbsp;праздник и&nbsp;второй час посещения бесплатно</a>
+          {PROMO_NOTE}
           <a class="btn btn--teal" href="/denrozhdeniya">Праздник</a>
         </div>
       </div>
@@ -1740,6 +1741,7 @@ def build():
       <div class="section__head">
         <h2 class="section__title">Скидки от партнёров</h2>
         <p class="section__lead">Дополните праздник и&nbsp;получите скидки на&nbsp;услуги партнёров при аренде зала.</p>
+      {PROMO_NOTE}
       </div>
       <div class="partner-preview">{partners}</div>
       <div class="partner-preview__actions">
@@ -2944,6 +2946,7 @@ def build_razovoe():
     <div class="stage">
       <div class="quote__inner">
         <p class="quote__text" data-anim="zoomin" data-anim-dur="1">А ещё мы дарим скидку 50% на второй час! Потому что мы точно знаем&nbsp;— уходить вам не захочется ;)</p>
+        {PROMO_NOTE}
         <svg class="quote__rule" viewBox="0 0 1200 31.7" preserveAspectRatio="none" aria-hidden="true">
           <polygon points="40,31.7 40,4 0,4 0,0 44,0 44,22.3 67.2,0 1200,0 1200,4 68.8,4"></polygon>
         </svg>
@@ -2967,6 +2970,7 @@ def build_razovoe():
         <tbody>{price_rows}</tbody>
       </table>
       <p class="price-table__descr">Продление&nbsp;−50%.<br>Если одна из&nbsp;15 площадок занята, то&nbsp;скидка на&nbsp;посещение&nbsp;−30%.</p>
+      {PROMO_NOTE}
     </div>
   </section>
 
@@ -3081,7 +3085,7 @@ RENTAL_PAGES = {
             'tild3435-3938-4866-b831-623939303835__photo_2023-03-11_16-.webp',
         ],
         price_title='Стоимость за&nbsp;1 час аренды',
-        price_descr='От&nbsp;3‑х часов, каждый последующий час со&nbsp;скидкой 50%',
+        price_descr='От&nbsp;3‑х часов, каждый последующий час со&nbsp;скидкой 50%' + PROMO_NOTE,
         price_groups=[dict(note=None, items=[('Будни', '5 000 ₽'), ('Выходные', '7 000 ₽')])],
         footnote='*Стоимость указана за&nbsp;15 гостей (взрослые и&nbsp;дети).<br>'
                   'Свыше 15 гостей&nbsp;— доплата 300 ₽/человек за&nbsp;всё время пребывания.',
@@ -3132,7 +3136,7 @@ RENTAL_PAGES = {
             'tild6264-3335-4831-b131-663763353836__photo_2021-06-26_17-.webp',
         ],
         price_title='Стоимость за&nbsp;1 час аренды',
-        price_descr='От&nbsp;3‑х часов, каждый последующий час со&nbsp;скидкой 50%',
+        price_descr='От&nbsp;3‑х часов, каждый последующий час со&nbsp;скидкой 50%' + PROMO_NOTE,
         price_groups=[dict(note=None, items=[('Будни', '5 000 ₽'), ('Выходные', '7 000 ₽')])],
         footnote='*Стоимость указана за&nbsp;15 гостей (взрослые и&nbsp;дети).<br>'
                   'Свыше 15 гостей&nbsp;— доплата 300 ₽/человек за&nbsp;всё время пребывания.',
@@ -3204,7 +3208,7 @@ RENTAL_PAGES = {
             'tild6361-3339-4364-a234-306138303337__photo_2023-03-09_15-.webp',
         ],
         price_title='Стоимость за&nbsp;1 час аренды',
-        price_descr='От&nbsp;3‑х часов, каждый последующий час со&nbsp;скидкой 50%',
+        price_descr='От&nbsp;3‑х часов, каждый последующий час со&nbsp;скидкой 50%' + PROMO_NOTE,
         price_groups=[
             dict(note='«Счастливые часы» 10:00 — 12:00',
                  items=[('Будни', '8 000 ₽'), ('Выходные', '12 000 ₽')]),
@@ -3821,7 +3825,7 @@ VP_CHECKLIST = [
 
 # Акция: тот же компонент .promo-badge, что и у неонового шоу на главной.
 VP_PROMO = ('<p class="promo-badge">Первым 10 бронированиям&nbsp;— '
-            'фотограф на&nbsp;2 часа в&nbsp;подарок 🎁</p>')
+            'фотограф на&nbsp;2 часа в&nbsp;подарок 🎁</p>' + PROMO_NOTE)
 
 VP_GALLERY = [
     'tild6331-3438-4163-a535-656238353162__photo_2022-03-17_18-.webp',
@@ -4813,10 +4817,10 @@ def build_partner():
         cards.append(
             '<div class="partner-card">%s'
             '<div class="partner-card__body"><p>%s</p>'
-            '<p class="partner-card__discount">%s</p>'
+            '<p class="partner-card__discount">%s</p>%s'
             '<a class="partner-card__link" href="%s" target="_blank" rel="nofollow noopener noreferrer">%s</a>'
             '</div></div>'
-            % (pic, descr, discount, url, url.replace('https://', '')))
+            % (pic, descr, discount, PROMO_NOTE, url, url.replace('https://', '')))
     partner_cards = ''.join(cards)
 
     popups = render_form_popup('header')
@@ -5085,6 +5089,7 @@ def build_podarok():
     <div class="gift__card gift__card--offer">
       <p>Дарим <strong>сертификат на второй час посещения детского центра&nbsp;— бесплатно</strong>.
       Если вы у&nbsp;нас уже были&nbsp;— для вас действует скидка на&nbsp;посещение 50%.</p>
+      {PROMO_NOTE}
       <div class="gift__chips">
         <span class="gift__chip">Державина 23</span>
         <span class="gift__chip">10:00 — 21:00</span>
@@ -5095,6 +5100,7 @@ def build_podarok():
       <div class="gift__bot-icon" aria-hidden="true">🎁</div>
       <p>Хотите сертификат <strong>на&nbsp;1000&nbsp;₽</strong>? Получите его в&nbsp;нашем
       телеграм-боте <a href="https://t.me/porhay_gift_bot" target="_blank" rel="nofollow noopener noreferrer">@porhay_gift_bot</a></p>
+      {PROMO_NOTE}
     </div>
 
     <section style="margin-bottom:20px">
