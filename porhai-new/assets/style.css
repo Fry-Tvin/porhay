@@ -2497,3 +2497,12 @@ body:not(.birthday-page) .cta-band { padding-bottom:40px; }
 
 .home-page .hero__buttons { row-gap:8px; }
 .home-page .hero__buttons .promo-badge__note { flex-basis:100%; margin:0!important; }
+
+@media(max-width:1000px) {
+ .home-page .hero__art { margin-bottom:12px; }
+ .home-page main > .section:not(.legal) { padding-block:24px; }
+ .home-page .home-divider { height:28px; }
+ .home-page #zaly { padding-top:32px; padding-bottom:24px; }
+ .home-page #zaly .packages { margin-top:24px; }
+ .home-page .cards { gap:28px; }
+}
