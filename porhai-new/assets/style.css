@@ -2513,3 +2513,7 @@ body:not(.birthday-page) .cta-band { padding-bottom:40px; }
 .original-divider .tn-atom { width:100%; height:100%; }
 .original-divider img { display:block; width:100%; }
 .home-page main { overflow:clip; }
+
+.original-divider .tn-atom { display:block; }
+.original-divider .t396__artboard { width:100%; }
+.original-divider--unused { display:none; }
