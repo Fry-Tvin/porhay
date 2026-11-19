@@ -2527,3 +2527,5 @@ body:not(.birthday-page) .cta-band { padding-bottom:40px; }
 .original-divider [data-elem-type="image"] { z-index:100!important; }
 
 .original-divider { height:130px; padding-bottom:30px; }
+
+body main:has(.original-divider) { overflow:clip; }

@@ -228,64 +228,24 @@ CONFETTI_FLIP = [
 BUBBLE_DRIFT = (24, 25)
 
 
+_divider_serial = 0
+
+def original_divider(index, before, after):
+    global _divider_serial
+    _divider_serial += 1
+    with open(os.path.join(HERE, 'original-dividers.json'), encoding='utf8') as source:
+        html = json.load(source)[index]
+    old_id = ('rec572351759', 'rec572370702')[index]
+    html = html.replace(old_id, old_id + '-instance-' + str(_divider_serial))
+    colors = {'mint': '#DFFFFE', 'white': '#FFFFFF'}
+    html = html.replace('class="original-divider"', 'class="original-divider" style="background:linear-gradient(%s 0 50%%,%s 50%%)"' % (colors[before], colors[after]), 1)
+    return html
+
 def band(flip=False):
-    """Лента-разделитель: шарики и чёрточки на них.
-
-    flip=True — вариант Б (чёрточки свисают вниз, переход белый→мятный).
-    У каждого варианта своя раскладка, снятая с оригинала, — см. коммент
-    к BUBBLES/CONFETTI выше.
-    data-drift="mx,ro" — непрерывный дрейф по прокрутке (вариант А), читается
-    paint() внизу страницы. У варианта Б чёрточки анимированы иначе — разовый
-    scroll-in свинг по X/Y/повороту, data-swing3="mx,my,ro", см. CONFETTI_FLIP.
-    """
-    bubbles = BUBBLES_FLIP if flip else BUBBLES
-    bits = CONFETTI_FLIP if flip else CONFETTI
-
-    out = ['<div class="band" aria-hidden="true"><div class="band__inner">']
-    bmx, bro = BUBBLE_DRIFT
-    bubble_cls = 'band__bubble band__bubble--lg' if flip else 'band__bubble'
-    for i, (x, y) in enumerate(bubbles):
-        out.append('<span class="%s" style="left:%s%%;top:%dpx" '
-                   'data-drift="%d,%d"></span>'
-                   % (bubble_cls, x, y, bmx if i % 2 else -bmx, bro if i % 2 else -bro))
-    if flip:
-        for x, y, w, key, rot, mx, my, ro in bits:
-            out.append('<span class="band__bit" style="left:%s%%;top:%dpx;width:%dpx">'
-                       '<img src="%s%s" alt="" style="rotate:%ddeg" '
-                       'data-swing3="%d,%d,%d"></span>'
-                       % (x, y, w, IMG, BIT[key], rot, mx, my, ro))
-    else:
-        for x, y, w, key, rot, mx, ro in bits:
-            # Статичный поворот — на картинке, дрейф — на обёртке,
-            # чтобы скрипт не затирал поворот и наоборот.
-            out.append('<span class="band__bit" style="left:%s%%;top:%dpx;width:%dpx" '
-                       'data-drift="%d,%d"><img src="%s%s" alt="" '
-                       'style="transform:rotate(%ddeg)"></span>'
-                       % (x, y, w, mx, ro, IMG, BIT[key], rot))
-    out.append('</div></div>')
-    return ''.join(out)
-
+    return original_divider(1 if flip else 0, 'white' if flip else 'mint', 'mint' if flip else 'white')
 
 def home_band(before, after):
-    """Непрерывный стык главной: крупные статичные шары, движутся только линии."""
-    colors = {'mint': '#DFFFFE', 'white': '#FFFFFF'}
-    def silhouette(width, step, radius, height):
-        circles = ''.join('<circle cx="%d" cy="%d" r="%d"/>' %
-                          (x, radius + (8 if n % 2 else 0), radius)
-                          for n, x in enumerate(range(0, width + 1, step)))
-        return ('<svg class="home-divider__shape home-divider__shape--%s" '
-                'viewBox="0 0 %d %d" preserveAspectRatio="none" aria-hidden="true">'
-                '<rect x="0" y="70" width="%d" height="%d"/>%s</svg>' %
-                ('mobile' if width == 390 else 'desktop', width, height, width, height, circles))
-    lines = ''.join('<span class="home-divider__line" style="left:%s%%;top:%dpx;--line-turn:%ddeg" '
-                    'data-band-confetti><img src="%s%s" alt="" width="16" height="28"></span>' %
-                    (x, y, turn, IMG, BIT[key])
-                    for x, y, turn, key in [(12, 20, -16, 'd4abbe9e'),
-                    (37, 30, 20, '24e3675d'), (63, 14, -28, 'ceeef3f3'),
-                    (87, 28, 16, '13fdaa4f')])
-    return ('<div class="home-divider" style="--divider-before:%s;--divider-after:%s" aria-hidden="true">'
-            '%s%s%s</div>' % (colors[before], colors[after],
-            silhouette(1440, 180, 110, 110), silhouette(390, 130, 90, 100), lines))
+    return original_divider(0 if before == 'mint' else 1, before, after)
 
 
 # --- Данные страницы ------------------------------------------------------
@@ -1660,7 +1620,7 @@ def build():
     </div>
   </section>
 
-  {json.load(open(os.path.join(HERE, 'original-dividers.json'), encoding='utf8'))[0]}
+  {home_band('mint', 'white')}
 
   <section class="section">
     <div class="stage">
@@ -1676,7 +1636,7 @@ def build():
     </div>
   </section>
 
-  {json.load(open(os.path.join(HERE, 'original-dividers.json'), encoding='utf8'))[1]}
+  {home_band('white', 'mint')}
 
   <section class="section section--mint section--steps">
     <div class="stage">
