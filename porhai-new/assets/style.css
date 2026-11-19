@@ -2517,3 +2517,13 @@ body:not(.birthday-page) .cta-band { padding-bottom:40px; }
 .original-divider .tn-atom { display:block; }
 .original-divider .t396__artboard { width:100%; }
 .original-divider--unused { display:none; }
+
+/* Reserve a safe corridor for the original balloon silhouettes and their orbits. */
+.original-divider { height:170px; padding-top:70px; padding-bottom:70px; box-sizing:border-box; isolation:isolate; }
+.original-divider:first-of-type { background:linear-gradient(#dffffe 0 50%,#fff 50%); }
+#rec572351759 { background:linear-gradient(#dffffe 0 50%,#fff 50%); }
+#rec572370702 { background:linear-gradient(#fff 0 50%,#dffffe 50%); }
+.original-divider .t396__artboard { top:0; }
+.original-divider [data-elem-type="image"] { z-index:100!important; }
+
+.original-divider { height:130px; padding-bottom:30px; }

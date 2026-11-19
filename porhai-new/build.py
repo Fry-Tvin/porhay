@@ -1078,13 +1078,33 @@ PAGE_SCRIPT = """<script>
   var oldLines = Array.from(document.querySelectorAll('.original-divider [data-original-motion]'));
   function updateOldLines() {
     oldLines.forEach(function(line) {
-      var d = Math.max(0, innerHeight-line.closest('.original-divider').getBoundingClientRect().top);
-      var p = d < 200 ? d/200 : Math.max(0,1-(d-200)/210);
-      var v = line.dataset.originalMotion.split(',').map(Number);
-      line.style.transform = reduce ? '' : 'translate('+v[0]*p+'px,'+v[1]*p+'px) rotate('+v[2]*p+'deg)';
+      var parent = line.closest('.original-divider');
+      var style = getComputedStyle(line);
+      var x = parseFloat(style.left), y = parseFloat(style.top);
+      var w = line.offsetWidth, h = line.offsetHeight;
+      var shapes = Array.from(parent.querySelectorAll('[data-elem-type="shape"]'));
+      var nearest = null, best = Infinity;
+      shapes.forEach(function(shape) {
+        var st = getComputedStyle(shape);
+        var cx = parseFloat(st.left) + shape.offsetWidth / 2;
+        var cy = parseFloat(st.top) + shape.offsetHeight / 2;
+        var distance = Math.hypot(x + w/2-cx, y+h/2-cy);
+        if (distance < best) { nearest = [cx,cy]; best = distance; }
+      });
+      if (!nearest) return;
+      line.style.transformOrigin = (nearest[0]-x)+'px '+(nearest[1]-y)+'px';
+      var direction = Number(line.dataset.originalMotion.split(',')[2]) < 0 ? -1 : 1;
+      var degrees = (innerHeight-parent.getBoundingClientRect().top) * .55 * direction;
+      line.style.transform = reduce ? '' : 'rotate('+degrees+'deg)';
     });
   }
-  addEventListener('scroll',function(){requestAnimationFrame(updateOldLines);},{passive:true});
+  var originalTick = false;
+  addEventListener('scroll',function(){
+    if (originalTick) return;
+    originalTick = true;
+    requestAnimationFrame(function(){originalTick=false;updateOldLines();});
+  },{passive:true});
+  addEventListener('resize',updateOldLines);
   updateOldLines();
   // 0d. Клики по телефону/WhatsApp/Telegram — по всей странице, делегированием,
   //     чтобы не перечислять их поштучно (шапка, контакты, плавающая кнопка,
