@@ -1035,8 +1035,26 @@ PAGE_SCRIPT = """<script>
     }
   }
 
+  function dividerColor(element) {
+    while (element) {
+      var color = getComputedStyle(element).backgroundColor;
+      if (color && color !== 'rgba(0, 0, 0, 0)' && color !== 'transparent') return color;
+      element = element.parentElement;
+    }
+    return '#fff';
+  }
+  document.querySelectorAll('.original-divider').forEach(function (divider) {
+    var before = dividerColor(divider.previousElementSibling);
+    var after = dividerColor(divider.nextElementSibling);
+    divider.style.background = 'linear-gradient('+before+' 0 50%,'+after+' 50%)';
+    divider.querySelectorAll('[data-elem-type="shape"] .tn-atom').forEach(function (atom) {
+      atom.style.backgroundColor = after;
+    });
+  });
   var oldLines = Array.from(document.querySelectorAll('.original-divider [data-original-motion]'));
+  var originalNeedsFrame = false;
   function updateOldLines() {
+    originalNeedsFrame = false;
     oldLines.forEach(function(line) {
       var parent = line.closest('.original-divider');
       var style = getComputedStyle(line);
@@ -1055,14 +1073,25 @@ PAGE_SCRIPT = """<script>
       line.style.transformOrigin = (nearest[0]-x)+'px '+(nearest[1]-y)+'px';
       var direction = Number(line.dataset.originalMotion.split(',')[2]) < 0 ? -1 : 1;
       var degrees = (innerHeight-parent.getBoundingClientRect().top) * .55 * direction;
-      line.style.transform = reduce ? '' : 'rotate('+degrees+'deg)';
+      var target = degrees * .45;
+      var previous = Number(line.dataset.orbitAngle || target);
+      var delta = target - previous;
+      var angle = reduce ? 0 : previous + delta * .12;
+      line.dataset.orbitAngle = angle;
+      line.style.transform = 'rotate('+angle+'deg)';
+      if (!reduce && Math.abs(delta) > .08) originalNeedsFrame = true;
     });
   }
   var originalTick = false;
+  function animateOriginal() {
+    updateOldLines();
+    if (originalNeedsFrame) requestAnimationFrame(animateOriginal);
+    else originalTick = false;
+  }
   addEventListener('scroll',function(){
     if (originalTick) return;
     originalTick = true;
-    requestAnimationFrame(function(){originalTick=false;updateOldLines();});
+    requestAnimationFrame(animateOriginal);
   },{passive:true});
   addEventListener('resize',updateOldLines);
   updateOldLines();
@@ -4713,6 +4742,18 @@ def build_torty():
 # Тоже новая страница, фото от заказчика (28.08.2026) — 13 готовых фото
 # пиньят, без листов-сеток (уже отдельные кадры, нарезка не нужна).
 PINYATY_GALLERY = [
+    ('pinata-new-cat.webp', 'Кошечка'),
+    ('pinata-new-blaze.webp', 'Вспыш'),
+    ('pinata-new-ironman.webp', 'Железный человек'),
+    ('pinata-new-batman.webp', 'Бэтмен'),
+    ('pinata-new-cupcake.webp', 'Кекс'),
+    ('pinata-new-dino.webp', 'Динозавр'),
+    ('pinata-new-pony.webp', 'Пони'),
+    ('pinata-new-stitch.webp', 'Стич'),
+    ('pinata-new-skye.webp', 'Скай'),
+    ('pinata-new-avengers.webp', 'Супергерои'),
+    ('pinata-new-heart.webp', 'Сердце'),
+    ('pinata-new-hat.webp', 'Шляпа'),
     ('pinyata-zvezda.webp', 'Звезда'),
     ('pinyata-edinorog.webp', 'Единорог'),
     ('pinyata-edinorog-golova.webp', 'Единорог'),
@@ -4750,7 +4791,7 @@ def build_pinyaty():
 {seo_head('/pinyaty', 'Пиньяты на праздник в «Порхай», Владивосток', f'Пиньяты с наполнением на день рождения в «Порхай»: {len(PINYATY_GALLERY)} готовых дизайнов.')}
 <link rel="stylesheet" href="{STYLE_HREF}">
 </head>
-<body data-lead-type="pinyatas">
+<body class="pinyaty-page" data-lead-type="pinyatas">
 <script>document.documentElement.className+=' js'</script>
 
 {render_top_chrome()}
@@ -4761,7 +4802,7 @@ def build_pinyaty():
       <div class="page-hero__uptitle" data-anim="fadeinup" data-anim-dur="1">«Порхай»</div>
       <h1 class="page-hero__title" data-anim="fadeinup" data-anim-dur="1">Пиньяты</h1>
       <p class="page-hero__descr" data-anim="fadeinup" data-anim-dur="1" data-anim-delay=".1">С наполнением — на радость гостям праздника</p>
-      <a class="btn btn--yellow" href="#popup:pinyaty" data-analytics-placement="hero" data-anim="zoomin" data-anim-dur="1">Заказать пиньяту</a>
+      <a class="btn btn--yellow" href="https://wa.me/79510000499?text={quote('здравствуйте, хочу заказать пиньяту')}" data-analytics-placement="hero" data-anim="zoomin" data-anim-dur="1">Заказать пиньяту</a>
     </div>
   </section>
 
@@ -4769,11 +4810,11 @@ def build_pinyaty():
 
   <section class="section section--compact">
     <div class="stage">
-      <div class="torty-grid torty-grid--big">{gallery}</div>
+      <p class="pinata-custom">Мы можем изготовить любую пиньяту по вашему дизайну.</p><div class="torty-grid torty-grid--big">{gallery}</div>
     </div>
   </section>
 
-  <div class="cta-band cta-band--compact"><a class="btn btn--yellow" href="#popup:pinyaty" data-analytics-placement="bottom">Заказать пиньяту</a></div>
+  <div class="cta-band cta-band--compact"><a class="btn btn--yellow" href="https://wa.me/79510000499?text={quote('здравствуйте, хочу заказать пиньяту')}" data-analytics-placement="bottom">Заказать пиньяту</a></div>
 
   {band(flip=True)}
 

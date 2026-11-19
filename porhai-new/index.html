@@ -31,7 +31,7 @@
 <meta property="og:description" content="«Порхай» — детский развлекательный центр во Владивостоке. Дни рождения и выпускные под ключ, аниматоры и шоу-программы. 3 сухих бассейна, фотозоны. Державина, 23.">
 <meta property="og:image" content="https://xn--80asndg4a.xn--p1ai/assets/img/tild3463-6130-4836-a539-636430646232__vector.webp">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="stylesheet" href="assets/style.css?v=edff6fecdd22">
+<link rel="stylesheet" href="assets/style.css?v=9c90001cb99a">
 </head>
 <body class="home-page" data-lead-type="general">
 <script>document.documentElement.className+=' js'</script>
@@ -2630,8 +2630,26 @@
     }
   }
 
+  function dividerColor(element) {
+    while (element) {
+      var color = getComputedStyle(element).backgroundColor;
+      if (color && color !== 'rgba(0, 0, 0, 0)' && color !== 'transparent') return color;
+      element = element.parentElement;
+    }
+    return '#fff';
+  }
+  document.querySelectorAll('.original-divider').forEach(function (divider) {
+    var before = dividerColor(divider.previousElementSibling);
+    var after = dividerColor(divider.nextElementSibling);
+    divider.style.background = 'linear-gradient('+before+' 0 50%,'+after+' 50%)';
+    divider.querySelectorAll('[data-elem-type="shape"] .tn-atom').forEach(function (atom) {
+      atom.style.backgroundColor = after;
+    });
+  });
   var oldLines = Array.from(document.querySelectorAll('.original-divider [data-original-motion]'));
+  var originalNeedsFrame = false;
   function updateOldLines() {
+    originalNeedsFrame = false;
     oldLines.forEach(function(line) {
       var parent = line.closest('.original-divider');
       var style = getComputedStyle(line);
@@ -2650,14 +2668,25 @@
       line.style.transformOrigin = (nearest[0]-x)+'px '+(nearest[1]-y)+'px';
       var direction = Number(line.dataset.originalMotion.split(',')[2]) < 0 ? -1 : 1;
       var degrees = (innerHeight-parent.getBoundingClientRect().top) * .55 * direction;
-      line.style.transform = reduce ? '' : 'rotate('+degrees+'deg)';
+      var target = degrees * .45;
+      var previous = Number(line.dataset.orbitAngle || target);
+      var delta = target - previous;
+      var angle = reduce ? 0 : previous + delta * .12;
+      line.dataset.orbitAngle = angle;
+      line.style.transform = 'rotate('+angle+'deg)';
+      if (!reduce && Math.abs(delta) > .08) originalNeedsFrame = true;
     });
   }
   var originalTick = false;
+  function animateOriginal() {
+    updateOldLines();
+    if (originalNeedsFrame) requestAnimationFrame(animateOriginal);
+    else originalTick = false;
+  }
   addEventListener('scroll',function(){
     if (originalTick) return;
     originalTick = true;
-    requestAnimationFrame(function(){originalTick=false;updateOldLines();});
+    requestAnimationFrame(animateOriginal);
   },{passive:true});
   addEventListener('resize',updateOldLines);
   updateOldLines();

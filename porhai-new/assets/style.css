@@ -2529,3 +2529,13 @@ body:not(.birthday-page) .cta-band { padding-bottom:40px; }
 .original-divider { height:130px; padding-bottom:30px; }
 
 body main:has(.original-divider) { overflow:clip; }
+
+.pinata-custom { text-align:center; max-width:600px; margin:0 auto 22px; font-size:20px; line-height:1.4; }
+.pinyaty-page .torty-grid--big { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:18px; }
+.pinyaty-page .torty-grid__item--big { width:auto; min-width:0; }
+.pinyaty-page .torty-grid__item--big img { width:100%; height:220px; object-fit:contain; border-radius:14px; }
+@media(max-width:767px) {
+ .pinyaty-page .torty-grid--big { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+ .pinyaty-page .torty-grid__item--big img { height:170px; }
+ .pinata-custom { font-size:18px; }
+}
