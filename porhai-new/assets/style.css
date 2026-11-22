@@ -2539,3 +2539,5 @@ body main:has(.original-divider) { overflow:clip; }
  .pinyaty-page .torty-grid__item--big img { height:170px; }
  .pinata-custom { font-size:18px; }
 }
+
+.contact__maps { margin-top:14px; font-size:14px; line-height:1.5; }.contact__maps a { color:var(--ink); text-decoration:underline; text-underline-offset:3px; }

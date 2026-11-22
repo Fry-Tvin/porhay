@@ -49,7 +49,7 @@ SITE_URL = 'https://xn--80asndg4a.xn--p1ai'
 SEO_IMAGE = IMG + 'tild3463-6130-4836-a539-636430646232__vector.webp'
 
 # Один источник для поискового описания главной и Open Graph.
-HOME_SEO_TITLE = 'Порхай — детский развлекательный центр во Владивостоке'
+HOME_SEO_TITLE = 'Порхай — детский центр во Владивостоке, Державина, 23'
 HOME_SEO_DESCRIPTION = ('«Порхай» — детский развлекательный центр во Владивостоке. '
                         'Дни рождения и выпускные под ключ, аниматоры и шоу-программы. '
                         '3 сухих бассейна, фотозоны. Державина, 23.')
@@ -860,6 +860,7 @@ BUSINESS_LD = json.dumps({
     '@type': 'LocalBusiness',
     '@id': SITE_URL + '/',
     'name': 'Порхай',
+    'description': 'Детский развлекательный центр во Владивостоке, ул. Державина, 23. Дни рождения, выпускные, сухие бассейны и фотозоны.',
     'url': SITE_URL + '/',
     'image': SITE_URL + '/' + SEO_IMAGE,
     'telephone': PHONE,
@@ -871,7 +872,11 @@ BUSINESS_LD = json.dumps({
         'addressCountry': 'RU',
     },
     'openingHours': 'Mo-Su 10:00-21:00',
-    'sameAs': [url for _, url, _, _ in SOCIALS],
+    'hasMap': 'https://yandex.ru/maps/org/porkhay/234292709609/',
+    'sameAs': [url for _, url, _, _ in SOCIALS] + [
+        'https://yandex.ru/maps/org/porkhay/234292709609/',
+        'https://2gis.ru/vladivostok/firm/70000001052379765',
+    ],
 }, ensure_ascii=False)
 
 
@@ -891,6 +896,8 @@ def render_contact_section():
         '<h2 class="contact__title">Контакты</h2>'
         '<p class="contact__text"><a href="%s" data-analytics-placement="contacts">%s</a><br>%s<br>%s</p>'
         '<div class="contact__socials">%s</div>'
+        '<p class="contact__maps"><a href="https://yandex.ru/maps/org/porkhay/234292709609/">Яндекс Карты</a> · '
+        '<a href="https://2gis.ru/vladivostok/firm/70000001052379765">2ГИС</a></p>'
         '</div>'
         '<div class="contact__map" data-anim="zoomin" data-anim-dur="1" data-anim-delay=".2">'
         '<iframe src="https://yandex.ru/map-widget/v1/?text=%s&z=16&l=map" width="100%%" height="400" '
@@ -1632,8 +1639,8 @@ def build():
     <div class="stage hero__stage">
       <div class="hero__content">
         <img class="hero__flag" src="{IMG}tild3236-6461-4137-a165-663934353632__b8bca4c5-59d4-4e8a-a.svg" alt="" width="154" height="113" data-anim="zoomin" data-anim-dur="1" data-anim-delay=".6">
-        <h1 class="hero__title" data-anim="fadeinright" data-anim-dur="1.7">Развлекательный центр для всей семьи</h1>
-        <p class="hero__text" data-anim="fadeinright" data-anim-dur="1.7" data-anim-delay=".2">Дни рождения и&nbsp;выпускные под&nbsp;ключ <b>во&nbsp;Владивостоке</b>. Аниматоры и&nbsp;шоу-программы, 3&nbsp;сухих бассейна и&nbsp;фотозоны.</p>
+        <h1 class="hero__title" data-anim="fadeinright" data-anim-dur="1.7">«Порхай» — детский развлекательный центр</h1>
+        <p class="hero__text" data-anim="fadeinright" data-anim-dur="1.7" data-anim-delay=".2"><b>Владивосток, ул.&nbsp;Державина, 23.</b> Дни рождения и&nbsp;выпускные под&nbsp;ключ. Аниматоры и&nbsp;шоу-программы, 3&nbsp;сухих бассейна и&nbsp;фотозоны.</p>
         <div class="hero__buttons" data-anim="zoomin" data-anim-dur="2.4" data-anim-delay=".4">
           <a class="btn btn--yellow" href="#popup:bonus" data-analytics-placement="hero">Получите 3&nbsp;пиццы на&nbsp;праздник и&nbsp;второй час посещения бесплатно</a>
           {PROMO_NOTE}
