@@ -2056,8 +2056,19 @@
       var hasForm = !!dlg.querySelector('[data-form]');
       var placement = a.dataset.analyticsPlacement || '';
       if (hasForm) {
+        var openedForm=dlg.querySelector('[data-form]');
+        if (openedForm.dataset.sending) { dlg.showModal(); return; }
+        openedForm.hidden=false;
+        dlg.querySelector('[data-form-head]').hidden=false;
+        dlg.querySelector('[data-form-thanks]').hidden=true;
+        dlg.querySelector('[data-form-error]').hidden=true;
+        openedForm.elements.phone.setCustomValidity('');
         dlg.dataset.ctaPlacement = placement;
         dlg.dataset.package = a.dataset.package || '';
+        if (document.body.classList.contains('birthday-page')) {
+          dlg.querySelector('.popup__title').textContent = a.dataset.promo ? 'Закрепим пиньяту за вашим праздником' : 'Узнайте свободные даты';
+          dlg.querySelector('.popup__subtitle p').textContent = a.dataset.promo ? 'Оставьте номер — уточним условия подарка и пришлём свободные даты в WhatsApp в течение 20 минут (10:00–21:00).' : 'Оставьте номер — пришлём свободные даты и цены в WhatsApp в течение 20 минут (10:00–21:00)';
+        }
         var summary = dlg.querySelector('[data-package-summary]');
         if (summary) {
           summary.textContent = a.dataset.packageLabel || '';
@@ -2099,20 +2110,33 @@
     }
     form.addEventListener('focus', onFieldTouch, true);
     form.addEventListener('input', onFieldTouch, true);
+    form.elements.phone.addEventListener('input',function(){this.setCustomValidity('');});
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
+      if (form.dataset.sending) return;
+      var phone=form.elements.phone, raw=phone.value.trim(), digits=raw.replace(/[^0-9]/g,'');
+      if (!/^[+0-9() .-]+$/.test(raw) || !((digits.length===10 && digits[0]==='9') || (digits.length===11 && /^[78]9/.test(digits)) || (raw[0]==='+' && /^[1-9][0-9]{6,14}$/.test(digits)))) {
+        phone.setCustomValidity('Введите номер РФ или международный номер с кодом страны, например +7 или +995.');
+        phone.reportValidity(); return;
+      }
+      form.dataset.sending='1';
+      var submit=form.querySelector('[type="submit"]'), label=submit.textContent;
+      submit.disabled=true;submit.textContent='Отправляем…';
+      function unlock(){delete form.dataset.sending;submit.disabled=false;submit.textContent=label;}
       var errorEl = dlg.querySelector('[data-form-error]');
       if (errorEl) errorEl.hidden = true;
       var placement = dlg.dataset.ctaPlacement || '';
       var goalParams = { page: location.pathname, lead_type: leadType, form: formKey, placement: placement };
       sendLead(form, dlg.id, function () {
+        unlock();
         form.hidden = true;
         var head = dlg.querySelector('[data-form-head]');
         if (head) head.hidden = true;
         dlg.querySelector('[data-form-thanks]').hidden = false;
         trackGoal('lead_submit', goalParams);
       }, function (errorType) {
+        unlock();
         trackGoal('lead_error', Object.assign({ error_type: errorType }, goalParams));
         if (errorEl) errorEl.hidden = false;
       });
