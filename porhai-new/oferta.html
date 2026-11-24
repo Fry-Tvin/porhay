@@ -18,6 +18,7 @@
     ym(112256802, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
 </script>
 <noscript><div><img src="https://mc.yandex.ru/watch/112256802" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<script src="/assets/js/attribution.js?v=20261124"></script>
 <!-- /Yandex.Metrika counter -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Публичная оферта — Порхай</title>
@@ -64,63 +65,8 @@
     } catch (err) {}
   }
 
-  // Read the counter early; a blocked counter must not block submissions.
-  function cacheClientId(id) {
-    try { if (id) localStorage.setItem('porhay_cid', id); } catch (err) {}
-  }
-  try { if (window.ym) ym(112256802, 'getClientID', cacheClientId); } catch (err) {}
-  function getClientId(callback) {
-    var id = '';
-    try { id = localStorage.getItem('porhay_cid') || ''; } catch (err) {}
-    if (!id) {
-      var cookie = document.cookie.match(/(?:^|;\s*)_ym_uid=([^;]+)/);
-      if (cookie) id = cookie[1];
-    }
-    if (id) { callback(id); return; }
-    var done = false;
-    function finish(id) {
-      cacheClientId(id);
-      if (done) return;
-      done = true;
-      callback(id || '');
-    }
-    try {
-      if (window.ym) {
-        ym(112256802, 'getClientID', finish);
-        setTimeout(function () { finish(''); }, 800);
-      } else finish('');
-    } catch (err) { finish(''); }
-  }
-
-  var UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'yclid'];
-  var ATTRIBUTION_KEY = 'porhay_attribution';
-  var DAY_MS = 86400000;
-  function getAttribution() {
-    try {
-      var data = JSON.parse(localStorage.getItem(ATTRIBUTION_KEY) || 'null');
-      if (data && Number.isFinite(data.ts) && Date.now() - data.ts <= 90 * DAY_MS) return data;
-      if (data) localStorage.removeItem(ATTRIBUTION_KEY);
-    } catch (err) {}
-    return {};
-  }
-  (function captureAttribution() {
-    try {
-      var params = new URLSearchParams(location.search);
-      var data = {};
-      UTM_KEYS.forEach(function (k) {
-        var value = params.get(k);
-        if (value) data[k] = value;
-      });
-      var tagged = Object.keys(data).length > 0;
-      var ref = document.referrer;
-      if (ref && new URL(ref).origin !== location.origin) data.referrer = ref;
-      var previous = getAttribution();
-      if (!tagged && (!data.referrer || previous.ts)) return;
-      data.landing_page = location.pathname;
-      data.ts = Date.now();
-      localStorage.setItem(ATTRIBUTION_KEY, JSON.stringify(data));
-    } catch (err) {}
-  })();
+  function getClientId(callback) { window.PorhayAttribution.clientId(callback); }
+  function getAttribution() { return window.PorhayAttribution.get(); }
 
   function birthdayWhatsApp(link, packageLabel) {
     var source = getAttribution();

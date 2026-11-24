@@ -104,6 +104,7 @@
     .bonus__cta{ margin-top:28px; }
   }
 </style>
+<script src="/assets/js/attribution.js?v=20261124"></script>
 </head>
 <body>
 <script>document.documentElement.className+=' js'</script>
@@ -210,31 +211,8 @@
   function trackGoal(name, params){
     try{ if(window.ym) ym(112256802, 'reachGoal', name, params || {}); }catch(e){}
   }
-  function getClientId(callback){
-    var done = false;
-    function finish(id){ if(done) return; done = true; callback(id || ''); }
-    try{
-      if(window.ym){ ym(112256802, 'getClientID', finish); setTimeout(function(){ finish(''); }, 800); }
-      else finish('');
-    }catch(e){ finish(''); }
-  }
-  (function captureAttribution(){
-    try{
-      if(sessionStorage.getItem('attribution')) return;
-      var params = new URLSearchParams(location.search);
-      var attribution = {}, has = false;
-      ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','yclid'].forEach(function(k){
-        var v = params.get(k);
-        if(v){ attribution[k] = v; has = true; }
-      });
-      var ref = document.referrer;
-      if(ref && ref.indexOf(location.origin) !== 0){ attribution.referrer = ref; has = true; }
-      if(has) sessionStorage.setItem('attribution', JSON.stringify(attribution));
-    }catch(e){}
-  })();
-  function getAttribution(){
-    try{ return JSON.parse(sessionStorage.getItem('attribution') || '{}'); }catch(e){ return {}; }
-  }
+  function getClientId(callback){ window.PorhayAttribution.clientId(callback); }
+  function getAttribution(){ return window.PorhayAttribution.get(); }
   var formStarted = false;
   function trackFormStart(){
     if(formStarted) return;
