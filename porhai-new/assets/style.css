@@ -2541,3 +2541,8 @@ body main:has(.original-divider) { overflow:clip; }
 }
 
 .contact__maps { margin-top:14px; font-size:14px; line-height:1.5; }.contact__maps a { color:var(--ink); text-decoration:underline; text-underline-offset:3px; }
+
+.birthday-page .popup--form .popup__box { min-width:0; overflow-x:hidden; }
+.birthday-page .popup--form .form { min-width:0; max-width:100%; }
+.birthday-page .birthday-form-wa { display:block; max-width:100%; width:100%; text-align:center; white-space:normal; overflow-wrap:anywhere; line-height:1.4; padding:8px 0; color:#205f63; text-decoration:underline; }
+.birthday-page .popup--form .form__submit { min-width:0; max-width:100%; width:100%; white-space:normal; }

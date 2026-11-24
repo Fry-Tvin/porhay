@@ -3695,7 +3695,7 @@ def build_denrozhdeniya():
                 .replace('>Ваше имя</span>', '>Ваше имя (необязательно)</span>')
                 .replace('<label class="form__consent"><input type="checkbox" name="marketing"><span>Хочу получать новости, акции и приглашения на праздники</span></label>', '')
                 .replace('>Отправить</button>', '>Запросить даты</button>')
-                .replace('</form>', f'<a href="{wa}" data-analytics-placement="form">Или напишите нам в WhatsApp</a></form>')
+                .replace('</form>', f'<a class="birthday-form-wa" href="{wa}" data-analytics-placement="form">Или напишите нам в WhatsApp</a></form>')
                 .replace('>Спасибо!</p>', '>Заявка принята!</p>')
                 .replace('Мы свяжемся с вами в ближайшее время.',
                          f'Напишем вам в WhatsApp в течение 20 минут (10:00–21:00). Хотите быстрее — напишите нам сами.</p><a href="{wa}" data-analytics-placement="thanks">WhatsApp</a> · <a href="tel:+79510000499" data-analytics-placement="thanks">+7 951 000-04-99</a><p hidden>'))
@@ -3717,7 +3717,7 @@ def build_denrozhdeniya():
 <body class="birthday-page" data-lead-type="birthday">
 <script>document.documentElement.className+=' js'</script>
 
-{render_top_chrome().replace('Мы используем файлы cookie, чтобы сайт работал корректно. ', 'Используем cookie. ').replace('Продолжая пользоваться сайтом, вы соглашаетесь с ', 'Подробнее в ').replace('>Хорошо</button>', '>Ок</button>')}
+{render_top_chrome().replace('Мы используем файлы cookie, чтобы сайт работал корректно. ', 'Используем cookie. ').replace('Продолжая пользоваться сайтом, вы соглашаетесь с ', 'Подробнее — ').replace('политикой конфиденциальности</a>', 'в политике конфиденциальности</a>').replace('>Хорошо</button>', '>Ок</button>')}
 
 <main>
   <section class="birthday-hero">
