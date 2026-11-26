@@ -3765,6 +3765,16 @@ def build_denrozhdeniya():
 
 {PAGE_SCRIPT}
 <script>
+document.querySelectorAll('#room-reviews [data-video]').forEach(function(box) {{
+ box.addEventListener('click',function(e) {{
+  if(box.querySelector('iframe'))return;
+  var frame=document.createElement('iframe');
+  frame.src='https://rutube.ru/play/embed/'+box.dataset.video+'/?autoplay=1';
+  frame.title='Видеообзор зала';
+  frame.allow='autoplay; fullscreen';frame.allowFullscreen=true;frame.className='video__frame';
+  box.replaceChildren(frame);
+ }});
+}});
 var chooser = document.getElementById('birthday-messengers');
 var messengerContext = {{}};
 function messengerGoal(name, extra) {{
