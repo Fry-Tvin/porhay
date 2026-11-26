@@ -3644,7 +3644,7 @@ def build_denrozhdeniya():
 
 <main>
   <section class="birthday-hero">
-    <div class="stage"><a class="birthday-gift" href="#birthday-messengers" data-promo="pinata" data-analytics-placement="promo">🎁 Получить пиньяту на праздник →</a></div>
+
     <div class="stage birthday-hero__grid">
       <div class="birthday-hero__copy">
         <h1>Детский день рождения под ключ <span>во Владивостоке</span></h1>
@@ -3653,6 +3653,7 @@ def build_denrozhdeniya():
       </div>
       <img class="birthday-hero__photo" src="{IMG}{DR_COVER}" alt="День рождения в «Порхай»" fetchpriority="high">
       <div class="birthday-actions" id="birthday-actions">
+        <a class="btn btn--yellow birthday-gift-primary" href="#birthday-messengers" data-promo="pinata" data-analytics-placement="promo">Получить пиньяту на праздник</a>
         {cta.format('hero')}
         <a href="{wa}" data-analytics-placement="hero">Написать в WhatsApp</a>
       </div>
@@ -3709,7 +3710,7 @@ def build_denrozhdeniya():
         <div class="bd-contact-links">
           <a href="{PHONE_HREF}" data-analytics-placement="footer">☎ {PHONE}</a>
           <a href="{wa}" data-analytics-placement="footer">WhatsApp →</a>
-          <a href="https://t.me/porhay_vladivostok" data-analytics-placement="footer">Telegram →</a>
+          <a href="https://t.me/porhay_vl" data-analytics-placement="footer">Telegram →</a>
         </div>
         <a class="btn btn--yellow" href="#popup:denrozhdeniya" data-phone-form data-analytics-placement="footer_phone">Оставить номер телефона</a>
       </div>
@@ -3734,7 +3735,7 @@ def build_denrozhdeniya():
   <p data-messenger-topic></p>
   <div class="birthday-messenger-grid">
    <a data-messenger="whatsapp" href="{wa}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true">{WA_ICON}</svg>WhatsApp</a>
-   <a data-messenger="telegram" href="https://t.me/porhay_vladivostok" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true">{TG_ICON}</svg>Telegram</a>
+   <a data-messenger="telegram" href="https://t.me/porhay_vl" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true">{TG_ICON}</svg>Telegram</a>
    <a data-messenger="max" href="https://max.ru/u/f9LHodD0cOLqrvIA72DMUOdZ1jWjZtmxu15O2okC2Dm2gS5lLfRvIFPf-x4" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true">{MAX_ICON}</svg>MAX</a>
   </div>
   <p class="messenger-hint">Для MAX скопируйте сообщение и вставьте его в чат:</p>
@@ -3768,7 +3769,7 @@ document.addEventListener('click',function(e) {{
  chooser.querySelector('[data-messenger-draft]').textContent=text;
  chooser.querySelector('[data-copy-status]').textContent='';
  chooser.querySelector('[data-messenger="whatsapp"]').href='https://wa.me/79510000499?text='+encodeURIComponent(text);
- chooser.querySelector('[data-messenger="telegram"]').href='https://t.me/porhay_vladivostok?text='+encodeURIComponent(text);
+ chooser.querySelector('[data-messenger="telegram"]').href='https://t.me/porhay_vl?text='+encodeURIComponent(text);
  var current=document.querySelector('dialog[open]');if(current)current.close();
  chooser.showModal();
  messengerGoal('messenger_open');

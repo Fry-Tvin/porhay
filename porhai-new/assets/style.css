@@ -2554,3 +2554,6 @@ body main:has(.original-divider) { overflow:clip; }
 .popup--messengers .messenger-hint,.messenger-draft { font-size:13px; line-height:1.4; margin:10px 0; }
 .messenger-copy { color:#205f63; background:#dffffe; border:1px solid #7dbbb9; padding:8px 12px; border-radius:10px; cursor:pointer; }
 .birthday-page .birthday-form-wa { color:#087a7e!important; font-weight:800; text-decoration:underline!important; text-underline-offset:4px; background:#e7f8f7; border-radius:10px; margin-top:10px; }
+
+.birthday-page .birthday-actions .birthday-gift-primary { background:var(--yellow); color:var(--ink); border:0; margin:0; font-weight:900; }
+.birthday-page .birthday-actions a.btn:not(.birthday-gift-primary) { background:transparent; color:#205f63; border:1px solid #38a2a5; margin-top:8px; }
