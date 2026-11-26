@@ -2557,3 +2557,17 @@ body main:has(.original-divider) { overflow:clip; }
 
 .birthday-page .birthday-actions .birthday-gift-primary { background:var(--yellow); color:var(--ink); border:0; margin:0; font-weight:900; }
 .birthday-page .birthday-actions a.btn:not(.birthday-gift-primary) { background:transparent; color:#205f63; border:1px solid #38a2a5; margin-top:8px; }
+
+.birthday-gift-primary { animation:gift-breathe 3.5s ease-in-out infinite; }
+@keyframes gift-breathe { 0%,100% { box-shadow:0 0 0 0 #f5cf3740; } 50% { box-shadow:0 0 0 6px #f5cf3700; } }
+@media(prefers-reduced-motion:reduce) { .birthday-gift-primary { animation:none; } }
+.bd-bright-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+.bd-bright-card { margin:0; border-radius:18px; overflow:hidden; background:white; }
+.bd-bright-card img { width:100%; aspect-ratio:4/3; object-fit:cover; }
+.bd-bright-card figcaption { padding:12px; font-weight:800; line-height:1.35; }
+.bd-room { padding:12px; background:white; }
+.bd-room h3 { margin:0 0 10px; }
+.bd-room .video { margin:0 0 10px; }
+.bd-carousel__track--rooms { --card:88%; }
+.birthday-steps .steps { margin-top:16px; }
+@media(max-width:767px) { .bd-bright-grid { grid-template-columns:1fr; } .bd-bright-card { display:grid; grid-template-columns:40% 1fr; align-items:center; } .birthday-steps .steps { gap:12px; } }

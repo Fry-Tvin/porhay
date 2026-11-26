@@ -24,7 +24,7 @@
 <title>Публичная оферта на выпускной — Порхай</title>
 <meta name="description" content="Публичная оферта на организацию и проведение выпускного мероприятия в развлекательном центре «Порхай», г. Владивосток, ул. Державина 23.">
 <meta name="robots" content="noindex">
-<link rel="stylesheet" href="assets/style.css?v=07340149ba22">
+<link rel="stylesheet" href="assets/style.css?v=5fcc4d47ad7e">
 </head>
 <body data-lead-type="general">
 <script>document.documentElement.className+=' js'</script>
@@ -583,8 +583,7 @@
   // 5c. Видео о центре: до клика на странице только наша картинка-обложка,
   //     плеер RuTube (его скрипты и куки) подставляется одним iframe'ом
   //     по первому клику — страница грузится без стороннего плеера вообще.
-  var video = document.querySelector('[data-video]');
-  if (video) {
+  document.querySelectorAll('[data-video]').forEach(function(video) {
     video.addEventListener('click', function () {
       var frame = document.createElement('iframe');
       frame.src = 'https://rutube.ru/play/embed/' + video.getAttribute('data-video') + '/?autoplay=1';
@@ -594,7 +593,7 @@
       frame.className = 'video__frame';
       video.replaceChildren(frame);
     }, { once: true });
-  }
+  });
 
   // 6. Мобильное меню.
   var burger = document.querySelector('.burger');

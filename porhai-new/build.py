@@ -1483,8 +1483,7 @@ PAGE_SCRIPT = """<script>
   // 5c. Видео о центре: до клика на странице только наша картинка-обложка,
   //     плеер RuTube (его скрипты и куки) подставляется одним iframe'ом
   //     по первому клику — страница грузится без стороннего плеера вообще.
-  var video = document.querySelector('[data-video]');
-  if (video) {
+  document.querySelectorAll('[data-video]').forEach(function(video) {
     video.addEventListener('click', function () {
       var frame = document.createElement('iframe');
       frame.src = 'https://rutube.ru/play/embed/' + video.getAttribute('data-video') + '/?autoplay=1';
@@ -1494,7 +1493,7 @@ PAGE_SCRIPT = """<script>
       frame.className = 'video__frame';
       video.replaceChildren(frame);
     }, { once: true });
-  }
+  });
 
   // 6. Мобильное меню.
   var burger = document.querySelector('.burger');
@@ -3479,7 +3478,7 @@ DR_COMPARE = [
         ('Аниматор',                   ['1 ч', '1 ч', '1 ч', '1,5 ч + шоу']),
     ]),
     ('Что входит в праздник', [
-        ('Надпись из шаров',           ['✓', '✓', '—', '—']),
+        ('Надпись из шаров',           ['✓', '✓', '✓', '✓']),
         ('Серебряное шоу',             ['—', '✓', '✓', '✓']),
         ('Блеск-тату',                 ['—', '✓', '✓', '✓']),
         ('Торт с дизайном, 2 кг',      ['—', '—', '✓', '✓']),
@@ -3588,7 +3587,16 @@ def build_denrozhdeniya():
         '<h3>%s</h3></div>' % (icon, title)
         for icon, title in zip(icons, ('Фотозоны и бассейны', 'Помощь с оформлением', 'Программа для детей', 'Подготовка зала и уборка')))
 
-    plan_photos = dict(zip((pl['slug'] for pl in DR_PLANS), DR_GALLERY[:4]))
+    plan_photos = {
+        'mini': RENTAL_PAGES['whiteroom']['cover'],
+        'pod-kluch': RENTAL_PAGES['loftbox']['cover'],
+        'vip': DR_GALLERY[2],
+        'super-vip': RENTAL_PAGES['combo']['cover'],
+    }
+    party_steps = ''.join('<li class="step"><span class="step__num">%d</span><p class="step__title">%s</p></li>' % (i+1,t) for i,t in enumerate(STEPS))
+    party_cards = ''.join('<figure class="bd-bright-card"><img src="%s%s" alt="" loading="lazy"><figcaption>%s</figcaption></figure>' % (IMG,img,caption) for img,caption in CARDS)
+    room_cards = ''.join('<article class="bd-room"><h3>%s</h3>%s<a href="/%s">Подробнее о зале →</a></article>' % (data['gallery_title'],render_video(data['video'],data['cover'],'о зале '+data['gallery_title']),slug) for slug,data in RENTAL_PAGES.items())
+    rooms = birthday_carousel('<div class="bd-carousel__track bd-carousel__track--rooms" tabindex="0" aria-label="Видеообзоры залов">'+room_cards+'</div>', 'Обзоры залов', len(RENTAL_PAGES))
     plans = ''.join(
         '<details class="plan birthday-plan" id="plan-%s"><summary><img src="%s" alt="" loading="lazy"><span><strong>%s</strong><span class="plan__price">%s</span></span><span class="bd-arrow" aria-hidden="true">➜</span></summary><div class="birthday-plan__body">'
         '<p class="plan__meta">%s</p>'
@@ -3654,8 +3662,6 @@ def build_denrozhdeniya():
       <img class="birthday-hero__photo" src="{IMG}{DR_COVER}" alt="День рождения в «Порхай»" fetchpriority="high">
       <div class="birthday-actions" id="birthday-actions">
         <a class="btn btn--yellow birthday-gift-primary" href="#birthday-messengers" data-promo="pinata" data-analytics-placement="promo">Получить пиньяту на праздник</a>
-        {cta.format('hero')}
-        <a href="{wa}" data-analytics-placement="hero">Написать в WhatsApp</a>
       </div>
     </div>
   </section>
@@ -3667,6 +3673,18 @@ def build_denrozhdeniya():
     </div>
   </section>
 
+  <section class="section birthday-steps"><div class="stage">
+    <h2 class="section-title">Организуйте праздник в 5 шагов</h2>
+    <ol class="steps">{party_steps}</ol>
+  </div></section>
+  <section class="section birthday-bright"><div class="stage">
+    <h2 class="section-title">Мы делаем ваш праздник ярче</h2>
+    <div class="bd-bright-grid">{party_cards}</div>
+  </div></section>
+  <section class="section" id="room-reviews"><div class="stage">
+    <h2 class="section-title">Обзоры наших залов</h2>
+    {rooms}
+  </div></section>
   <section class="section" id="pakety">
     <div class="stage">
       <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Пакеты на день рождения</h2>

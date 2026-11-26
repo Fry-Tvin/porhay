@@ -32,7 +32,7 @@
 <meta property="og:description" content="«Порхай» — детский развлекательный центр во Владивостоке. Дни рождения и выпускные под ключ, аниматоры и шоу-программы. 3 сухих бассейна, фотозоны. Державина, 23.">
 <meta property="og:image" content="https://xn--80asndg4a.xn--p1ai/assets/img/tild3463-6130-4836-a539-636430646232__vector.webp">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="stylesheet" href="assets/style.css?v=07340149ba22">
+<link rel="stylesheet" href="assets/style.css?v=5fcc4d47ad7e">
 </head>
 <body class="home-page" data-lead-type="general">
 <script>document.documentElement.className+=' js'</script>
@@ -3071,8 +3071,7 @@
   // 5c. Видео о центре: до клика на странице только наша картинка-обложка,
   //     плеер RuTube (его скрипты и куки) подставляется одним iframe'ом
   //     по первому клику — страница грузится без стороннего плеера вообще.
-  var video = document.querySelector('[data-video]');
-  if (video) {
+  document.querySelectorAll('[data-video]').forEach(function(video) {
     video.addEventListener('click', function () {
       var frame = document.createElement('iframe');
       frame.src = 'https://rutube.ru/play/embed/' + video.getAttribute('data-video') + '/?autoplay=1';
@@ -3082,7 +3081,7 @@
       frame.className = 'video__frame';
       video.replaceChildren(frame);
     }, { once: true });
-  }
+  });
 
   // 6. Мобильное меню.
   var burger = document.querySelector('.burger');
