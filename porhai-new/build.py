@@ -3618,7 +3618,7 @@ def build_denrozhdeniya():
                 .replace('>Ваше имя</span>', '>Ваше имя (необязательно)</span>')
                 .replace('<label class="form__consent"><input type="checkbox" name="marketing"><span>Хочу получать новости, акции и приглашения на праздники</span></label>', '')
                 .replace('>Отправить</button>', '>Запросить даты</button>')
-                .replace('</form>', f'<a class="birthday-form-wa" href="{wa}" data-analytics-placement="form">Или напишите нам в WhatsApp</a></form>')
+                .replace('</form>', f'<a class="birthday-form-wa" href="#birthday-messengers" data-analytics-placement="form">Или получите информацию здесь</a></form>')
                 .replace('>Спасибо!</p>', '>Заявка принята!</p>')
                 .replace('Мы свяжемся с вами в ближайшее время.',
                          f'Напишем вам в WhatsApp в течение 20 минут (10:00–21:00). Хотите быстрее — напишите нам сами.</p><a href="{wa}" data-analytics-placement="thanks">WhatsApp</a> · <a href="tel:+79510000499" data-analytics-placement="thanks">+7 951 000-04-99</a><p hidden>'))
@@ -3644,6 +3644,7 @@ def build_denrozhdeniya():
 
 <main>
   <section class="birthday-hero">
+    <div class="stage"><a class="birthday-gift" href="#birthday-messengers" data-promo="pinata" data-analytics-placement="promo">🎁 Получить пиньяту на праздник →</a></div>
     <div class="stage birthday-hero__grid">
       <div class="birthday-hero__copy">
         <h1>Детский день рождения под ключ <span>во Владивостоке</span></h1>
@@ -3670,7 +3671,7 @@ def build_denrozhdeniya():
       <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Пакеты на день рождения</h2>
 
       <p class="ct__links"><a href="/torty">Все дизайны тортов →</a> <a href="/pinyaty">Все пиньяты →</a></p>
-      {PROMO_PINATA.replace('<p class="promo-badge">', '<a class="promo-badge" href="#popup:denrozhdeniya" data-promo="pinata" data-analytics-placement="promo">').replace('ноябре*</p>', 'ноябре*</a>')}
+
       <div class="plans__grid">{plans}</div>
       <details class="birthday-compare"><summary>Сравнить все пакеты</summary>{render_compare_table(('Мини', 'Под ключ', 'Вип', 'Супер Вип'), DR_COMPARE, DR_COMPARE_REC, DR_COMPARE_COMMON)}</details>
     </div>
@@ -3710,7 +3711,7 @@ def build_denrozhdeniya():
           <a href="{wa}" data-analytics-placement="footer">WhatsApp →</a>
           <a href="https://t.me/porhay_vladivostok" data-analytics-placement="footer">Telegram →</a>
         </div>
-        {cta.format('footer')}
+        <a class="btn btn--yellow" href="#popup:denrozhdeniya" data-phone-form data-analytics-placement="footer_phone">Оставить номер телефона</a>
       </div>
       <p class="birthday-map-links"><a href="https://yandex.ru/maps/org/porkhay/234292709609/">Открыть в Яндекс Картах</a> · <a href="https://2gis.ru/vladivostok/firm/70000001052379765">Открыть в 2ГИС</a></p>
     </div>
@@ -3726,9 +3727,63 @@ def build_denrozhdeniya():
 <script type="application/ld+json">{BUSINESS_LD}</script>
 
 {popups}
+<dialog class="popup popup--messengers" id="birthday-messengers" aria-label="Выберите мессенджер">
+ <div class="popup__box">
+  <button type="button" class="popup__close" data-popup-close aria-label="Закрыть">×</button>
+  <h3 class="popup__title">Выберите мессенджер</h3>
+  <p data-messenger-topic></p>
+  <div class="birthday-messenger-grid">
+   <a data-messenger="whatsapp" href="{wa}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true">{WA_ICON}</svg>WhatsApp</a>
+   <a data-messenger="telegram" href="https://t.me/porhay_vladivostok" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true">{TG_ICON}</svg>Telegram</a>
+   <a data-messenger="max" href="https://max.ru/u/f9LHodD0cOLqrvIA72DMUOdZ1jWjZtmxu15O2okC2Dm2gS5lLfRvIFPf-x4" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true">{MAX_ICON}</svg>MAX</a>
+  </div>
+  <p class="messenger-hint">Для MAX скопируйте сообщение и вставьте его в чат:</p>
+  <button type="button" class="messenger-copy">Скопировать сообщение</button>
+  <p class="messenger-draft" data-messenger-draft></p>
+  <p role="status" data-copy-status></p>
+ </div>
+</dialog>
 
 {PAGE_SCRIPT}
 <script>
+var chooser = document.getElementById('birthday-messengers');
+var messengerContext = {{}};
+function messengerGoal(name, extra) {{
+ try {{ if(window.ym) ym(112256802,'reachGoal',name,Object.assign({{page:location.pathname}},messengerContext,extra||{{}})); }} catch(e) {{}}
+}}
+document.addEventListener('click',function(e) {{
+ var link=e.target.closest('a');
+ if(!link || link.closest('#birthday-messengers') || link.hasAttribute('data-phone-form')) return;
+ var href=link.getAttribute('href')||'';
+ if(!href.startsWith('#popup:') && href!=='#birthday-messengers' && !link.matches('.birthday-actions a[href*="wa.me"],.bd-contact-links a[href*="wa.me"],.bd-contact-links a[href*="t.me"]')) return;
+ e.preventDefault();e.stopImmediatePropagation();
+ var source=link.dataset.analyticsPlacement||'form';
+ var intent=link.dataset.promo ? 'pinata':'dates';
+ var packageLabel=link.dataset.packageLabel||'';
+ messengerContext={{placement:source,intent:intent,package:link.dataset.package||''}};
+ var text=intent==='pinata'?'Здравствуйте, хочу получить пиньяту на день рождения':'Здравствуйте! Хочу узнать свободные даты на день рождения';
+ if(packageLabel)text+=' — '+packageLabel.split(',')[0];
+ try {{var attribution=JSON.parse(localStorage.getItem('porhay_attribution')||'{{}}');if(attribution.yclid||attribution.utm_source==='ya')text+=' (Я)';}}catch(err){{}}
+ chooser.querySelector('[data-messenger-topic]').textContent=intent==='pinata'?'Получить пиньяту на день рождения':(packageLabel||'Узнать свободные даты');
+ chooser.querySelector('[data-messenger-draft]').textContent=text;
+ chooser.querySelector('[data-copy-status]').textContent='';
+ chooser.querySelector('[data-messenger="whatsapp"]').href='https://wa.me/79510000499?text='+encodeURIComponent(text);
+ chooser.querySelector('[data-messenger="telegram"]').href='https://t.me/porhay_vladivostok?text='+encodeURIComponent(text);
+ var current=document.querySelector('dialog[open]');if(current)current.close();
+ chooser.showModal();
+ messengerGoal('messenger_open');
+ messengerGoal('cta_click',{{cta_text:link.textContent.trim(),flow:'messenger'}});
+}},true);
+chooser.querySelector('.messenger-copy').addEventListener('click',async function(){{
+ try {{await navigator.clipboard.writeText(chooser.querySelector('[data-messenger-draft]').textContent);chooser.querySelector('[data-copy-status]').textContent='Сообщение скопировано';}}catch(e){{chooser.querySelector('[data-copy-status]').textContent='Выделите и скопируйте текст сообщения ниже.';}}
+}});
+chooser.querySelectorAll('[data-messenger]').forEach(function(link) {{
+ link.addEventListener('click',function(){{
+  messengerGoal('messenger_select',{{messenger:link.dataset.messenger}});
+  messengerGoal(link.dataset.messenger+'_click',{{flow:'messenger'}});
+  if(link.dataset.messenger==='max' && navigator.clipboard)navigator.clipboard.writeText(chooser.querySelector('[data-messenger-draft]').textContent).catch(function(){{}});
+ }});
+}});
 document.querySelectorAll('.bd-carousel').forEach(function (box) {{
   var track = box.querySelector('.bd-carousel__track');
   var cards = Array.from(track.children);
