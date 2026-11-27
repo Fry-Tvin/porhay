@@ -2129,8 +2129,12 @@
     return '#fff';
   }
   document.querySelectorAll('.original-divider').forEach(function (divider) {
-    var before = dividerColor(divider.previousElementSibling);
-    var after = dividerColor(divider.nextElementSibling);
+    var previous = divider.previousElementSibling;
+    var next = divider.nextElementSibling;
+    while(previous && /^(STYLE|SCRIPT|TEMPLATE)$/.test(previous.tagName)) previous=previous.previousElementSibling;
+    while(next && /^(STYLE|SCRIPT|TEMPLATE)$/.test(next.tagName)) next=next.nextElementSibling;
+    var before = dividerColor(previous);
+    var after = dividerColor(next);
     divider.style.background = 'linear-gradient('+before+' 0 50%,'+after+' 50%)';
     divider.querySelectorAll('[data-elem-type="shape"] .tn-atom').forEach(function (atom) {
       atom.style.backgroundColor = after;
