@@ -3593,8 +3593,20 @@ def build_denrozhdeniya():
         'vip': DR_GALLERY[2],
         'super-vip': RENTAL_PAGES['combo']['cover'],
     }
-    party_steps = ''.join('<li class="step"><span class="step__num">%d</span><p class="step__title">%s</p></li>' % (i+1,t) for i,t in enumerate(STEPS))
-    party_cards = ''.join('<figure class="bd-bright-card"><img src="%s%s" alt="" loading="lazy"><figcaption>%s</figcaption></figure>' % (IMG,img,caption) for img,caption in CARDS)
+    party_steps = ''.join('<li class="step" data-anim="fadeinup" data-anim-dur="1" data-anim-delay="%.2f"><span class="step__num">%d</span><p class="step__title">%s</p></li>' % (i*.1,i+1,t) for i,t in enumerate(STEPS))
+    party_cards = ''.join(
+        '<figure class="card" data-anim="zoomin" data-anim-dur="1.3" data-anim-delay="%.2f">' % (i*.15) +
+        '<span class="card__frame card__frame--teal"><img src="%stild3665-3464-4535-b763-386533363061__svg4.svg" alt=""></span>'
+        '<span class="card__frame card__frame--yellow"><img src="%stild6338-3565-4263-b539-323163613235__svg3.svg" alt=""></span>'
+        '<span class="card__photo" style="background-image:url(%s%s)" role="img" aria-label="%s"></span>'
+        '<span class="card__plate"><img src="%stild3661-3566-4834-a234-336436346262__photo.webp" alt=""></span>'
+        '<figcaption class="card__caption">%s</figcaption></figure>' %
+        (IMG,IMG,IMG,img,escape(caption,quote=True),IMG,caption) for i,(img,caption) in enumerate(CARDS))
+    def small_divider():
+        shapes = ''.join('<span data-elem-type="shape" class="small-ball" style="left:%s%%"><span class="tn-atom"></span></span>'
+                         '<span data-original-motion="0,0,%d" class="small-ball-line" style="left:calc(%s%% + 3px)"><img src="%s%s" alt=""></span>' %
+                         (i*100/12,40 if i%2 else -40,i*100/12,IMG,BIT['d4abbe9e']) for i in range(12))
+        return '<div class="original-divider birthday-small-divider" aria-hidden="true">'+shapes+'</div>'
     room_cards = ''.join('<article class="bd-room"><h3>%s</h3>%s<a href="/%s">Подробнее о зале →</a></article>' % (data['gallery_title'],render_video(data['video'],data['cover'],'о зале '+data['gallery_title']),slug) for slug,data in RENTAL_PAGES.items())
     rooms = birthday_carousel('<div class="bd-carousel__track bd-carousel__track--rooms" tabindex="0" aria-label="Видеообзоры залов">'+room_cards+'</div>', 'Обзоры залов', len(RENTAL_PAGES))
     plans = ''.join(
@@ -3677,14 +3689,17 @@ def build_denrozhdeniya():
     <h2 class="section-title">Организуйте праздник в 5 шагов</h2>
     <ol class="steps">{party_steps}</ol>
   </div></section>
+  {small_divider()}
   <section class="section birthday-bright"><div class="stage">
     <h2 class="section-title">Мы делаем ваш праздник ярче</h2>
-    <div class="bd-bright-grid">{party_cards}</div>
+    <div class="cards">{party_cards}</div>
   </div></section>
+  {small_divider()}
   <section class="section" id="room-reviews"><div class="stage">
     <h2 class="section-title">Обзоры наших залов</h2>
     {rooms}
   </div></section>
+  {small_divider()}
   <section class="section" id="pakety">
     <div class="stage">
       <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Пакеты на день рождения</h2>
