@@ -1,8 +1,8 @@
 name: Deploy to GitHub Pages
 
-# Собирает сайт из porhai-new/ (там лежит рабочая вёрстка, см. CLAUDE.md)
-# и публикует на GitHub Pages. porhai-eds/ (эталон с Тильды), spec/,
-# content/ и *.py-скрипты не публикуются — это только для разработки.
+# РЎРѕР±РёСЂР°РµС‚ СЃР°Р№С‚ РёР· porhai-new/ (С‚Р°Рј Р»РµР¶РёС‚ СЂР°Р±РѕС‡Р°СЏ РІС‘СЂСЃС‚РєР°, СЃРј. CLAUDE.md)
+# Рё РїСѓР±Р»РёРєСѓРµС‚ РЅР° GitHub Pages. porhai-eds/ (СЌС‚Р°Р»РѕРЅ СЃ РўРёР»СЊРґС‹), spec/,
+# content/ Рё *.py-СЃРєСЂРёРїС‚С‹ РЅРµ РїСѓР±Р»РёРєСѓСЋС‚СЃСЏ вЂ” СЌС‚Рѕ С‚РѕР»СЊРєРѕ РґР»СЏ СЂР°Р·СЂР°Р±РѕС‚РєРё.
 
 on:
   push:
@@ -34,6 +34,7 @@ jobs:
           cp porhai-new/*.html _site/
           cp porhai-new/sitemap.xml porhai-new/robots.txt _site/
           cp -r porhai-new/assets _site/assets
+          cp -r porhai-new/feed _site/feed
           cp CNAME _site/CNAME
 
       - name: Setup Pages
