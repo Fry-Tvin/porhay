@@ -2604,3 +2604,10 @@ body main:has(.original-divider) { overflow:clip; }
 .bd-room-lead { margin:-4px 0 20px; font-size:16px; line-height:1.45; color:#58615f; }
 .bd-carousel__track--rooms { --card:86%; gap:18px; }
 @media(min-width:1000px) { .bd-carousel__track--rooms { --card:calc((100% - 36px)/3); } }
+
+.birthday-page .original-divider { overflow:hidden; }
+.birthday-page .birthday-bright .cards { width:76%; margin-inline:auto; max-width:920px; }
+@media(max-width:767px) {
+ .birthday-page .birthday-bright .cards { width:76%; max-width:280px; gap:22px; }
+ .birthday-page .birthday-bright .card__caption { font-size:15px; line-height:1.25; }
+}

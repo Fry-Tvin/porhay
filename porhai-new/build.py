@@ -3602,7 +3602,7 @@ def build_denrozhdeniya():
         '<span class="card__plate"><img src="%stild3661-3566-4834-a234-336436346262__photo.webp" alt=""></span>'
         '<figcaption class="card__caption">%s</figcaption></figure>' %
         (IMG,IMG,IMG,img,escape(caption,quote=True),IMG,caption) for i,(img,caption) in enumerate(CARDS))
-    room_cards = ''.join('<article class="bd-room">%s<div class="bd-room__caption"><h3>%s</h3><a href="/%s">О зале →</a></div></article>' % (render_video(data['video'],data['cover'],'о зале '+data['gallery_title']),data['gallery_title'],slug) for slug,data in RENTAL_PAGES.items())
+    room_cards = ''.join('<article class="bd-room">%s<div class="bd-room__caption"><h3>%s</h3><a href="/%s">О зале →</a></div></article>' % (render_video(data['video'],(data['gallery'][0] if 'gallery' in data else DR_GALLERY[5]) if slug=='combo' else data['cover'],'о зале '+data['gallery_title']),data['gallery_title'],slug) for slug,data in RENTAL_PAGES.items())
     rooms = birthday_carousel('<div class="bd-carousel__track bd-carousel__track--rooms" tabindex="0" aria-label="Видеообзоры залов">'+room_cards+'</div>', 'Обзоры залов', len(RENTAL_PAGES))
     plans = ''.join(
         '<details class="plan birthday-plan" id="plan-%s"><summary><img src="%s" alt="" loading="lazy"><span><strong>%s</strong><span class="plan__price">%s</span></span><span class="bd-arrow" aria-hidden="true">➜</span></summary><div class="birthday-plan__body">'
@@ -3707,6 +3707,7 @@ def build_denrozhdeniya():
     </div>
   </section>
 
+  {home_band('mint', 'white')}
   <section class="features">
     <div class="stage">
       <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Почему стоит провести праздник в&nbsp;«Порхай»?</h2>
@@ -3714,6 +3715,7 @@ def build_denrozhdeniya():
     </div>
   </section>
 
+  {home_band('white', 'mint')}
   <section class="section" style="background:{DR_BG}" id="otziv">
     <div class="stage">
       <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Отзывы родителей</h2>
@@ -3723,9 +3725,11 @@ def build_denrozhdeniya():
   </section>
 
 
+  {home_band('mint', 'white')}
   {render_faq_section()}
 
 
+  {home_band('white', 'mint')}
   <section class="section birthday-directions-section" id="kontakt">
     <div class="stage birthday-directions">
       <div>
