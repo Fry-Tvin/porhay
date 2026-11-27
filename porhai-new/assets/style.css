@@ -2585,3 +2585,22 @@ body main:has(.original-divider) { overflow:clip; }
 .birthday-small-divider .small-ball .tn-atom { display:block; width:100%; height:100%; border-radius:50%; }
 .birthday-small-divider .small-ball-line { position:absolute; top:8px; width:10px; height:18px; z-index:3; }
 .birthday-small-divider img { width:100%; }
+
+/* The hero and gallery form one mint introduction; subsequent sections alternate. */
+.birthday-page .birthday-steps { background:#fff!important; }
+.birthday-page .birthday-bright { background:#dffffe!important; }
+.birthday-page #room-reviews { background:#fff!important; }
+.birthday-page #pakety { background:#dffffe!important; }
+.birthday-page .features { background:#fff!important; }
+.birthday-page #otziv { background:#dffffe!important; }
+.birthday-page #faq { background:#fff!important; }
+.birthday-page .birthday-directions-section { background:#dffffe!important; }
+.bd-room { padding:0; background:transparent; border-radius:18px; overflow:hidden; }
+.bd-room .video { border-radius:18px; overflow:hidden; margin:0; aspect-ratio:16/10; }
+.bd-room .video__poster { object-fit:cover; }
+.bd-room__caption { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 2px 4px; }
+.bd-room__caption h3 { font-size:21px; margin:0; line-height:1.2; }
+.bd-room__caption a { font-size:14px; color:#205f63; text-decoration:underline; text-underline-offset:4px; white-space:nowrap; }
+.bd-room-lead { margin:-4px 0 20px; font-size:16px; line-height:1.45; color:#58615f; }
+.bd-carousel__track--rooms { --card:86%; gap:18px; }
+@media(min-width:1000px) { .bd-carousel__track--rooms { --card:calc((100% - 36px)/3); } }

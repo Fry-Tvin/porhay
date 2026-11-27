@@ -3602,12 +3602,7 @@ def build_denrozhdeniya():
         '<span class="card__plate"><img src="%stild3661-3566-4834-a234-336436346262__photo.webp" alt=""></span>'
         '<figcaption class="card__caption">%s</figcaption></figure>' %
         (IMG,IMG,IMG,img,escape(caption,quote=True),IMG,caption) for i,(img,caption) in enumerate(CARDS))
-    def small_divider():
-        shapes = ''.join('<span data-elem-type="shape" class="small-ball" style="left:%s%%"><span class="tn-atom"></span></span>'
-                         '<span data-original-motion="0,0,%d" class="small-ball-line" style="left:calc(%s%% + 3px)"><img src="%s%s" alt=""></span>' %
-                         (i*100/12,40 if i%2 else -40,i*100/12,IMG,BIT['d4abbe9e']) for i in range(12))
-        return '<div class="original-divider birthday-small-divider" aria-hidden="true">'+shapes+'</div>'
-    room_cards = ''.join('<article class="bd-room"><h3>%s</h3>%s<a href="/%s">Подробнее о зале →</a></article>' % (data['gallery_title'],render_video(data['video'],data['cover'],'о зале '+data['gallery_title']),slug) for slug,data in RENTAL_PAGES.items())
+    room_cards = ''.join('<article class="bd-room">%s<div class="bd-room__caption"><h3>%s</h3><a href="/%s">О зале →</a></div></article>' % (render_video(data['video'],data['cover'],'о зале '+data['gallery_title']),data['gallery_title'],slug) for slug,data in RENTAL_PAGES.items())
     rooms = birthday_carousel('<div class="bd-carousel__track bd-carousel__track--rooms" tabindex="0" aria-label="Видеообзоры залов">'+room_cards+'</div>', 'Обзоры залов', len(RENTAL_PAGES))
     plans = ''.join(
         '<details class="plan birthday-plan" id="plan-%s"><summary><img src="%s" alt="" loading="lazy"><span><strong>%s</strong><span class="plan__price">%s</span></span><span class="bd-arrow" aria-hidden="true">➜</span></summary><div class="birthday-plan__body">'
@@ -3685,21 +3680,22 @@ def build_denrozhdeniya():
     </div>
   </section>
 
+{home_band('mint', 'white')}
   <section class="section birthday-steps"><div class="stage">
     <h2 class="section-title">Организуйте праздник в 5 шагов</h2>
     <ol class="steps">{party_steps}</ol>
   </div></section>
-  {small_divider()}
+  {home_band('white', 'mint')}
   <section class="section birthday-bright"><div class="stage">
     <h2 class="section-title">Мы делаем ваш праздник ярче</h2>
     <div class="cards">{party_cards}</div>
   </div></section>
-  {small_divider()}
+  {home_band('mint', 'white')}
   <section class="section" id="room-reviews"><div class="stage">
-    <h2 class="section-title">Обзоры наших залов</h2>
+    <h2 class="section-title">Выберите зал для праздника</h2><p class="bd-room-lead">Посмотрите видеообзоры и найдите своё пространство.</p>
     {rooms}
   </div></section>
-  {small_divider()}
+  {home_band('white', 'mint')}
   <section class="section" id="pakety">
     <div class="stage">
       <h2 class="section-title" data-anim="fadeinup" data-anim-dur="1">Пакеты на день рождения</h2>
